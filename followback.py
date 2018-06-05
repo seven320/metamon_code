@@ -41,6 +41,9 @@ print("list_followback,count=",len(list_followback))
 #follow back-part
 #num of follow once
 count=10
+if count>len(list_followback):
+    count=len(list_followback)
+
 for follownum in range(count):
     # follow-part
     try:

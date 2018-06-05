@@ -14,6 +14,8 @@ class Manuscript():
         self.tweet.append("えらい！\nとてもえらい！！")
         self.tweet.append("すばらしい！")
         self.tweet.append("最高！！仕事人！！！")
+        self.tweet.append("行動力の化身！！！！")
+        self.tweet.append("今日も頑張ってます")
 
     def manus(self,num=0):
         return self.tweet[num]

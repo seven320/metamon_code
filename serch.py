@@ -18,7 +18,7 @@ def main():
 
     classify_list=["褒めて","ほめて","承認","讃えて","たたえて","返信","変身","えらい"]
 
-    public_tweets = api.home_timeline(count=10,since_id=since_id)
+    public_tweets = api.home_timeline(count=100,since_id=since_id)
     #
     # print(len(public_tweets))
     # print(type(public_tweets))
@@ -30,17 +30,19 @@ def main():
         screen_name=tweet.user.screen_name#@以下のID
         tweet_id=tweet.id
         tweet_text=tweet.text
-        for i in range(len(classify_list)):
-            if classify_list[i] in tweet_text:
-                if tweet.favorited==False:
-                    print("test:承認")
-                    # #reply
-                    reply.main(user_name,screen_name,tweet_id,tweet_text)
-                    # #favorite
-                    api.create_favorite(tweet_id)
-                else:print("you already reply it!!")
-            else:
-                print("test:非承認")
+        print(user_name)
+        print(tweet_text+"\n")
+        # for i in range(len(classify_list)):
+        #     if classify_list[i] in tweet_text:
+        #         if tweet.favorited==False:
+        #             print("test:承認")
+        #             # #reply
+        #             # reply.main(user_name,screen_name,tweet_id,tweet_text)
+        #             # # #favorite
+        #             # api.create_favorite(tweet_id)
+        #         else:print("you already reply it!!")
+        #     else:
+        #         print("test:非承認")
 
 if __name__=="__main__":
     main()

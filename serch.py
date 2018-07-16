@@ -16,7 +16,7 @@ def main():
     twitter_id=account.id()
     since_id=None
 
-    classify_list=["褒めて","ほめて","承認","讃えて","たたえて","返信","変身","えらい"]
+    classify_list=["褒めて","ほめて","承認","讃えて","たたえて","えらい"]
 
     public_tweets = api.home_timeline(count=100,since_id=since_id)
     #

@@ -34,8 +34,7 @@ friends=api.friends_ids(twitter_id)
 #         pass
 # print(followers)
 #フォロワーからフォローしている人を引く
-set_followback=set(followers)-set(friends)
-list_followback=list(set_followback)#フォローバックすべき一覧
+list_followback=list(set(followers)-set(friends))#フォローバックすべき一覧
 print("list_followback,count=",len(list_followback))
 
 #follow back-part

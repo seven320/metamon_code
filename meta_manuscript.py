@@ -8,7 +8,6 @@ class Manuscript():
         self.tweet.append("満点！")
         self.tweet.append("いつも最高です。")
         self.tweet.append("とても優秀だもん！")
-        self.tweet.append("よっ、社長！！")
         self.tweet.append("できる人は違うもん")
         self.tweet.append("頑張り屋さんです")
         self.tweet.append("すごい！\nとてもすごい！！")
@@ -20,7 +19,9 @@ class Manuscript():
         self.tweet.append("わんだふる！！！")
         self.tweet.append("素晴らしい成果だもん！！")
         self.tweet.append("素晴らしい出来栄えです")
-        self.tweet.append("仕事を頑張る姿が素敵もん!!”)
+        self.tweet.append("仕事を頑張る姿が素敵もん!!")
+        self.tweet.append("大好きだもん")
+        self.tweet.append("今日もお疲れ様だもん")
 
     def manus(self,num=0):
         return self.tweet[num]

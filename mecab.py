@@ -51,8 +51,7 @@ def main():
     api = tweepy.API(auth)
     twitter_id=account.id()
 
-    public_tweets = api.home_timeline(count=1)
-
+    public_tweets = api.home_timeline(count=100)
 
     for tweet in public_tweets:
         print("\n"+tweet.user.name)

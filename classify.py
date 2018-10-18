@@ -9,7 +9,7 @@ sys.path.append(pardir)
 from metamon_code import reply
 #account情報をaccount.pyからロード
 from account import account #load account
-auth=account.Initialize()
+auth = account.Initialize()
 api = tweepy.API(auth)
 
 def lambda_handler():
@@ -29,7 +29,7 @@ def lambda_handler():
     for tweet in public_tweets:
         #HNに対する処理
         user_name = tweet.user.name#HN
-        #user_nameについて@以下の情報を削除
+        # user_nameについて@以下の情報を削除
         user_name = user_name.split("@")
 
         screen_name=tweet.user.screen_name#@以下のID
@@ -54,14 +54,14 @@ def lambda_handler():
             else:
                 print("test:非承認")
         #裏コマンド　変身
-        # for j in range(len(transform_command)):
-        #     if transform_command in tweet_text:
-        #         if tweet.favorited==False:
-        #             api.
-        #             # #favorite
-        #             api.create_favorite(tweet_id)
-        #         else:print("変身済みです")
-
+        for j in range(len(transform_command)):
+            if transform_command in tweet_text:
+                if tweet.favorited==False:
+                    pass
+                    # api.
+                    # #favorite
+                    api.create_favorite(tweet_id)
+                else:print("変身済みです")
 
 if __name__=="__main__":
     lambda_handler()

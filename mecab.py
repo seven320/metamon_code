@@ -12,17 +12,19 @@ sys.path.append(pardir)
 from account import account #load account
 
 text="月が綺麗ですね。メロンパン。メロン。パン"
+test = "豚汁垢、徹底的に中の人要素を排除して一貫性のあるツイートこころがけて話題性提供してめちゃくちゃ自発してふぁぼ爆して5日くらいでフォロー500フォロワー200？くらいにしたのなかなかじゃないか？ 自業自得とはいえつらいからみんか褒めて"
 
 # nm=MeCab
-def NLP(text):#natural language processing
+def nlp(text):#natural language processing
     m = MeCab.Tagger("-d /usr/local/lib/mecab/dic/mecab-ipadic-neologd")
     # print(m.parse(text))
     return m.parse(text)
 
-def sprit_text_to_noun(text):
+
+def text_to_noun(text):
     frequency_dic = {}
     frequency_verb = {}
-    m = MeCab.Tagger("-Ochasen -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd")
+    m = MeCab.Tagger("-Ochasen -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd")ｓ
     #自然言語処理
     node = m.parse(text)
 
@@ -51,14 +53,15 @@ def main():
     api = tweepy.API(auth)
     twitter_id=account.id()
 
-    public_tweets = api.home_timeline(count=100)
+    public_tweets = api.home_timeline(count=10)
 
     for tweet in public_tweets:
         print("\n"+tweet.user.name)
         # print(tweet.user.screen_name)#@以下のID
         print(tweet.text)
-        print(sprit_text_to_noun(tweet.text))
+        print(text_to_noun(tweet.text))
 
 if __name__=="__main__":
     # sprit_text_to_noun(text)
-    main()
+    # main()
+    print(nlp(test))

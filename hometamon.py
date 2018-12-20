@@ -19,7 +19,8 @@ class Hometamon():
         self.api = tweepy.API(auth, wait_on_rate_limit=True)
         self.twitter_id = account.id()
         self.manuscript = meta_manuscript.Manuscript()
-        self.dt_now = datetime.datetime.now()
+        JST = datetime.timezone(datetime.timedelta(hours=+9),"JST")
+        self.jst_now = datetime.datetime.now(JST)
 
     #read tweets
     def classify(self):
@@ -41,6 +42,11 @@ class Hometamon():
             screen_name = tweet.user.screen_name
             exclude = False
 
+            #自分には返事しない
+            if screen_name == self.twitter_id:
+                exclude = True
+
+            #上記の除外ワードを含む人には返事しない
             for str in exclusion_words:
                 if str in user_name:
                     exclude = True

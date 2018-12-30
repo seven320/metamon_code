@@ -22,7 +22,7 @@ class Hometamon():
         JST = datetime.timezone(datetime.timedelta(hours=+9),"JST")
         self.jst_now = datetime.datetime.now(JST)
         #for test
-        self.test = False
+        self.test = True
 
     #read tweets
     def classify(self):
@@ -47,8 +47,13 @@ class Hometamon():
             exclude = False
 
             #自分には返事しない
-            if tweet.user.screen_name == self.twitter_id:
+            if screen_name == self.twitter_id:
                 exclude = True
+                print("ex")
+
+            elif tweet.favorited == True:
+                exclude = True
+                print("you alredy favorited")
 
             #上記の除外ワードを含む人には返事しない
             for str in exclusion_words:
@@ -57,8 +62,8 @@ class Hometamon():
                     # print("ignore that account")
                     count["ignore"] += 1
                     break
-                else:
-                    exclude = False
+                    
+            print(exclude)
 
             if exclude == False:
                 user_name_ = user_name.split("@")
@@ -66,52 +71,43 @@ class Hometamon():
                 #返信part
                 for classify_word in classify_words:
                     if classify_word in tweet.text:
-                        if tweet.favorited == False:
-                            count["praise"] += 1
-                            #reply
-                            self.reply(user_name_[0],screen_name,tweet.id,tweet.text)
-                            #favorite
-                            self.api.create_favorite(tweet.id)
-                        else:
-                            print("you already replyed it!")
+                        count["praise"] += 1
+                        #reply
+                        self.reply(user_name_[0],screen_name,tweet.id,tweet.text)
+                        #favorite
+                        self.api.create_favorite(tweet.id)
 
                 #挨拶part
                 if 6 <= self.jst_now.hour <= 10:
                     for ohayou_word in ohayou_words:
                         if ohayou_word in tweet.text:
-                            if tweet.favorited == False:
-                                # print("-----test:greeting_morning")
-                                count["greeting_morning"] += 1
-                                self.greeting_morning(user_name_[0],screen_name,tweet.id,tweet.text)
-                                self.api.create_favorite(tweet.id)
-                            else:
-                                print("you already replyed it!")
+                            # print("-----test:greeting_morning")
+                            count["greeting_morning"] += 1
+                            self.greeting_morning(user_name_[0],screen_name,tweet.id,tweet.text)
+                            self.api.create_favorite(tweet.id)
 
 
-                if 22 <= self.jst_now.hour or self.jst_now.hour <= 1:
+
+                if 22 <= self.jst_now.hour or self.jst_now.hour <= 2:
                     for oyasumi_word in oyasumi_words:
                         if oyasumi_word in tweet.text:
-                            if tweet.favorited == False:
-                                # print("-----test:good night")
-                                count["greeting_nignt"] += 1
-                                self.greeting_nignt(user_name_[0],screen_name,tweet.id,tweet.text)
-                                self.api.create_favorite(tweet.id)
-                            else:
-                                print("you already replyed it")
-
+                            # print("-----test:good night")
+                            count["greeting_nignt"] += 1
+                            self.greeting_nignt(user_name_[0],screen_name,tweet.id,tweet.text)
+                            self.api.create_favorite(tweet.id)
 
                 #変身part
                 for transform_command in transform_commands:
                     if transform_command in tweet.text:
-                        if tweet.favorited == False:
-                            #transform
-                            self.transform()
-                            self.api.create_favorite(tweet.id)
+                        #transform
+                        self.transform()
+                        self.api.create_favorite(tweet.id)
+
 
                 #test part
                 if test_command[0] in tweet.text:
-                    if tweet.favorited == False and screen_name == "yosyuaomenww":
-                        self.test()
+                    if screen_name == "yosyuaomenww":
+                        self.test_tweet()
                         self.api.create_favorite(tweet.id)
 
         print("褒めた人数:{0}人\n無効な人数:{1}人\n挨拶した人数:{2}人".format(count["praise"],count["ignore"],count["greeting_morning"]))
@@ -128,7 +124,7 @@ class Hometamon():
             self.api.update_status(status=reply, in_reply_to_status_id=tweet_id)#status
         else:
             print("-----test:reply")
-        print("{0}のツイート:{1} に{2}と応援しました!".format(user_name,tweet_text,reply))
+        print("tweet:{0}:{1} \nreply:{2}".format(user_name,tweet_text,reply))
 
     def greeting_morning(self,user_name,screen_name,tweet_id,tweet_text):
         num = random.randint(0,len(self.manuscript.greeting_morning)-1)
@@ -138,7 +134,7 @@ class Hometamon():
             self.api.update_status(status=reply, in_reply_to_status_id=tweet_id)#status
         else:
             print("-----test:greeting_morning")
-        print("{0}のツイート:{1} に{2}と応援しました!".format(user_name,tweet_text,reply))
+        print("tweet:{0}:{1} \nreply:{2}".format(user_name,tweet_text,reply))
 
     def greeting_nignt(self,user_name,screen_name,tweet_id,tweet_text):
         num = random.randint(0,len(self.manuscript.greeting_night)-1)
@@ -147,7 +143,7 @@ class Hometamon():
             self.api.update_status(status=reply, in_reply_to_status_id=tweet_id)
         else:
             print("-----test:greeting_night")
-        print("{0}のツイート:{1} に{2}と応援しました!".format(user_name,tweet_text,reply))
+        print("tweet:{0}:{1} \nreply:{2}".format(user_name,tweet_text,reply))
 
     #フォロバする
     def followback(self):
@@ -179,12 +175,13 @@ class Hometamon():
         # status = "変身だもん"
         # self.api.update_status(status=status)
 
-    def test(self):
+    def test_tweet(self):
         if self.test == False:
             status = "起きてるモン！\n⊂・ー・つ"
         else:
             status = "ｚｚｚ"
         self.api.update_status(status=status)
+        print(status,"とツイートしました．")
 
 
     def check_timeline(self):

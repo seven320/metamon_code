@@ -6,6 +6,7 @@ class Manuscript():
         self.greeting_night = []
         #1~
         self.tweet.append("仕事終わらせてすごいモン！！")
+        self.tweet.append("つかれたもん〜")
         self.tweet.append("よく頑張りました！！！")
         self.tweet.append("満点！だモン")
         self.tweet.append("いつも最高です。")

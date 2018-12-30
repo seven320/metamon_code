@@ -48,16 +48,12 @@ class Manuscript():
         self.greeting_morning.append("今日もがんばるモン")
         self.greeting_morning.append("起きてえらいモン")
 
-        self.greeting_night.append("お休みだもん")
-        self.greeting_night.append("よく寝るんだもん")
-        self.greeting_night.append("今日もよく頑張ったんだもんね")
-        self.greeting_night.append("よしよしだもん〜")
-        self.greeting_night.append("頑張ったもん")
-        self.greeting_night.append("お疲れ様だもん")
-        self.greeting_night.append("しっかり寝るんだもん")
-        self.greeting_night.append("よく寝るもん")
-        self.greeting_night.append("明日もあるもん")
-        self.greeting_night.append("いいゆめみるんだもん")
+        self.greeting_night.append("お休みだもん!")
+        self.greeting_night.append("おやすみだもん！！")
+        self.greeting_night.append("おやすみだもん〜")
+        self.greeting_night.append("おやすみもん！")
+        self.greeting_night.append("よく寝るんだもん!")
+        self.greeting_night.append("いいゆめみるんだもん!")
 
 
 

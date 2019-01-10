@@ -14,7 +14,7 @@ from account import account #load account
 from metamon_code import meta_manuscript
 
 class Hometamon():
-    def __init__(self):
+    def __init__(self,test = True):
         auth = account.Initialize()
         self.api = tweepy.API(auth, wait_on_rate_limit=True)
         self.twitter_id = account.id()
@@ -22,12 +22,12 @@ class Hometamon():
         JST = datetime.timezone(datetime.timedelta(hours=+9),"JST")
         self.jst_now = datetime.datetime.now(JST)
         #for test
-        self.test = True
+        self.test = test
 
     #read tweets
     def classify(self):
         since = None
-        classify_words = ["褒めて","ほめて","讃えて","えらい","バオワ","ばおわ","バイト終","バおわ","実験終","らぼりだ","ラボ離脱","ラボりだ","帰宅","疲れた","つかれた","仕事納め","掃除終","掃除した"]
+        classify_words = ["褒めて","ほめて","讃えて","えらい","バオワ","ばおわ","バイト終","バおわ","実験終","実験おわ","実験完全終了","らぼりだ","ラボ離脱","ラボりだ","帰宅","疲れた","つかれた","仕事納め","掃除終","掃除した"]
         ohayou_words = ["おはよう","起床","起きた"]
         oyasumi_words = ["おやすみ","寝よう","寝る"]
         transform_commands = ["変身"]
@@ -41,33 +41,48 @@ class Hometamon():
         "greeting_morning":0,
         "greeting_nignt":0}
 
+        if self.test == True:
+            print("#"*10,"test","#"*10)
+        else:
+            print("#"*10,"product","#"*10)
+
+        tweet_count = 0
         for tweet in public_tweets:
             user_name = tweet.user.name#HN
             screen_name = tweet.user.screen_name#ID
             exclude = False
+            tweet_count += 1
+            print(tweet_count,": ",end="")
+
+            tweet_split = tweet.text.split(" ")
 
             #自分には返事しない
             if screen_name == self.twitter_id:
                 exclude = True
-                print("ex")
+                print("this tweet is mine")
 
+            #ファボしたツイートには反応しない
             elif tweet.favorited == True:
                 exclude = True
                 print("you alredy favorited")
 
-            #上記の除外ワードを含む人には返事しない
-            for str in exclusion_words:
-                if str in user_name:
-                    exclude = True
-                    # print("ignore that account")
-                    count["ignore"] += 1
-                    break
-                    
-            print(exclude)
+            #RTには返事しない
+            elif tweet_split[0] == "RT":
+                exclude = True
+                print("this is retweeted")
 
             if exclude == False:
-                user_name_ = user_name.split("@")
+                #上記の除外ワードを含む人には返事しない
+                for str in exclusion_words:
+                    if str in user_name:
+                        exclude = True
+                        # print("ignore that account")
+                        count["ignore"] += 1
+                        break
 
+            if exclude == False:
+                print("this is pass")
+                user_name_ = user_name.split("@")
                 #返信part
                 for classify_word in classify_words:
                     if classify_word in tweet.text:
@@ -88,7 +103,7 @@ class Hometamon():
 
 
 
-                if 22 <= self.jst_now.hour or self.jst_now.hour <= 2:
+                if 22 <= self.jst_now.hour or self.jst_now.hour <= 1:
                     for oyasumi_word in oyasumi_words:
                         if oyasumi_word in tweet.text:
                             # print("-----test:good night")
@@ -112,8 +127,6 @@ class Hometamon():
 
         print("褒めた人数:{0}人\n無効な人数:{1}人\n挨拶した人数:{2}人".format(count["praise"],count["ignore"],count["greeting_morning"]))
 
-
-
     #返事をする
     def reply(self,user_name,screen_name,tweet_id,tweet_text):
         num = random.randint(0,len(self.manuscript.tweet)-1)
@@ -123,17 +136,16 @@ class Hometamon():
         if self.test == False:
             self.api.update_status(status=reply, in_reply_to_status_id=tweet_id)#status
         else:
-            print("-----test:reply")
+            print("-----test:reply-----")
         print("tweet:{0}:{1} \nreply:{2}".format(user_name,tweet_text,reply))
 
     def greeting_morning(self,user_name,screen_name,tweet_id,tweet_text):
         num = random.randint(0,len(self.manuscript.greeting_morning)-1)
         reply = "@"+screen_name+"\n "+user_name+self.manuscript.greeting_morning[num]
         if self.test == False:
-
             self.api.update_status(status=reply, in_reply_to_status_id=tweet_id)#status
         else:
-            print("-----test:greeting_morning")
+            print("-----test:greeting_morning-----")
         print("tweet:{0}:{1} \nreply:{2}".format(user_name,tweet_text,reply))
 
     def greeting_nignt(self,user_name,screen_name,tweet_id,tweet_text):
@@ -142,29 +154,30 @@ class Hometamon():
         if self.test == False:
             self.api.update_status(status=reply, in_reply_to_status_id=tweet_id)
         else:
-            print("-----test:greeting_night")
+            print("-----test:greeting_night-----")
         print("tweet:{0}:{1} \nreply:{2}".format(user_name,tweet_text,reply))
 
     #フォロバする
     def followback(self):
-        #最近のフォロワーからその人のtweetやid情報取得
-        # followers=api.followers_ids(screen_name=twitter_id)#全てのフォロワーidを取得
-        # friends=api.friends_ids(twitter_id)#フォローしている人のidを取得
-        followers = self.api.followers_ids(self.twitter_id)
-        friends = self.api.friends_ids(self.twitter_id)
+        if self.test == True:
+            print("-----test:followback-----")
+        else:
+            #最近のフォロワーからその人のtweetやid情報取得
+            # followers=api.followers_ids(screen_name=twitter_id)#全てのフォロワーidを取得
+            # friends=api.friends_ids(twitter_id)#フォローしている人のidを取得
+            followers = self.api.followers_ids(self.twitter_id)
+            friends = self.api.friends_ids(self.twitter_id)
 
-        follow_back = list(set(followers)-set(friends))#list フォロバすべき
-        print("フォローバックした人数:{0}人".format(len(follow_back)))
+            follow_back = list(set(followers)-set(friends))#list フォロバすべき
+            print("フォローバックした人数:{0}人".format(len(follow_back)))
 
-        for i in range(min(len(follow_back),10)):
-            if self.test == False:
+            for i in range(min(len(follow_back),10)):
                 try:
                     self.api.create_friendship(follow_back[i])
                     print("success follow!"+str(follow_back[i]))
                 except tweepy.error.Tweeperror:
                     print("error")
-            else:
-                print("-----test:followback")
+
 
     def tweet(self):
         status = "順調だもん!"
@@ -174,6 +187,7 @@ class Hometamon():
         pass
         # status = "変身だもん"
         # self.api.update_status(status=status)
+
 
     def test_tweet(self):
         if self.test == False:
@@ -186,23 +200,42 @@ class Hometamon():
 
     def check_timeline(self):
         since = None
-        public_tweets = self.api.home_timeline(count=50,since_id=since)
+        public_tweets = self.api.home_timeline(count=10,since_id=since)
         print(self.twitter_id)
 
+
         for tweet in public_tweets:
+            print("-"*20)
+            # print(tweet)
             print(tweet.text)
+            #RTには返事しない
+            tweet_split = tweet.text.split(" ")
+            if tweet_split[0] == "RT":
+                exclude = True
+                print("this is retweeted")
+            else:
+                print("this is original")
+
             if tweet.user.screen_name == self.twitter_id:
                 print("-"*10)
                 print(tweet.user.name,tweet.user.screen_name,"\n",tweet.text)
             # print(tweet.user.name,tweet.user.screen_name)
 
 def main():
-    hometamon = Hometamon()
+    test = True
+    if test == True:
+        hometamon = Hometamon(test = True)
+    else:
+        hometamon = Hometamon(test = False)
+
     hometamon.classify()
     hometamon.followback()
+
 
 def lambda_handler(event, context):
     main()
 
 if __name__ == "__main__":
     main()
+    # hometamon = Hometamon()
+    # hometamon.check_timeline()

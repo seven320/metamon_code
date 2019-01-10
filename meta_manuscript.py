@@ -36,9 +36,18 @@ class Manuscript():
         self.tweet.append("体を休めるもん\nつお布団")
         self.tweet.append("今日は早く寝るモン")
         self.tweet.append("よく頑張ったもん。\n僕も頑張るモン")
-        self.tweet.append("つ おふとん\nよく寝るんだもん!!")
+        self.tweet.append("\nつ おふとん\nよく寝るんだもん!!")
         self.tweet.append("風邪に気をつけるんだもん！！１")
         self.tweet.append("ゆっくり休むんだもん〜")
+        self.tweet.append("お疲れ様だもん")
+        self.tweet.append("大好きだもんよ〜")
+        self.tweet.append("\n今日はつかれたもんね")
+        self.tweet.append("ゆっくりお風呂にはいるんだもん")
+        self.tweet.append("えらいもん！！")
+        self.tweet.append("がんばっててえらい！")
+        self.tweet.append("お疲れ様だもん")
+        self.tweet.append("ゆっくり休むもん")
+
 
         #greeting
         self.greeting_morning.append("おはようだモン！！")
@@ -47,6 +56,9 @@ class Manuscript():
         self.greeting_morning.append("あさだモンね〜")
         self.greeting_morning.append("今日もがんばるモン")
         self.greeting_morning.append("起きてえらいモン")
+        self.greeting_morning.append("眠いんだもん〜")
+        self.greeting_morning.append("おはようもん！！")
+        self.greeting_morning.append("まだねるもん〜")
 
         self.greeting_night.append("お休みだもん!")
         self.greeting_night.append("おやすみだもん！！")
@@ -54,8 +66,7 @@ class Manuscript():
         self.greeting_night.append("おやすみもん！")
         self.greeting_night.append("よく寝るんだもん!")
         self.greeting_night.append("いいゆめみるんだもん!")
-
-
+        self.greeting_night.append("ｚｚｚ")
 
     #
     # def manus(self,num=0):

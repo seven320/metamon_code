@@ -93,7 +93,7 @@ class Hometamon():
                         self.api.create_favorite(tweet.id)
 
                 #挨拶part
-                if 6 <= self.jst_now.hour <= 10:
+                if 0 <= self.jst_now.hour <= 24:
                     for ohayou_word in ohayou_words:
                         if ohayou_word in tweet.text:
                             # print("-----test:greeting_morning")
@@ -103,7 +103,7 @@ class Hometamon():
 
 
 
-                if 22 <= self.jst_now.hour or self.jst_now.hour <= 1:
+                if 22 <= self.jst_now.hour or self.jst_now.hour <= 2:
                     for oyasumi_word in oyasumi_words:
                         if oyasumi_word in tweet.text:
                             # print("-----test:good night")
@@ -132,7 +132,7 @@ class Hometamon():
         num = random.randint(0,len(self.manuscript.tweet)-1)
         # num_padded = '{0:03d}'.format(num) #ゼロパディング:0で３桁左詰する。 example 1→001
         print(num)
-        reply = "@"+screen_name+"\n "+user_name+self.manuscript.tweet[num]
+        reply = "@"+screen_name+"\n "+user_name+self.manuscript.reply[num]
         if self.test == False:
             self.api.update_status(status=reply, in_reply_to_status_id=tweet_id)#status
         else:
@@ -222,12 +222,9 @@ class Hometamon():
             # print(tweet.user.name,tweet.user.screen_name)
 
 def main():
+    #test command
     test = True
-    if test == True:
-        hometamon = Hometamon(test = True)
-    else:
-        hometamon = Hometamon(test = False)
-
+    hometamon = Hometamon(test)
     hometamon.classify()
     hometamon.followback()
 

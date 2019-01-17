@@ -71,6 +71,10 @@ class Hometamon():
                 exclude = True
                 print("this is retweeted")
 
+            elif tweet_split[0][0] == "@":
+                exclude = True
+                print("this is to someone")
+
             if exclude == False:
                 #上記の除外ワードを含む人には返事しない
                 for str in exclusion_words:
@@ -78,6 +82,7 @@ class Hometamon():
                         exclude = True
                         # print("ignore that account")
                         count["ignore"] += 1
+                        print("this is ignored")
                         break
 
             if exclude == False:
@@ -213,6 +218,8 @@ class Hometamon():
             if tweet_split[0] == "RT":
                 exclude = True
                 print("this is retweeted")
+            elif tweet_split[0][0] == "@":
+                print("aa")
             else:
                 print("this is original")
 

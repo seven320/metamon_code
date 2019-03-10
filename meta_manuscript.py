@@ -2,79 +2,85 @@
 class Manuscript():
     def __init__(self):
         self.tweet = []
-        self.reply=[]
-        self.greeting_morning = []
-        self.greeting_night = []
+        
+        self.reply = ["仕事終わらせてすごいもん！！",
+        "つかれたもん〜",
+        "よく頑張ったもん！！！",
+        "満点だもん！！",
+        "いつも最高です。",
+        "とても優秀だもん！",
+        "できる人は違うもん",
+        "頑張り屋さんだもん",
+        "すごい！\nとてもすごい！！",
+        "すばらしいもん！",
+        "最高！！仕事人！！！",
+        "行動力の化身！！！！",
+        "今日も頑張ってるもん",
+        "今日の成果も素晴らしいもん！！",
+        "わんだふる！！！",
+        "素晴らしい成果だもん！！",
+        "素晴らしい出来栄えだもん",
+        "仕事を頑張る姿が素敵だもん!!",
+        "大好きだもん",
+        "今日もお疲れ様だもん",
+        "ゆっくり休むんだもん！！",
+        "休憩も大事だもん",
+        "君はひとりじゃないもん",
+        "時には休息も必要だもん",
+        "おつかれさまだもん",
+        "すごいんだもん",
+        "は偉いんだもん",
+        "今日は大変だったもんね",
+        "体を休めるもん\nつお布団",
+        "今日は早く寝るもん",
+        "よく頑張ったもん。\n僕も頑張るもん",
+        "\nつ おふとん\nよく寝るんだもん!!",
+        "風邪に気をつけるんだもん！！",
+        "ゆっくり休むんだもん〜",
+        "お疲れ様だもん",
+        "大好きだもんよ〜",
+        "\n今日はつかれたもんね",
+        "ゆっくりお風呂にはいるんだもん",
+        "えらいもん！！",
+        "がんばっててえらい！",
+        "お疲れ様だもん",
+        "ゆっくり休むもん",
+        "\nいつも一緒にいるもん",
+        "お菓子食べてゆっくり休むもん",
+        "休憩大事もんよ",
+        "体よく休めるもん",
+        "は今日も頑張ったもん！！",
+        "ご飯よく食べて休憩するもん"
+        ]
 
-        #reply
-        self.reply.append("仕事終わらせてすごいモン！！")
-        self.reply.append("つかれたもん〜")
-        self.reply.append("よく頑張りました！！！")
-        self.reply.append("満点！だモン")
-        self.reply.append("いつも最高です。")
-        self.reply.append("とても優秀だモン！")
-        self.reply.append("できる人は違うモン")
-        self.reply.append("頑張り屋さんです")
-        self.reply.append("すごい！\nとてもすごい！！")
-        self.reply.append("すばらしい！")
-        self.reply.append("最高！！仕事人！！！")
-        self.reply.append("行動力の化身！！！！")
-        self.reply.append("今日も頑張ってます")
-        self.reply.append("今日の成果も素晴らしい！！")
-        self.reply.append("わんだふる！！！")
-        self.reply.append("素晴らしい成果だモン！！")
-        self.reply.append("素晴らしい出来栄えだモン")
-        self.reply.append("仕事を頑張る姿が素敵だモン!!")
-        self.reply.append("大好きだモン")
-        self.reply.append("今日もお疲れ様だもん")
-        self.reply.append("ゆっくり休むんだモン！！")
-        self.reply.append("休憩も大事だモン")
-        self.reply.append("君はひとりじゃないモン")
-        self.reply.append("時には休息も必要だモン")
-        self.reply.append("おつかれさまだモン")
-        self.reply.append("すごいんだモン")
-        self.reply.append("は偉いんだモン")
-        self.reply.append("今日は大変だったモンね")
-        self.reply.append("体を休めるもん\nつお布団")
-        self.reply.append("今日は早く寝るモン")
-        self.reply.append("よく頑張ったもん。\n僕も頑張るモン")
-        self.reply.append("\nつ おふとん\nよく寝るんだもん!!")
-        self.reply.append("風邪に気をつけるんだもん！！１")
-        self.reply.append("ゆっくり休むんだもん〜")
-        self.reply.append("お疲れ様だもん")
-        self.reply.append("大好きだもんよ〜")
-        self.reply.append("\n今日はつかれたもんね")
-        self.reply.append("ゆっくりお風呂にはいるんだもん")
-        self.reply.append("えらいもん！！")
-        self.reply.append("がんばっててえらい！")
-        self.reply.append("お疲れ様だもん")
-        self.reply.append("ゆっくり休むもん")
-        self.reply.append("\nいつも一緒にいるもん")
-        self.reply.append("お菓子食べてゆっくり休むもん")
+        self.greeting_morning = [
+        "おはようだもん！！",
+        "起きて偉いんだもん",
+        "おはよう。。。\nまだ眠いんだもん",
+        "元気に頑張るもん",
+        "今日もがんばるもん",
+        "起きてえらいもん",
+        "布団から出てえらい！！",
+        "おはようもん！！",
+        "まだねるもん〜",
+        "毎日起きてえらいもん",
+        "おはようもん",
+        "おはようもん\n今日もみんなを褒めてまわるもん",
+        "おはようだもん\n僕ももうちょっとで布団から出るもん．．．",
+        "おはようだもん\nもう5分だけ寝たいもん．．．"
+        ]
 
-        #greeting
-        self.greeting_morning.append("おはようだモン！！")
-        self.greeting_morning.append("起きて偉いんだモン")
-        self.greeting_morning.append("おはよう。。。\nまだ眠いんだモン")
-        # self.greeting_morning.append("あさだモンね〜")
-        self.greeting_morning.append("今日もがんばるモン")
-        self.greeting_morning.append("起きてえらいモン")
-        self.greeting_morning.append("眠いんだもん〜")
-        self.greeting_morning.append("おはようもん！！")
-        self.greeting_morning.append("まだねるもん〜")
-
-        self.greeting_night.append("お休みだもん!")
-        self.greeting_night.append("おやすみだもん！！")
-        self.greeting_night.append("おやすみだもん〜")
-        self.greeting_night.append("おやすみもん！")
-        self.greeting_night.append("よく寝るんだもん!")
-        self.greeting_night.append("いいゆめみるんだもん!")
-        self.greeting_night.append("ｚｚｚ")
-
-
-    #
-    # def manus(self,num=0):
-    #     return self.reply[num]
-    #
-    # def max_num(self):
-    #     return len(self.reply)
+        self.greeting_night = [
+        "お休みだもん!",
+        "おやすみだもん！！",
+        "おやすみだもん〜",
+        "おやすみもん！",
+        "よく寝るんだもん!",
+        "いいゆめみるんだもん!",
+        "おやすみなさいだもん",
+        "疲れたもんね",
+        "よしよしもん",
+        "今日もお疲れ様だもん",
+        "明日も頑張るもん",
+        "おやすみだもんｚｚｚ"
+        ]

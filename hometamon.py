@@ -39,7 +39,8 @@ class Hometamon():
         count = {"ignore":0,
         "praise":0,
         "greeting_morning":0,
-        "greeting_nignt":0}
+        "greeting_nignt":0,
+        "pass":0}
 
         if self.test == True:
             print("#"*10,"test","#"*10)
@@ -52,9 +53,14 @@ class Hometamon():
             screen_name = tweet.user.screen_name#ID
             exclude = False
             tweet_count += 1
-            print(tweet_count,": ",end="")
 
             tweet_split = tweet.text.split(" ")
+
+
+            print(tweet_count,": ",end="")
+            if self.test:
+                print("text:",tweet.text)
+            print("status:",end="")
 
             #自分には返事しない
             if screen_name == self.twitter_id:
@@ -96,7 +102,10 @@ class Hometamon():
                         self.reply(user_name_[0],screen_name,tweet.id,tweet.text)
                         #favorite
                         self.api.create_favorite(tweet.id)
+                        exclude = True
+                        break
 
+            if exclude == False:
                 #挨拶part
                 if 0 <= self.jst_now.hour <= 24:
                     for ohayou_word in ohayou_words:
@@ -105,8 +114,8 @@ class Hometamon():
                             count["greeting_morning"] += 1
                             self.greeting_morning(user_name_[0],screen_name,tweet.id,tweet.text)
                             self.api.create_favorite(tweet.id)
-
-
+                            exclude = True
+                            break
 
                 if 22 <= self.jst_now.hour or self.jst_now.hour <= 2:
                     for oyasumi_word in oyasumi_words:
@@ -115,7 +124,10 @@ class Hometamon():
                             count["greeting_nignt"] += 1
                             self.greeting_nignt(user_name_[0],screen_name,tweet.id,tweet.text)
                             self.api.create_favorite(tweet.id)
+                            exclude = True
+                            break
 
+            if exclude == False:
                 #変身part
                 for transform_command in transform_commands:
                     if transform_command in tweet.text:
@@ -134,7 +146,7 @@ class Hometamon():
 
     #返事をする
     def reply(self,user_name,screen_name,tweet_id,tweet_text):
-        num = random.randint(0,len(self.manuscript.tweet)-1)
+        num = random.randint(0,len(self.manuscript.reply)-1)
         # num_padded = '{0:03d}'.format(num) #ゼロパディング:0で３桁左詰する。 example 1→001
         print(num)
         reply = "@"+screen_name+"\n "+user_name+self.manuscript.reply[num]
@@ -196,7 +208,7 @@ class Hometamon():
 
     def test_tweet(self):
         if self.test == False:
-            status = "起きてるモン！\n⊂・ー・つ"
+            status = "起きてるもん！\n⊂・ー・つ"
         else:
             status = "ｚｚｚ"
         self.api.update_status(status=status)
@@ -208,7 +220,6 @@ class Hometamon():
         public_tweets = self.api.home_timeline(count=10,since_id=since)
         print(self.twitter_id)
 
-
         for tweet in public_tweets:
             print("-"*20)
             # print(tweet)
@@ -219,7 +230,8 @@ class Hometamon():
                 exclude = True
                 print("this is retweeted")
             elif tweet_split[0][0] == "@":
-                print("aa")
+                exclude = True
+                print("this is to someone")
             else:
                 print("this is original")
 
@@ -228,18 +240,20 @@ class Hometamon():
                 print(tweet.user.name,tweet.user.screen_name,"\n",tweet.text)
             # print(tweet.user.name,tweet.user.screen_name)
 
-def main():
+def main(test):
     #test command
-    test = True
     hometamon = Hometamon(test)
     hometamon.classify()
     hometamon.followback()
 
 
 def lambda_handler(event, context):
-    main()
+    main(test = False)
+    # hometamon = Hometamon()
+    # hometamon.check_timeline()
+
 
 if __name__ == "__main__":
-    main()
+    main(test=True)
     # hometamon = Hometamon()
     # hometamon.check_timeline()

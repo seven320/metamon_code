@@ -24,6 +24,10 @@ class Hometamon():
         #for test
         self.test = test
 
+    def check_api(self):
+        limit_info = self.api.rate_limit_status()
+        dir(limit_info[rate_limit_status])
+
     #read tweets
     def classify(self):
         since = None
@@ -107,7 +111,7 @@ class Hometamon():
 
             if exclude == False:
                 #挨拶part
-                if 0 <= self.jst_now.hour <= 24:
+                if 5 <= self.jst_now.hour <= 10:
                     for ohayou_word in ohayou_words:
                         if ohayou_word in tweet.text:
                             # print("-----test:greeting_morning")
@@ -185,16 +189,27 @@ class Hometamon():
             followers = self.api.followers_ids(self.twitter_id)
             friends = self.api.friends_ids(self.twitter_id)
 
+            # print("followers",len(followers))
+            # print(followers)
+            # print("friends",len(friends))
+            # print(friends)
+
             follow_back = list(set(followers)-set(friends))#list フォロバすべき
-            print("フォローバックした人数:{0}人".format(len(follow_back)))
+            print("フォローバックしたい人数:{0}人".format(len(follow_back)))
 
+            random.shuffle(follow_back)
+            print(follow_back)
             for i in range(min(len(follow_back),10)):
-                try:
-                    self.api.create_friendship(follow_back[i])
-                    print("success follow!"+str(follow_back[i]))
-                except tweepy.error.Tweeperror:
-                    print("error")
-
+                status = self.api.get_user(follow_back[i])
+                if status.follow_request_sent:
+                    print("I already request to follow")
+                else:
+                    try:
+                        self.api.create_friendship(id = follow_back[i])
+                        print("success follow!"+str(follow_back[i]))
+                    except tweepy.error.TweepError as e:
+                        print(e)
+                        print("error")
 
     def tweet(self):
         status = "順調だもん!"
@@ -243,6 +258,7 @@ class Hometamon():
 def main(test):
     #test command
     hometamon = Hometamon(test)
+    # hometamon.check_api()
     hometamon.classify()
     hometamon.followback()
 

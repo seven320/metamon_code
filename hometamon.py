@@ -36,7 +36,7 @@ class Hometamon():
         oyasumi_words = ["おやすみ","寝よう","寝る"]
         transform_commands = ["変身"]
         test_command = ["_test_"]
-        exclusion_words = ["bot","ビジネス","副業","公式","株"]
+        exclusion_words = ["bot","ビジネス","副業","公式","株","FX","ブランド","無料"]
 
         public_tweets = self.api.home_timeline(count=50,since_id=since)
 
@@ -189,16 +189,11 @@ class Hometamon():
             followers = self.api.followers_ids(self.twitter_id)
             friends = self.api.friends_ids(self.twitter_id)
 
-            # print("followers",len(followers))
-            # print(followers)
-            # print("friends",len(friends))
-            # print(friends)
-
             follow_back = list(set(followers)-set(friends))#list フォロバすべき
             print("フォローバックしたい人数:{0}人".format(len(follow_back)))
 
             random.shuffle(follow_back)
-            print(follow_back)
+            # print(follow_back)
             for i in range(min(len(follow_back),10)):
                 status = self.api.get_user(follow_back[i])
                 if status.follow_request_sent:

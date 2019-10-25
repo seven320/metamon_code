@@ -55,59 +55,69 @@ class Hometamon():
         for tweet_cnt, tweet in enumerate(public_tweets):
             user_name = tweet.user.name#HN
             screen_name = tweet.user.screen_name#ID
-            exclude = False
+            reply_flag = True
 
             tweet_split = tweet.text.split(" ")
-
-            print(tweet_cnt,": ",end="")
+            print("")
+            print(tweet_cnt,":",end="")
             if self.test:
                 print("text:",tweet.text)
-            print("status:",end="")
+                print("char count:",len(tweet.text))
+            print("reply status:",end="")
 
             #自分には返事しない
             if screen_name == self.my_twitter_id:
                 print("this tweet is mine")
                 count_reply["ignore"] += 1
+                reply_flag = False
                 continue
 
             #ファボしたツイートには反応しない
             elif tweet.favorited == True:
                 print("you alredy favorited")
                 count_reply["ignore"] += 1
+                reply_flag = False
                 continue
 
             #RTには返事しない
             elif tweet_split[0] == "RT":
                 print("this is retweeted")
                 count_reply["ignore"] += 1
+                reply_flag = False
                 continue
 
             #誰かへのツイートには返事しない
             elif tweet_split[0][0] == "@":
                 print("this is to someone")
                 count_reply["ignore"] += 1
+                reply_flag = False
                 continue
 
+            #tweet内容が80文字を超えている場合には返事しない
+            elif len(tweet.text) >= 80:
+                count_reply["ignore"] += 1
+                reply_flag = False
+                continue
 
             #上記の除外ワードを含む人には返事しない
-            if exclude == False:
+            if reply_flag:
                 for exclusion_name in exclusion_names:
                     if exclusion_name in user_name:
-                        exclude = True
                         print("ignore account")
                         count_reply["ignore"] += 1
-                        break
-            
-            # 上記の単語を含むツイートを無視する
-            if exclude == False:
-                for exclusion_word in exclusion_words:
-                    if exclusion_word in tweet.text:
-                        exclude = True
-                        print("ignore this tweet")
-                        count_reply["ignore"] += 1
+                        reply_flag = False
                         break
 
-            if exclude == False:
+            # 上記の単語を含むツイートを無視する
+            if reply_flag:
+                for exclusion_word in exclusion_words:
+                    if exclusion_word in tweet.text:
+                        print("ignore this tweet")
+                        count_reply["ignore"] += 1
+                        reply_flag = False
+                        break
+
+            if reply_flag:
                 print("this is pass")
                 user_name_ = user_name.split("@")
                 #返信part
@@ -118,10 +128,10 @@ class Hometamon():
                         self.reply(user_name_[0],screen_name,tweet.id,tweet.text)
                         #favorite
                         self.api.create_favorite(tweet.id)
-                        exclude = True
+                        reply_flag = False
                         break
 
-            if exclude == False:
+            if reply_flag:
                 #挨拶part おはよう
                 if 5 <= self.jst_now.hour <= 10:
                     for ohayou_word in ohayou_words:
@@ -130,9 +140,9 @@ class Hometamon():
                             count_reply["greeting_morning"] += 1
                             self.greeting_morning(user_name_[0],screen_name,tweet.id,tweet.text)
                             self.api.create_favorite(tweet.id)
-                            exclude = True
+                            reply_flag = False
                             break
-                
+
                 #挨拶　おやすみ
                 if 22 <= self.jst_now.hour or self.jst_now.hour <= 2:
                     for oyasumi_word in oyasumi_words:
@@ -141,17 +151,17 @@ class Hometamon():
                             count_reply["greeting_nignt"] += 1
                             self.greeting_nignt(user_name_[0],screen_name,tweet.id,tweet.text)
                             self.api.create_favorite(tweet.id)
-                            exclude = True
+                            reply_flag = False
                             break
 
-            if exclude == False:
+            if reply_flag:
                 #変身part
                 for transform_command in transform_commands:
                     if transform_command in tweet.text:
                         #transform
                         self.transform()
                         self.api.create_favorite(tweet.id)
-                        exclude = True
+                        reply_flag = False
                         break
 
                 #test part
@@ -160,15 +170,13 @@ class Hometamon():
                         self.test_tweet()
                         self.api.create_favorite(tweet.id)
                         print("test tweet")
-                        exclude = True
+                        reply_flag = False
                         break
 
-            if exclude == False:
+            if reply_flag:
                 count_reply["pass"] += 1
 
-
-
-        print("褒めた人数:{0}人\n無効な人数:{1}人\n挨拶した人数:{2}人\npassした人数:{3}人\ntest reply:{4}人".format(count_reply["praise"],
+        print("褒めた人数:{0}人\n無効な人数:{1}人\n挨拶した人数:{2}人\nなにも反応しなかった人数:{3}人\ntest reply:{4}人".format(count_reply["praise"],
         count_reply["ignore"],
         count_reply["greeting_morning"] + count_reply["greeting_nignt"],
         count_reply["pass"],
@@ -271,10 +279,10 @@ class Hometamon():
             #RTには返事しない
             tweet_split = tweet.text.split(" ")
             if tweet_split[0] == "RT":
-                exclude = True
+                reply_flag = True
                 print("this is retweeted")
             elif tweet_split[0][0] == "@":
-                exclude = True
+                reply_flag = True
                 print("this is to someone")
             else:
                 print("this is original")

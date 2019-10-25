@@ -26,7 +26,7 @@ class Hometamon():
 
     def check_api(self):
         limit_info = self.api.rate_limit_status()
-        dir(limit_info[rate_limit_status])
+        dir(limit_info["rate_limit_status"])
 
     #read tweets
     def classify(self):
@@ -59,7 +59,7 @@ class Hometamon():
 
             tweet_split = tweet.text.split(" ")
 
-            print(tweet_count,": ",end="")
+            print(tweet_cnt,": ",end="")
             if self.test:
                 print("text:",tweet.text)
             print("status:",end="")
@@ -82,22 +82,24 @@ class Hometamon():
                 count_reply["ignore"] += 1
                 continue
 
+            #誰かへのツイートには返事しない
             elif tweet_split[0][0] == "@":
                 print("this is to someone")
                 count_reply["ignore"] += 1
                 continue
 
+
+            #上記の除外ワードを含む人には返事しない
             if exclude == False:
-                #上記の除外ワードを含む人には返事しない
-                for str in exclusion_names:
-                    if str in user_name:
+                for exclusion_name in exclusion_names:
+                    if exclusion_name in user_name:
                         exclude = True
                         print("ignore account")
                         count_reply["ignore"] += 1
                         break
-
+            
+            # 上記の単語を含むツイートを無視する
             if exclude == False:
-                # 上記の単語を含むツイートを無視する．
                 for exclusion_word in exclusion_words:
                     if exclusion_word in tweet.text:
                         exclude = True
@@ -120,7 +122,7 @@ class Hometamon():
                         break
 
             if exclude == False:
-                #挨拶part
+                #挨拶part おはよう
                 if 5 <= self.jst_now.hour <= 10:
                     for ohayou_word in ohayou_words:
                         if ohayou_word in tweet.text:
@@ -130,7 +132,8 @@ class Hometamon():
                             self.api.create_favorite(tweet.id)
                             exclude = True
                             break
-
+                
+                #挨拶　おやすみ
                 if 22 <= self.jst_now.hour or self.jst_now.hour <= 2:
                     for oyasumi_word in oyasumi_words:
                         if oyasumi_word in tweet.text:

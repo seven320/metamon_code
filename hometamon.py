@@ -9,18 +9,27 @@ import sys,os
 pardir=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(pardir)
 
+from dotenv import load_dotenv
+
 #account情報をaccount.pyからロード
-from account import account #load account
-from metamon_code import meta_manuscript
+import meta_manuscript
 
 class Hometamon():
     def __init__(self,test = True):
-        auth = account.Initialize()
+        load_dotenv(".env")
+        consumer_key = os.environ.get("CONSUMER_KEY")
+        consumer_secret = os.environ.get("CONSUMER_SECRET")
+        access_token = os.environ.get("ACCESS_TOKEN")
+        token_secret = os.environ.get("TOKEN_SECRET")
+
+        auth = tweepy.OAuthHandler(consumer_key=consumer_key, consumer_secret=consumer_secret)
+        auth.set_access_token(key = access_token, secret = token_secret)
         self.api = tweepy.API(auth, wait_on_rate_limit=True)
-        self.my_twitter_id = account.id()
+        self.my_twitter_id = os.environ.get("TWITTER_ID")
         self.manuscript = meta_manuscript.Manuscript()
         JST = datetime.timezone(datetime.timedelta(hours=+9),"JST")
         self.jst_now = datetime.datetime.now(JST)
+        self.admin_twitter_id = os.environ.get("ADMIN_RECIPIENT_ID")
         #for test
         self.test = test
 
@@ -35,7 +44,7 @@ class Hometamon():
         oyasumi_words = ["おやすみ","寝よう","寝る"]
         transform_commands = []
         test_command = ["_test_"]
-        exclusion_names = ["bot","ビジネス","副業","公式","株","FX","ブランド","無料","キャリア"]
+        exclusion_names = ["bot","ビジネス","副業","公式","株","FX","ブランド","無料","キャリア","エージェント"]
         exclusion_words = ["#peing","http"]
 
         count_reply = {"ignore":0,
@@ -171,16 +180,20 @@ class Hometamon():
                         self.api.create_favorite(tweet.id)
                         print("test tweet")
                         reply_flag = False
+
                         break
 
             if reply_flag:
                 count_reply["pass"] += 1
 
-        print("褒めた人数:{0}人\n無効な人数:{1}人\n挨拶した人数:{2}人\nなにも反応しなかった人数:{3}人\ntest reply:{4}人".format(count_reply["praise"],
+        result = "褒めた数:{0}\n無効な数:{1}\n挨拶した数:{2}\n反応しなかった数:{3}\ntest reply:{4}".format(count_reply["praise"],
         count_reply["ignore"],
         count_reply["greeting_morning"] + count_reply["greeting_nignt"],
         count_reply["pass"],
-        count_reply["test"]))
+        count_reply["test"])
+        print(result)
+        #自分のアカウントにDMを送信
+        self.api.send_direct_message(self.admin_twitter_id, result)
 
     #返事をする
     def reply(self,user_name,screen_name,tweet_id,tweet_text):

@@ -73,7 +73,7 @@ class Hometamon():
             print(tweet_cnt,":",end="")
             if self.test:
                 print("text:",tweet.text)
-                print("char count:",len(tweet.text))
+                # print("char count:",len(tweet.text))
             print("reply status:",end="")
 
             #自分には返事しない
@@ -193,7 +193,11 @@ class Hometamon():
             mode = "test"
         else:
             mode = "deploy"
-        result = str(self.jst_now) + "\nmode:" + mode + "\n褒めた数:{0}\n無効な数:{1}\n挨拶した数:{2}\n反応しなかった数:{3}\nテスト数:{4}だもん！！".format(count_reply["praise"],
+        result =
+        "{0}\nmode\n{1}褒めた数:{2}\n無効な数:{3}\n挨拶した数:{4}\n反応しなかった数:{5}\nテスト数:{6}だもん！！".format(
+        str(self.jst_now),
+        mode,
+        count_reply["praise"],
         count_reply["ignore"],
         count_reply["greeting_morning"] + count_reply["greeting_nignt"],
         count_reply["pass"],
@@ -311,8 +315,6 @@ class Hometamon():
                 print("-"*10)
                 print(tweet.user.name,tweet.user.screen_name,"\n",tweet.text)
             # print(tweet.user.name,tweet.user.screen_name)
-
-
 
 def main(test):
     #test command

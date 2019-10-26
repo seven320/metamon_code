@@ -22,8 +22,8 @@ python hometamon.py
 ~~~
 
 ## about hometamon (記事)
-[褒めたもんについて（コンセプト編）](https://denden-seven.hatenablog.com/entry/2019/01/09/131220)
-[褒めたもんについて（技術編）](https://denden-seven.hatenablog.com/entry/2019/01/09/130437)
+[褒めたもんについて（コンセプト編）](https://denden-seven.hatenablog.com/entry/2019/01/09/131220)  
+[褒めたもんについて（技術編）](https://denden-seven.hatenablog.com/entry/2019/01/09/130437)  
 
 ## licence
 [MIT](https://github.com/tcnksm/tool/blob/master/LICENCE)

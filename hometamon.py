@@ -17,6 +17,8 @@ from metamon_code import meta_manuscript
 class Hometamon():
     def __init__(self,test = True):
         load_dotenv(".env")
+        # AWS上では相対パスではだめ
+        # load_dotenv("metamon_code/.env")
         consumer_key = os.environ.get("CONSUMER_KEY")
         consumer_secret = os.environ.get("CONSUMER_SECRET")
         access_token = os.environ.get("ACCESS_TOKEN")
@@ -39,7 +41,7 @@ class Hometamon():
 
     #read tweets
     def classify(self):
-        classify_words = ["褒めて","ほめて","バオワ","ばおわ","バイト終","バおわ","実験終","実験おわ","実験完全終了","らぼりだ","ラボ離脱","ラボりだ","帰宅","疲れた","つかれた","仕事納め","掃除終","掃除した"]
+        classify_words = ["褒めて","ほめて","バオワ","ばおわ","バイト終","バおわ","実験終","実験おわ","らぼりだ","ラボ離脱","ラボりだ","帰宅","疲れた","つかれた","仕事納め","掃除終","掃除した"]
         ohayou_words = ["おはよう","起床","起きた"]
         oyasumi_words = ["おやすみ","寝よう","寝る"]
         transform_commands = []

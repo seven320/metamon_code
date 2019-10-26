@@ -186,7 +186,12 @@ class Hometamon():
             if reply_flag:
                 count_reply["pass"] += 1
 
-        result = "褒めた数:{0}\n無効な数:{1}\n挨拶した数:{2}\n反応しなかった数:{3}\ntest reply:{4}".format(count_reply["praise"],
+
+        if self.test:
+            mode = "test"
+        else:
+            mode = "deploy"
+        result = str(self.jst_now) + "\nmode:" + mode + "\n褒めた数:{0}\n無効な数:{1}\n挨拶した数:{2}\n反応しなかった数:{3}\nテスト数:{4}だもん！！".format(count_reply["praise"],
         count_reply["ignore"],
         count_reply["greeting_morning"] + count_reply["greeting_nignt"],
         count_reply["pass"],

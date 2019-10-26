@@ -194,7 +194,7 @@ class Hometamon():
         else:
             mode = "deploy"
             
-        result = "{0}\nmode:\n{1}褒めた数:{2}\n無効な数:{3}\n挨拶した数:{4}\n反応しなかった数:{5}\nテスト数:{6}だもん！！".format(
+        result = "time:{0}\nmode:{1}\n褒めた数:{2}\n無効な数:{3}\n挨拶した数:{4}\n反応しなかった数:{5}\nテスト数:{6}だもん！！".format(
         str(self.jst_now),
         mode,
         count_reply["praise"],
@@ -267,9 +267,6 @@ class Hometamon():
                     except tweepy.error.TweepError as e:
                         print(e)
                         print("error")
-
-
-
 
     def tweet(self):
         status = "順調だもん!"

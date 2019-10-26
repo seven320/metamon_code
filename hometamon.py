@@ -193,8 +193,8 @@ class Hometamon():
             mode = "test"
         else:
             mode = "deploy"
-        result =
-        "{0}\nmode\n{1}褒めた数:{2}\n無効な数:{3}\n挨拶した数:{4}\n反応しなかった数:{5}\nテスト数:{6}だもん！！".format(
+            
+        result = "{0}\nmode:\n{1}褒めた数:{2}\n無効な数:{3}\n挨拶した数:{4}\n反応しなかった数:{5}\nテスト数:{6}だもん！！".format(
         str(self.jst_now),
         mode,
         count_reply["praise"],

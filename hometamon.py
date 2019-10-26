@@ -242,8 +242,6 @@ class Hometamon():
             print("-----test:followback-----")
         else:
             #最近のフォロワーからその人のtweetやid情報取得
-            # followers=api.followers_ids(screen_name=twitter_id)#全てのフォロワーidを取得
-            # friends=api.friends_ids(twitter_id)#フォローしている人のidを取得
             followers = self.api.followers_ids(self.my_twitter_id)
             friends = self.api.friends_ids(self.my_twitter_id)
 
@@ -251,8 +249,10 @@ class Hometamon():
             print("フォローバックしたい人数:{0}人".format(len(follow_back)))
 
             random.shuffle(follow_back)
-            # print(follow_back)
-            for i in range(min(len(follow_back),10)):
+
+            follow_back = follow_back[:10]
+            user_statuses = self.api.lookup_users(follow_back)
+            for status in user_statuses:
                 try:
                     status = self.api.get_user(follow_back[i])
                 except:
@@ -261,14 +261,15 @@ class Hometamon():
                 if status.follow_request_sent:
                     print("I already request to follow")
                 else:
-                    print("hoge")
                     try:
                         self.api.create_friendship(id = follow_back[i])
                         print("success follow!"+str(follow_back[i]))
                     except tweepy.error.TweepError as e:
-                        print("ogheohgao")
                         print(e)
                         print("error")
+
+
+
 
     def tweet(self):
         status = "順調だもん!"

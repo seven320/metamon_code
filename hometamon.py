@@ -253,17 +253,12 @@ class Hometamon():
             follow_back = follow_back[:10]
             user_statuses = self.api.lookup_users(follow_back)
             for status in user_statuses:
-                try:
-                    status = self.api.get_user(follow_back[i])
-                except:
-                    print("he is frozend")
-                    continue
                 if status.follow_request_sent:
                     print("I already request to follow")
                 else:
                     try:
-                        self.api.create_friendship(id = follow_back[i])
-                        print("success follow!"+str(follow_back[i]))
+                        self.api.create_friendship(id = status.id)
+                        print("success follow!"+str(status.screen_name))
                     except tweepy.error.TweepError as e:
                         print(e)
                         print("error")

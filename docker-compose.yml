@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+    metamon:
+        build: ./main
+        container_name: hometamon-container
+        restart: always
+        tty: true

@@ -13,7 +13,7 @@ sys.path.append(pardir)
 from dotenv import load_dotenv
 
 # account情報をaccount.pyからロード
-from metamon_code import meta_manuscript
+from src import meta_manuscript
 
 
 class Hometamon():

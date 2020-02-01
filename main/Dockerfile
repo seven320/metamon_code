@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.7
 
 MAINTAINER KenKato <github: seven320>
 
@@ -33,6 +33,7 @@ RUN pip install \
 # RUN echo '* * * * * root python3 ./test/main.py' >> /etc/cron.d/10min
 # RUN service cron start
 RUN git clone -b dev https://github.com/seven320/metamon_code.git
+RUN mv ./metamon_code/main/crontab /var/spool/cron/crontabs/root
 CMD busybox crond -l 2 -L /dev/stderr -f
 
 ENV USER mother

@@ -6,3 +6,6 @@ compose/up:
 
 restart:
 	compose/build compose/up
+
+exec:
+	docker exec -it hometamon-container /bin/bash

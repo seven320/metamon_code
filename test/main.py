@@ -1,4 +1,4 @@
-file_name = "./data2.txt"
+file_name = "~/data2.txt"
 
 try:
     file = open(file_name, 'w')

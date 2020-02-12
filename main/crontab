@@ -1,1 +1,1 @@
-* * * * * python /metamon_code/test/main.py
+*/10 * * * * python3 /metamon_code/main/src/hometamon.py --deploy 1 

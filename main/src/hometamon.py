@@ -1,11 +1,11 @@
 # encoding utf-8
-
+import sys, os
 import datetime
 import tweepy
 import random
+import argparse
 
-# 親ディレクトリにあるアカウント情報へのパス
-import sys, os
+import pykakasi
 
 pardir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(pardir)
@@ -15,16 +15,19 @@ from dotenv import load_dotenv
 # account情報をaccount.pyからロード
 from src import meta_manuscript
 
-
 class Hometamon():
     def __init__(self, test=True):
-        load_dotenv(".env")
-        # AWS上では相対パスではだめ
-        # load_dotenv("metamon_code/.env")
-        consumer_key = os.environ.get("CONSUMER_KEY")
-        consumer_secret = os.environ.get("CONSUMER_SECRET")
-        access_token = os.environ.get("ACCESS_TOKEN")
-        token_secret = os.environ.get("TOKEN_SECRET")
+        if load_dotenv(".env") and os.environ.get("CONSUMER_KEY") != None:
+            consumer_key = os.environ.get("CONSUMER_KEY")
+            consumer_secret = os.environ.get("CONSUMER_SECRET")
+            access_token = os.environ.get("ACCESS_TOKEN")
+            token_secret = os.environ.get("TOKEN_SECRET")
+        else: # 絶対パス
+            load_dotenv("/metamon_code/main/src/.env")
+            consumer_key = os.environ.get("CONSUMER_KEY")
+            consumer_secret = os.environ.get("CONSUMER_SECRET")
+            access_token = os.environ.get("ACCESS_TOKEN")
+            token_secret = os.environ.get("TOKEN_SECRET") 
 
         auth = tweepy.OAuthHandler(consumer_key=consumer_key, consumer_secret=consumer_secret)
         auth.set_access_token(key=access_token, secret=token_secret)
@@ -34,8 +37,12 @@ class Hometamon():
         JST = datetime.timezone(datetime.timedelta(hours=+9), "JST")
         self.jst_now = datetime.datetime.now(JST)
         self.admin_twitter_id = os.environ.get("ADMIN_RECIPIENT_ID")
-        # for test
         self.test = test
+        # 平仮名に変換
+        self.kakasi = pykakasi.kakasi()
+        self.kakasi.setMode("J", "H") # 漢字を平仮名に
+        self.kakasi.setMode("K", "H") # カタカナを平仮名に
+        self.conv = self.kakasi.getConverter()
 
     def check_api(self):
         limit_info = self.api.rate_limit_status()
@@ -43,37 +50,41 @@ class Hometamon():
 
     # read tweets
     def classify(self):
-        classify_words = ["褒めて", "ほめて", "バオワ", "ばおわ", "バイト終", "バおわ", "実験終", "実験おわ", "らぼりだ", "ラボ離脱", "ラボりだ", "帰宅", "疲れた",
-                          "つかれた", "仕事納め", "掃除終", "掃除した", "がこおわ", "学校終"]
-        ohayou_words = ["おはよう", "起床", "起きた", "ぽきた", "おきた"]
-        oyasumi_words = ["おやすみ", "寝よう", "寝る", "寝ます", "ねるね"]
-        transform_commands = []
-        test_command = ["_test_"]
         exclusion_names = ["bot", "ビジネス", "副業", "公式", "株", "FX", "ブランド", "無料", "キャリア", "エージェント"]
         exclusion_words = ["#peing", "http"]
+        ohayou_words = ["おはよう", "ぽきた", "起きた", "起床", "早起き"]
+        oyasumi_words = ["おやすみ", "寝よう", "寝る", "寝ます"]
+
+        # classify_wordsのみひらがな
+        classify_words = ["ほめて", "ばおわ", "ばいとお", "じっけんお", "らぼりだ", "きたく",
+                          "つかれた", "しごとお", "そうじお", "そうじした", "がこおわ"]
+        transform_commands = ["変身"]
+        test_commands = ["_test_"]
 
         count_reply = {"ignore": 0,
                        "praise": 0,
                        "greeting_morning": 0,
                        "greeting_nignt": 0,
                        "pass": 0,
-                       "test": 0}
+                       "transform": 0,
+                       "test": 0
+                       }
 
-        public_tweets = self.api.home_timeline(count=50, since_id=None)
+        public_tweets = self.api.home_timeline(count = 50, since_id = None)
 
         if self.test:
             print("#" * 10, "test", "#" * 10)
         else:
             print("#" * 10, "product", "#" * 10)
 
-        for tweet_cnt, tweet in enumerate(public_tweets):
+        for tweet_index, tweet in enumerate(public_tweets):
             user_name = tweet.user.name  # HN
             screen_name = tweet.user.screen_name  # ID
             reply_flag = True
 
             tweet_split = tweet.text.split(" ")
             print("")
-            print(tweet_cnt, ":", end="")
+            print(tweet_index, ":", end="")
             if self.test:
                 print("text:", tweet.text)
                 # print("char count:",len(tweet.text))
@@ -81,22 +92,22 @@ class Hometamon():
 
             # 自分には返事しない
             if screen_name == self.my_twitter_id:
-                print("this tweet is mine")
                 count_reply["ignore"] += 1
+                print("this tweet is mine")
                 reply_flag = False
                 continue
 
             # ファボしたツイートには反応しない
             elif tweet.favorited:
-                print("you alredy favorited")
                 count_reply["ignore"] += 1
+                print("you alredy favorited")
                 reply_flag = False
                 continue
 
             # RTには返事しない
             elif tweet_split[0] == "RT":
-                print("this is retweeted")
                 count_reply["ignore"] += 1
+                print("this is retweeted")
                 reply_flag = False
                 continue
 
@@ -106,13 +117,13 @@ class Hometamon():
                     self.api.create_favorite(tweet.id)
                 count_reply["ignore"] += 1
                 print("this is to someone")
-                count_reply["ignore"] += 1
                 reply_flag = False
                 continue
 
             # tweet内容が80文字を超えている場合には返事しない
             elif len(tweet.text) >= 80:
                 count_reply["ignore"] += 1
+                print("this tweet is over 80 chr")
                 reply_flag = False
                 continue
 
@@ -120,8 +131,8 @@ class Hometamon():
             if reply_flag:
                 for exclusion_name in exclusion_names:
                     if exclusion_name in user_name:
-                        print("ignore account")
                         count_reply["ignore"] += 1
+                        print("ignore account")
                         reply_flag = False
                         break
 
@@ -129,26 +140,14 @@ class Hometamon():
             if reply_flag:
                 for exclusion_word in exclusion_words:
                     if exclusion_word in tweet.text:
-                        print("ignore this tweet")
                         count_reply["ignore"] += 1
+                        print("ignore this tweet")
                         reply_flag = False
                         break
 
             if reply_flag:
-                print("this is pass")
+                print("this tweet isn't ignored")
                 user_name_ = user_name.split("@")
-                # 返信part
-                for classify_word in classify_words:
-                    if classify_word in tweet.text:
-                        count_reply["praise"] += 1
-                        # reply
-                        self.reply(user_name_[0], screen_name, tweet.id, tweet.text)
-                        # favorite
-                        self.api.create_favorite(tweet.id)
-                        reply_flag = False
-                        break
-
-            if reply_flag:
                 # 挨拶part おはよう
                 if 5 <= self.jst_now.hour <= 10:
                     for ohayou_word in ohayou_words:
@@ -170,25 +169,42 @@ class Hometamon():
                             self.api.create_favorite(tweet.id)
                             reply_flag = False
                             break
+            
+            # ここから先は全てひらがなに変換した上で行う
+            if reply_flag:
+                hiragana_tweet_text = self.conv.do(tweet.text)
+
+            if reply_flag:
+                # 返信part
+                for classify_word in classify_words:
+                    if classify_word in hiragana_tweet_text:
+                        count_reply["praise"] += 1
+                        # reply
+                        self.reply(user_name_[0], screen_name, tweet.id, tweet.text)
+                        # favorite
+                        self.api.create_favorite(tweet.id)
+                        reply_flag = False
+                        break
 
             if reply_flag:
                 # 変身part
                 for transform_command in transform_commands:
-                    if transform_command in tweet.text:
+                    if transform_command in hiragana_tweet_text:
                         # transform
+                        count_reply["transform"] += 1
                         self.transform()
                         self.api.create_favorite(tweet.id)
                         reply_flag = False
                         break
 
                 # test part
-                if test_command[0] in tweet.text:
-                    if screen_name == "yosyuaomenww":
-                        self.test_tweet()
+                for test_command in test_commands:
+                    if screen_name == "yosyuaomenww" and test_command in hiragana_tweet_text:
+                        count_reply["test"] += 1
                         self.api.create_favorite(tweet.id)
+                        self.test_tweet()
                         print("test tweet")
                         reply_flag = False
-
                         break
 
             if reply_flag:
@@ -199,14 +215,17 @@ class Hometamon():
         else:
             mode = "deploy"
 
-        result = "time:{0}\nmode:{1}\n褒めた数:{2}\n無効な数:{3}\n挨拶した数:{4}\n反応しなかった数:{5}\nテスト数:{6}だもん！！".format(
+        result = "time:{0}\nmode:{1}\n褒めた数:{2}\n無効な数:{3}\n挨拶した数:{4}\n反応しなかった数:{5}\n変身:{6}\nテスト数:{7}\n合計:{8}/{9}だもん！！".format(
             str(self.jst_now),
             mode,
             count_reply["praise"],
             count_reply["ignore"],
             count_reply["greeting_morning"] + count_reply["greeting_nignt"],
             count_reply["pass"],
-            count_reply["test"])
+            count_reply["transform"],
+            count_reply["test"],
+            sum(count_reply.values()),
+            len(public_tweets))
         print(result)
         # 自分のアカウントにDMを送信
         self.api.send_direct_message(self.admin_twitter_id, result)
@@ -325,15 +344,19 @@ def main(test):
     hometamon.followback()
     # """
 
-
-def lambda_handler(event, context):
-    main(test=False)
-    # hometamon = Hometamon()
-    # hometamon.check_timeline()
-
+# def deploy_handler():
+#     main(test = 1)
+#     # hometamon = Hometamon()
+#     # hometamon.check_timeline()
 
 if __name__ == "__main__":
     # main(test = False)
-    main(test=True)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--deploy", help = "run with deploy mode")
+    args = parser.parse_args()
+    if args.deploy:
+        main(test = False)
+    else:
+        main(test = True)
     # hometamon = Hometamon()
     # hometamon.check_timeline()

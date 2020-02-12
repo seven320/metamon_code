@@ -20,26 +20,16 @@ RUN pip install --upgrade pip
 RUN pip install \
     tweepy==3.8.0 \
     tqdm==4.36.1\
+    pykakasi==1.2\
     python-dotenv==0.10.5
 
-# copy
-# COPY ./src/.env /.env
-# COPY ./src src
-# COPY ./test test
-# COPY crontab /var/spool/cron/crontabs/root
-
-
-
-# RUN echo '* * * * * root python3 ./test/main.py' >> /etc/cron.d/10min
 # RUN service cron start
-RUN git clone -b dev https://github.com/seven320/metamon_code.git
-RUN mv ./metamon_code/main/crontab /var/spool/cron/crontabs/root
+# RUN git clone -b dev https://github.com/seven320/metamon_code.git
+RUN git clone https://github.com/seven320/metamon_code.git
+COPY ./src/.env ./metamon_code/main/src/.env
+RUN cp ./metamon_code/main/crontab /var/spool/cron/crontabs/root
 CMD busybox crond -l 2 -L /dev/stderr -f
 
 ENV USER mother
 ENV HOME /home/${USER}
 ENV SHELL /bin/bash
-
-
-
-

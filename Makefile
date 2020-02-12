@@ -1,3 +1,4 @@
+
 compose/build:
 	docker-compose build
 
@@ -9,3 +10,6 @@ restart:
 
 exec:
 	docker exec -it hometamon-container /bin/bash
+  
+run:
+	python3 hometamon.py

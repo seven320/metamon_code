@@ -144,6 +144,8 @@ class Hometamon():
                         break
 
             if reply_flag:
+                print("this tweet isn't ignored")
+                user_name_ = user_name.split("@")
                 # 挨拶part おはよう
                 if 5 <= self.jst_now.hour <= 10:
                     for ohayou_word in ohayou_words:
@@ -166,13 +168,11 @@ class Hometamon():
                             reply_flag = False
                             break
             
+            # ここから先は全てひらがなに変換した上で行う
             if reply_flag:
                 hiragana_tweet_text = self.conv.do(tweet.text)
-                print(hiragana_tweet_text)
 
             if reply_flag:
-                print("this is pass")
-                user_name_ = user_name.split("@")
                 # 返信part
                 for classify_word in classify_words:
                     if classify_word in hiragana_tweet_text:
@@ -199,8 +199,8 @@ class Hometamon():
                 for test_command in test_commands:
                     if screen_name == "yosyuaomenww" and test_command in hiragana_tweet_text:
                         count_reply["test"] += 1
-                        self.test_tweet()
                         self.api.create_favorite(tweet.id)
+                        self.test_tweet()
                         print("test tweet")
                         reply_flag = False
                         break

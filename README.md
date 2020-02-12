@@ -1,3 +1,6 @@
+# README
+![hometamon](https://user-images.githubusercontent.com/33506506/74358523-e9594980-4e04-11ea-8130-ee86a32fef74.jpg)
+
 # metamon_code
 褒めたもんを実行するためのコード
 
@@ -19,11 +22,10 @@ vim .env.exam
 cp .env.exam .env
 ~~~
 #### 3 run code
-~~~
-python hometamon.py --deploy 0
-~~~
 
---deploy 1にすると実際にツイートを行います
+~~~
+python hometamon.py --deploy 1
+~~~
 
 #### 4 deploy with docker(optional)
 ~~~

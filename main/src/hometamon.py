@@ -52,7 +52,7 @@ class Hometamon():
         ohayou_words = ["おはよう", "起床", "起きた", "ぽきた", "おきた"]
         oyasumi_words = ["おやすみ", "寝よう", "寝る", "寝ます", "ねるね"]
         transform_commands = []
-        test_command = ["_test_"]
+        test_commands = ["_test_"]
         exclusion_names = ["bot", "ビジネス", "副業", "公式", "株", "FX", "ブランド", "無料", "キャリア", "エージェント"]
         exclusion_words = ["#peing", "http"]
 
@@ -61,9 +61,11 @@ class Hometamon():
                        "greeting_morning": 0,
                        "greeting_nignt": 0,
                        "pass": 0,
-                       "test": 0}
+                       "transform": 0,
+                       "test": 0
+                       }
 
-        public_tweets = self.api.home_timeline(count=50, since_id=None)
+        public_tweets = self.api.home_timeline(count = 50, since_id = None)
 
         if self.test:
             print("#" * 10, "test", "#" * 10)
@@ -85,35 +87,36 @@ class Hometamon():
 
             # 自分には返事しない
             if screen_name == self.my_twitter_id:
-                print("this tweet is mine")
                 count_reply["ignore"] += 1
+                print("this tweet is mine")
                 reply_flag = False
                 continue
 
             # ファボしたツイートには反応しない
             elif tweet.favorited:
-                print("you alredy favorited")
                 count_reply["ignore"] += 1
+                print("you alredy favorited")
                 reply_flag = False
                 continue
 
             # RTには返事しない
             elif tweet_split[0] == "RT":
-                print("this is retweeted")
                 count_reply["ignore"] += 1
+                print("this is retweeted")
                 reply_flag = False
                 continue
 
             # 誰かへのツイートには返事しない
             elif tweet_split[0][0] == "@":
-                print("this is to someone")
                 count_reply["ignore"] += 1
+                print("this is to someone")
                 reply_flag = False
                 continue
 
             # tweet内容が80文字を超えている場合には返事しない
             elif len(tweet.text) >= 80:
                 count_reply["ignore"] += 1
+                print("this tweet is over 80 chr")
                 reply_flag = False
                 continue
 
@@ -121,8 +124,8 @@ class Hometamon():
             if reply_flag:
                 for exclusion_name in exclusion_names:
                     if exclusion_name in user_name:
-                        print("ignore account")
                         count_reply["ignore"] += 1
+                        print("ignore account")
                         reply_flag = False
                         break
 
@@ -130,11 +133,11 @@ class Hometamon():
             if reply_flag:
                 for exclusion_word in exclusion_words:
                     if exclusion_word in tweet.text:
-                        print("ignore this tweet")
                         count_reply["ignore"] += 1
+                        print("ignore this tweet")
                         reply_flag = False
                         break
-
+                
             if reply_flag:
                 print("this is pass")
                 user_name_ = user_name.split("@")
@@ -177,19 +180,20 @@ class Hometamon():
                 for transform_command in transform_commands:
                     if transform_command in tweet.text:
                         # transform
+                        count_reply["transform"] += 1
                         self.transform()
                         self.api.create_favorite(tweet.id)
                         reply_flag = False
                         break
 
                 # test part
-                if test_command[0] in tweet.text:
-                    if screen_name == "yosyuaomenww":
+                for test_command in test_commands:
+                    if screen_name == "yosyuaomenww" and test_command in tweet.text:
+                        count_reply["test"] += 1
                         self.test_tweet()
                         self.api.create_favorite(tweet.id)
                         print("test tweet")
                         reply_flag = False
-
                         break
 
             if reply_flag:
@@ -200,14 +204,16 @@ class Hometamon():
         else:
             mode = "deploy"
 
-        result = "time:{0}\nmode:{1}\n褒めた数:{2}\n無効な数:{3}\n挨拶した数:{4}\n反応しなかった数:{5}\nテスト数:{6}だもん！！".format(
+        result = "time:{0}\nmode:{1}\n褒めた数:{2}\n無効な数:{3}\n挨拶した数:{4}\n反応しなかった数:{5}\n変身:{6}\nテスト数:{7}\n合計:{8}だもん！！".format(
             str(self.jst_now),
             mode,
             count_reply["praise"],
             count_reply["ignore"],
             count_reply["greeting_morning"] + count_reply["greeting_nignt"],
             count_reply["pass"],
-            count_reply["test"])
+            count_reply["transform"],
+            count_reply["test"],
+            sum(count_reply.values()))
         print(result)
         # 自分のアカウントにDMを送信
         self.api.send_direct_message(self.admin_twitter_id, result)

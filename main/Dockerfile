@@ -23,7 +23,8 @@ RUN pip install \
     python-dotenv==0.10.5
 
 # RUN service cron start
-RUN git clone -b dev https://github.com/seven320/metamon_code.git
+# RUN git clone -b dev https://github.com/seven320/metamon_code.git
+RUN git clone https://github.com/seven320/metamon_code.git
 COPY ./src/.env ./metamon_code/main/src/.env
 RUN cp ./metamon_code/main/crontab /var/spool/cron/crontabs/root
 CMD busybox crond -l 2 -L /dev/stderr -f

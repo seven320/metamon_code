@@ -18,13 +18,17 @@ from src import meta_manuscript
 
 class Hometamon():
     def __init__(self, test=True):
-        load_dotenv(".env")
-        # AWS上では相対パスではだめ
-        # load_dotenv("metamon_code/.env")
-        consumer_key = os.environ.get("CONSUMER_KEY")
-        consumer_secret = os.environ.get("CONSUMER_SECRET")
-        access_token = os.environ.get("ACCESS_TOKEN")
-        token_secret = os.environ.get("TOKEN_SECRET")
+        if load_dotenv(".env") and os.environ.get("CONSUMER_KEY") != None:
+            consumer_key = os.environ.get("CONSUMER_KEY")
+            consumer_secret = os.environ.get("CONSUMER_SECRET")
+            access_token = os.environ.get("ACCESS_TOKEN")
+            token_secret = os.environ.get("TOKEN_SECRET")
+        else:
+            load_dotenv("src/.env")
+            consumer_key = os.environ.get("CONSUMER_KEY")
+            consumer_secret = os.environ.get("CONSUMER_SECRET")
+            access_token = os.environ.get("ACCESS_TOKEN")
+            token_secret = os.environ.get("TOKEN_SECRET") 
 
         auth = tweepy.OAuthHandler(consumer_key=consumer_key, consumer_secret=consumer_secret)
         auth.set_access_token(key=access_token, secret=token_secret)
@@ -322,15 +326,14 @@ def main(test):
     hometamon.followback()
     # """
 
-
-def lambda_handler(event, context):
-    main(test=False)
+def deploy_handler():
+    main(test = 1)
     # hometamon = Hometamon()
     # hometamon.check_timeline()
 
 
 if __name__ == "__main__":
     # main(test = False)
-    main(test=True)
+    main(test = True)
     # hometamon = Hometamon()
     # hometamon.check_timeline()

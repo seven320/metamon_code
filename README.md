@@ -9,7 +9,7 @@ dotenv==0.10.3
 
 #### 1 このレポジトリをコピーしてください. clone this repository
 ~~~
-git clone github.com/seven320/metamon_code
+git clone https://github.com/seven320/metamon_code.git
 cd metamon_code
 ~~~
 #### 2 ツイッターのapiを取得し，/metamoncode/main/src/.envに入力してください．この時，通知を送るアカウントの情報も書いてください．get twitter api and input your api keys in .env like .env.exam

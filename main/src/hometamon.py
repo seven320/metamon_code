@@ -13,7 +13,7 @@ sys.path.append(pardir)
 from dotenv import load_dotenv
 
 # account情報をaccount.pyからロード
-from metamon_code import meta_manuscript
+from src import meta_manuscript
 
 
 class Hometamon():
@@ -46,7 +46,7 @@ class Hometamon():
         classify_words = ["褒めて", "ほめて", "バオワ", "ばおわ", "バイト終", "バおわ", "実験終", "実験おわ", "らぼりだ", "ラボ離脱", "ラボりだ", "帰宅", "疲れた",
                           "つかれた", "仕事納め", "掃除終", "掃除した", "がこおわ", "学校終"]
         ohayou_words = ["おはよう", "起床", "起きた", "ぽきた", "おきた"]
-        oyasumi_words = ["おやすみ", "寝よう", "寝る", "寝ます", "ねね"]
+        oyasumi_words = ["おやすみ", "寝よう", "寝る", "寝ます", "ねるね"]
         transform_commands = []
         test_command = ["_test_"]
         exclusion_names = ["bot", "ビジネス", "副業", "公式", "株", "FX", "ブランド", "無料", "キャリア", "エージェント"]

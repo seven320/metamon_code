@@ -102,6 +102,9 @@ class Hometamon():
 
             # 誰かへのツイートには返事しない
             elif tweet_split[0][0] == "@":
+                if tweet_split[0] == "@denden_by": # replyにファボする
+                    self.api.create_favorite(tweet.id)
+                count_reply["ignore"] += 1
                 print("this is to someone")
                 count_reply["ignore"] += 1
                 reply_flag = False

@@ -3,6 +3,7 @@
 import datetime
 import tweepy
 import random
+import argparse
 
 # 親ディレクトリにあるアカウント情報へのパス
 import sys, os
@@ -325,14 +326,19 @@ def main(test):
     hometamon.followback()
     # """
 
-def deploy_handler():
-    main(test = 1)
-    # hometamon = Hometamon()
-    # hometamon.check_timeline()
-
+# def deploy_handler():
+#     main(test = 1)
+#     # hometamon = Hometamon()
+#     # hometamon.check_timeline()
 
 if __name__ == "__main__":
     # main(test = False)
-    main(test = True)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--deploy", help = "run with deploy mode")
+    args = parser.parse_args()
+    if args.deploy:
+        main(test = False)
+    else:
+        main(test = True)
     # hometamon = Hometamon()
     # hometamon.check_timeline()

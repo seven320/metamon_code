@@ -7,30 +7,30 @@ dotenv==0.10.3
 
 ## 使い方 How to USE
 
-#### 1 このレポジトリをコピーしてください. clone this repository
+#### 1 clone this repository
 ~~~
 git clone https://github.com/seven320/metamon_code.git
 cd metamon_code
 ~~~
-#### 2 ツイッターのapiを取得し，/metamoncode/main/src/.envに入力してください．この時，通知を送るアカウントの情報も書いてください．get twitter api and input your api keys in .env like .env.exam
+#### 2 get twitter api and input your api keys in .env like .env.exam
 ~~~
 cd main/src/
 vim .env.exam
 cp .env.exam .env
 ~~~
-#### 3 テストコードの実行 run code
+#### 3 run code
 ~~~
 python hometamon.py --deploy 0
 ~~~
 
 --deploy 1にすると実際にツイートを行います
 
-#### 4 docker の起動と時間ごとに自動実行(optional) deploy with docker 
+#### 4 deploy with docker(optional)
 ~~~
 cd /metamon_code/
 make restart
 ~~~
-busyboxにより，10分ごとに自動実行します．
+run hometamon.py with busybox every 8 min.
 
 ## about hometamon (記事)
 [褒めたもんについて（コンセプト編）](https://denden-seven.hatenablog.com/entry/2019/01/09/131220)  

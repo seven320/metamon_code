@@ -15,7 +15,6 @@ from dotenv import load_dotenv
 # account情報をaccount.pyからロード
 from src import meta_manuscript
 
-
 class Hometamon():
     def __init__(self, test=True):
         if load_dotenv(".env") and os.environ.get("CONSUMER_KEY") != None:
@@ -23,8 +22,8 @@ class Hometamon():
             consumer_secret = os.environ.get("CONSUMER_SECRET")
             access_token = os.environ.get("ACCESS_TOKEN")
             token_secret = os.environ.get("TOKEN_SECRET")
-        else:
-            load_dotenv("src/.env")
+        else: # 絶対パス
+            load_dotenv("/metamon_code/main/src/.env")
             consumer_key = os.environ.get("CONSUMER_KEY")
             consumer_secret = os.environ.get("CONSUMER_SECRET")
             access_token = os.environ.get("ACCESS_TOKEN")

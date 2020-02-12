@@ -1,1 +1,1 @@
-* * * * * python3 -c "from /metamon_code/main/src import hometamon; hometamon.deploy_handler()"
+* * * * * python3 /metamon_code/main/src/hometamon.py 

@@ -5,7 +5,6 @@ import tweepy
 import random
 import argparse
 
-import pykakasi
 
 pardir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(pardir)
@@ -38,26 +37,24 @@ class Hometamon():
         self.jst_now = datetime.datetime.now(JST)
         self.admin_twitter_id = os.environ.get("ADMIN_RECIPIENT_ID")
         self.test = test
-        # 平仮名に変換
-        self.kakasi = pykakasi.kakasi()
-        self.kakasi.setMode("J", "H") # 漢字を平仮名に
-        self.kakasi.setMode("K", "H") # カタカナを平仮名に
-        self.conv = self.kakasi.getConverter()
 
     def check_api(self):
         limit_info = self.api.rate_limit_status()
         dir(limit_info["rate_limit_status"])
 
+    def get_tweets(self):
+        return self.api.home_timeline(count = 50, since_id = None)
+
     # read tweets
-    def classify(self):
+    def classify(self, public_tweets):
         exclusion_names = ["bot", "ビジネス", "副業", "公式", "株", "FX", "ブランド", "無料", "キャリア", "エージェント"]
         exclusion_words = ["#peing", "http"]
         ohayou_words = ["おはよう", "ぽきた", "起きた", "起床", "早起き"]
         oyasumi_words = ["おやすみ", "寝よう", "寝る", "寝ます"]
 
-        # classify_wordsのみひらがな
-        classify_words = ["ほめて", "ばおわ", "ばいとお", "じっけんお", "らぼりだ", "きたく",
-                          "つかれた", "しごとお", "そうじお", "そうじした", "がこおわ"]
+        # 漢字と平仮名に変換
+        classify_words = ["褒めて", "ほめて", "バオワ", "ばおわ", "バイト終", "バおわ", "実験終", "実験おわ", "らぼりだ", "ラボ離脱", "ラボりだ", "帰宅", "疲れた",
+                          "つかれた", "仕事納め", "掃除終", "掃除した", "がこおわ", "学校終"]
         transform_commands = ["変身"]
         test_commands = ["_test_"]
 
@@ -69,8 +66,6 @@ class Hometamon():
                        "transform": 0,
                        "test": 0
                        }
-
-        public_tweets = self.api.home_timeline(count = 50, since_id = None)
 
         if self.test:
             print("#" * 10, "test", "#" * 10)
@@ -169,15 +164,11 @@ class Hometamon():
                             self.api.create_favorite(tweet.id)
                             reply_flag = False
                             break
-            
-            # ここから先は全てひらがなに変換した上で行う
-            if reply_flag:
-                hiragana_tweet_text = self.conv.do(tweet.text)
 
             if reply_flag:
                 # 返信part
                 for classify_word in classify_words:
-                    if classify_word in hiragana_tweet_text:
+                    if classify_word in tweet.text:
                         count_reply["praise"] += 1
                         # reply
                         self.reply(user_name_[0], screen_name, tweet.id, tweet.text)
@@ -189,7 +180,7 @@ class Hometamon():
             if reply_flag:
                 # 変身part
                 for transform_command in transform_commands:
-                    if transform_command in hiragana_tweet_text:
+                    if transform_command in tweet.text:
                         # transform
                         count_reply["transform"] += 1
                         self.transform()
@@ -199,7 +190,7 @@ class Hometamon():
 
                 # test part
                 for test_command in test_commands:
-                    if screen_name == "yosyuaomenww" and test_command in hiragana_tweet_text:
+                    if screen_name == "yosyuaomenww" and test_command in tweet.text:
                         count_reply["test"] += 1
                         self.api.create_favorite(tweet.id)
                         self.test_tweet()
@@ -230,10 +221,11 @@ class Hometamon():
         # 自分のアカウントにDMを送信
         self.api.send_direct_message(self.admin_twitter_id, result)
 
+        return count_reply
+
     # 返事をする
     def reply(self, user_name, screen_name, tweet_id, tweet_text):
         num = random.randint(0, len(self.manuscript.reply) - 1)
-        # num_padded = '{0:03d}'.format(num) #ゼロパディング:0で３桁左詰する。 example 1→001
         print(num)
         reply = "@" + screen_name + "\n " + user_name + self.manuscript.reply[num]
         if self.test:
@@ -333,14 +325,14 @@ class Hometamon():
                 print(tweet.user.name, tweet.user.screen_name, "\n", tweet.text)
             # print(tweet.user.name,tweet.user.screen_name)
 
-
 def main(test):
     # test command
     hometamon = Hometamon(test)
     # hometamon.check_api()
     # hometamon.get_user_info()
     # """
-    hometamon.classify()
+    public_tweets = hometamon.get_tweets()
+    hometamon.classify(public_tweets)
     hometamon.followback()
     # """
 

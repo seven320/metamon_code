@@ -25,6 +25,8 @@ class Hometamon():
             load_dotenv("src/.env")
         elif os.path.exists("/src/.env"):
             load_dotenv("/src/.env")
+        elif os.path.exists("main/src/.env"):
+            load_dotenv("main/src/.env")
         else:
             print("error doesn't exist .env path")
 

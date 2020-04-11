@@ -14,4 +14,4 @@ exec:
 	docker exec -it hometamon-container /bin/sh
   
 run:
-	python3 hometamon.py
+	python3 main/src/hometamon.py --test 1

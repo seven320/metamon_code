@@ -20,6 +20,8 @@ cd metamon_code
 cd main/src/
 vim .env.exam
 cp .env.exam .env
+
+
 ~~~
 #### 3 run code
 

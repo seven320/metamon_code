@@ -5,13 +5,13 @@ compose/build:
 compose/up:
 	docker-compose up
 
-restart:
+re-run:
 	docker-compose down
 	docker-compose build --no-cache
 	docker-compose up
 
 exec:
-	docker exec -it hometamon-container /bin/bash
+	docker exec -it hometamon-container /bin/sh
   
 run:
 	python3 hometamon.py

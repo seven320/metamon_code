@@ -6,3 +6,5 @@ services:
         container_name: hometamon-container
         restart: always
         tty: true
+        environment: 
+            TZ: Asia/Tokyo

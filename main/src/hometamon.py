@@ -1,36 +1,45 @@
 # encoding utf-8
-import sys, os
-import datetime
-import tweepy
+import os
+import sys
 import random
-import argparse
+import time
+from distutils.util import strtobool
+import datetime as dt
 
+import tweepy
+import argparse
+import datetime
 
 pardir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(pardir)
 
-from dotenv import load_dotenv
-
 # account情報をaccount.pyからロード
 from src import meta_manuscript
+from dotenv import load_dotenv
 
 class Hometamon():
-    def __init__(self, test=True):
-        if load_dotenv(".env") and os.environ.get("CONSUMER_KEY") != None:
-            consumer_key = os.environ.get("CONSUMER_KEY")
-            consumer_secret = os.environ.get("CONSUMER_SECRET")
-            access_token = os.environ.get("ACCESS_TOKEN")
-            token_secret = os.environ.get("TOKEN_SECRET")
-        else: # 絶対パス
-            load_dotenv("/metamon_code/main/src/.env")
-            consumer_key = os.environ.get("CONSUMER_KEY")
-            consumer_secret = os.environ.get("CONSUMER_SECRET")
-            access_token = os.environ.get("ACCESS_TOKEN")
-            token_secret = os.environ.get("TOKEN_SECRET") 
+    def __init__(self, test):
+        if os.path.exists(".env"):
+            load_dotenv(".env")
+        elif os.path.exists("src/.env"):
+            load_dotenv("src/.env")
+        elif os.path.exists("/src/.env"):
+            load_dotenv("/src/.env")
+        else:
+            print("error doesn't exist .env path")
 
-        auth = tweepy.OAuthHandler(consumer_key=consumer_key, consumer_secret=consumer_secret)
-        auth.set_access_token(key=access_token, secret=token_secret)
-        self.api = tweepy.API(auth, wait_on_rate_limit=True)
+        consumer_key = os.environ.get("CONSUMER_KEY")
+        consumer_secret = os.environ.get("CONSUMER_SECRET")
+        access_token = os.environ.get("ACCESS_TOKEN")
+        token_secret = os.environ.get("TOKEN_SECRET") 
+
+        auth = tweepy.OAuthHandler(
+            consumer_key = consumer_key,
+            consumer_secret = consumer_secret)
+        auth.set_access_token(
+            key = access_token,
+            secret = token_secret)
+        self.api = tweepy.API(auth, wait_on_rate_limit = True)
         self.my_twitter_id = os.environ.get("TWITTER_ID")
         self.manuscript = meta_manuscript.Manuscript()
         JST = datetime.timezone(datetime.timedelta(hours=+9), "JST")
@@ -51,10 +60,13 @@ class Hometamon():
         exclusion_words = ["#peing", "http"]
         ohayou_words = ["おはよう", "ぽきた", "起きた", "起床", "早起き"]
         oyasumi_words = ["おやすみ", "寝よう", "寝る", "寝ます"]
+        classify_words = [
+            "褒めて", "ほめて", 
+            "バオワ", "ばおわ", "バイト終", "バおわ", 
+            "実験終", "実験おわ", "らぼりだ", "ラボ離脱", "ラボりだ", 
+            "帰宅", "帰る", "疲れた","つかれた", 
+            "仕事納め", "掃除終", "掃除した", "がこおわ", "学校終"]
 
-        # 漢字と平仮名に変換
-        classify_words = ["褒めて", "ほめて", "バオワ", "ばおわ", "バイト終", "バおわ", "実験終", "実験おわ", "らぼりだ", "ラボ離脱", "ラボりだ", "帰宅", "疲れた",
-                          "つかれた", "仕事納め", "掃除終", "掃除した", "がこおわ", "学校終"]
         transform_commands = ["変身"]
         test_commands = ["_test_"]
 
@@ -82,7 +94,6 @@ class Hometamon():
             print(tweet_index, ":", end="")
             if self.test:
                 print("text:", tweet.text)
-                # print("char count:",len(tweet.text))
             print("reply status:", end="")
 
             # 自分には返事しない
@@ -143,7 +154,7 @@ class Hometamon():
             if reply_flag:
                 print("this tweet isn't ignored")
                 user_name_ = user_name.split("@")
-                # 挨拶part おはよう
+                # 挨拶 おはよう
                 if 5 <= self.jst_now.hour <= 10:
                     for ohayou_word in ohayou_words:
                         if ohayou_word in tweet.text:
@@ -218,16 +229,14 @@ class Hometamon():
             sum(count_reply.values()),
             len(public_tweets))
         print(result)
-        # 自分のアカウントにDMを送信
+        # 自分のアカウントに結果を送信
         self.api.send_direct_message(self.admin_twitter_id, result)
 
         return count_reply
 
     # 返事をする
     def reply(self, user_name, screen_name, tweet_id, tweet_text):
-        num = random.randint(0, len(self.manuscript.reply) - 1)
-        print(num)
-        reply = "@" + screen_name + "\n " + user_name + self.manuscript.reply[num]
+        reply = "@" + screen_name + "\n " + user_name + random.choice(self.manuscript.reply)
         if self.test:
             print("-----test:reply-----")
         else:
@@ -235,8 +244,7 @@ class Hometamon():
         print("tweet:{0}:{1} \nreply:{2}".format(user_name, tweet_text, reply))
 
     def greeting_morning(self, user_name, screen_name, tweet_id, tweet_text):
-        num = random.randint(0, len(self.manuscript.greeting_morning) - 1)
-        reply = "@" + screen_name + "\n " + user_name + self.manuscript.greeting_morning[num]
+        reply = "@" + screen_name + "\n " + user_name + random.choice(self.manuscript.greeting_morning)
         if self.test:
             print("-----test:greeting_morning-----")
         else:
@@ -244,8 +252,7 @@ class Hometamon():
         print("tweet:{0}:{1} \nreply:{2}".format(user_name, tweet_text, reply))
 
     def greeting_nignt(self, user_name, screen_name, tweet_id, tweet_text):
-        num = random.randint(0, len(self.manuscript.greeting_night) - 1)
-        reply = "@" + screen_name + "\n " + user_name + self.manuscript.greeting_night[num]
+        reply = "@" + screen_name + "\n " + user_name + random.choice(self.manuscript.greeting_night)
         if self.test:
             print("-----test:greeting_night-----")
         else:
@@ -279,6 +286,16 @@ class Hometamon():
                         print(e)
                         print("error")
 
+    def tweet_sweet(self):
+        status = random.choice(self.manuscript.sweet_tweet_before)
+        status += "\n⊂・ー・つ" + chr(int(random.choice(self.manuscript.sweets)[2:], 16)) + "\n" # 16進数から変換
+        status += random.choice(self.manuscript.sweet_tweet_after)
+        if self.test:
+            print("15時 tweet:", status)
+        else:
+            pass
+            # self.api.update_status(status = status)
+
     def tweet(self):
         status = "順調だもん!"
         self.api.update_status(status=status)
@@ -307,7 +324,6 @@ class Hometamon():
 
         for tweet in public_tweets:
             print("-" * 20)
-            # print(tweet)
             print(tweet.text)
             # RTには返事しない
             tweet_split = tweet.text.split(" ")
@@ -326,29 +342,31 @@ class Hometamon():
             # print(tweet.user.name,tweet.user.screen_name)
 
 def main(test):
+    local_time = dt.datetime.now()
     # test command
     hometamon = Hometamon(test)
     # hometamon.check_api()
     # hometamon.get_user_info()
     # """
+
     public_tweets = hometamon.get_tweets()
     hometamon.classify(public_tweets)
+    if local_time.hour == 15 and 0 <= local_time.minute <= 5 or hometamon.test: # 15:00 ~ 15:05までの間ならツイートする
+        hometamon.tweet_sweet()
     hometamon.followback()
     # """
 
-# def deploy_handler():
-#     main(test = 1)
-#     # hometamon = Hometamon()
-#     # hometamon.check_timeline()
-
 if __name__ == "__main__":
-    # main(test = False)
     parser = argparse.ArgumentParser()
-    parser.add_argument("--deploy", help = "run with deploy mode")
+    parser.add_argument(
+        "--test", 
+        type = strtobool,
+        help = "run by test mode(defalt True)",
+        default = True,
+        required = True
+        )
     args = parser.parse_args()
-    if args.deploy:
-        main(test = False)
-    else:
+    if args.test:
         main(test = True)
-    # hometamon = Hometamon()
-    # hometamon.check_timeline()
+    else:
+        main(test = False)

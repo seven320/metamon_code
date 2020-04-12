@@ -4,11 +4,10 @@ import sys
 import random
 import time
 from distutils.util import strtobool
-import datetime as dt
+import datetime
 
 import tweepy
 import argparse
-import datetime
 
 pardir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(pardir)
@@ -289,14 +288,14 @@ class Hometamon():
                         print("error")
 
     def tweet_sweet(self):
-        status = random.choice(self.manuscript.sweet_tweet_before)
-        status += "\n⊂・ー・つ" + chr(int(random.choice(self.manuscript.sweets)[2:], 16)) + "\n" # 16進数から変換
-        status += random.choice(self.manuscript.sweet_tweet_after)
-        if self.test:
-            print("15時 tweet:", status)
-        else:
-            pass
-            # self.api.update_status(status = status)
+        if self.jst_now.hour == 15 and 0 <= self.jst_now.minute <= 5 or self.test: # 15:00 ~ 15:05までの間ならツイートする
+            status = random.choice(self.manuscript.sweet_tweet_before)
+            status += "\n⊂・ー・つ" + chr(int(random.choice(self.manuscript.sweets)[2:], 16)) + "\n" # 16進数から変換
+            status += random.choice(self.manuscript.sweet_tweet_after)
+            if self.test:
+                print("15時 tweet:", status)
+            else:
+                self.api.update_status(status = status)
 
     def tweet(self):
         status = "順調だもん!"
@@ -344,7 +343,6 @@ class Hometamon():
             # print(tweet.user.name,tweet.user.screen_name)
 
 def main(test):
-    local_time = dt.datetime.now()
     # test command
     hometamon = Hometamon(test)
     # hometamon.check_api()
@@ -353,8 +351,7 @@ def main(test):
 
     public_tweets = hometamon.get_tweets()
     hometamon.classify(public_tweets)
-    if local_time.hour == 15 and 0 <= local_time.minute <= 5 or hometamon.test: # 15:00 ~ 15:05までの間ならツイートする
-        hometamon.tweet_sweet()
+    hometamon.tweet_sweet()
     hometamon.followback()
     # """
 

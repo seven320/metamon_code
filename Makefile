@@ -8,7 +8,7 @@ compose/up:
 re-run:
 	docker-compose down
 	docker-compose build --no-cache
-	docker-compose up
+	docker-compose up -d
 
 exec:
 	docker exec -it hometamon-container /bin/sh

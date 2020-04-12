@@ -40,8 +40,8 @@ run hometamon.py with busybox every 8 min.
 [褒めたもんについて（コンセプト編）](https://denden-seven.hatenablog.com/entry/2019/01/09/131220)  
 [褒めたもんについて（技術編）](https://denden-seven.hatenablog.com/entry/2019/01/09/130437)  
 
-## licence
-[MIT](https://github.com/tcnksm/tool/blob/master/LICENCE)
+## license
+[MIT](LICENSE)
 
 ## Author
 [seven320](https://github.com/seven320)

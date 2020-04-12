@@ -15,24 +15,24 @@ dotenv==0.10.3
 git clone https://github.com/seven320/metamon_code.git
 cd metamon_code
 ~~~
-#### 2 get twitter api and input your api keys in .env like .env.exam
-~~~
-cd main/src/
-vim .env.exam
-cp .env.exam .env
+#### 2 get twitter api and input 
 
+input your api keys into "main/src/.env" like "main/src/exam_env"
 
 ~~~
+cd main/src
+cp exam_env .env
+vim .env
+~~~
+
 #### 3 run code
-
 ~~~
-python hometamon.py --deploy 1
+python hometamon.py --test 1
 ~~~
-
 #### 4 deploy with docker(optional)
 ~~~
 cd /metamon_code/
-make restart
+make re-run
 ~~~
 run hometamon.py with busybox every 8 min.
 

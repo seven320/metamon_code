@@ -1,46 +1,52 @@
 import pytest
 
+
 import os, sys
 sys.path.insert(0, os.path.dirname(__file__))
 from src import hometamon2
 
-from mock import Mock
+# from mock import Mock
 import datetime as dt
 
 class FakeManuscript():
     def __init__(self):
-        self.reply = ["reply"]
-        self.greeting_morning = ["おはよう"]
-        self.greeting_night = ["こんばんは"]
+        self.reply = ["お疲れ様だもん"]
+        self.greeting_morning = ["おはようだもん"]
+        self.greeting_night = ["おやすみだもん"]
 
         self.sweet_tweet_before = ["3時"]
         self.sweet_tweet_after = ["おやすみ"]
         self.sweets = ["U+1F950"] # croissant
 
 @pytest.fixture(scope = "function")
-def app():
+def app(mocker):
     app = hometamon2.Hometamon()
     app.manuscript = FakeManuscript()
+    app.api = mocker.Mock()
+    # app.home_timeline()
+    # app.create_favorite(tweet.id)
     return app
 
 @pytest.fixture(scope = "function")
-def tweet():
-    tweet = Mock()
+def tweet(mocker):
+    tweet = mocker.Mock()
     tweet.text = "おはよう"
     tweet.user.name = "電電"
     tweet.user.screen_name = "yosyuaomenw"
     tweet.favorited = False
     return tweet
 
-def test_greeting_morning(app):
-    expected = "@twitter\n青い鳥おはよう"
-    reply = app.greeting_morning(user_name = "青い鳥", screen_name = "twitter")
-    assert reply == expected
+def test_greeting_morning(app, tweet):
+    expected = "@yosyuaomenw\n電電おはようだもん"
+    assert app.greeting_morning(tweet) == expected
 
-def test_greeting_night(app):
-    expected = "@twitter\n青い鳥こんばんは"
-    reply = app.greeting_night(user_name = "青い鳥", screen_name = "twitter")
-    assert reply == expected
+def test_greeting_night(app, tweet):
+    expected = "@yosyuaomenw\n電電おやすみだもん"
+    assert app.greeting_night(tweet) == expected
+
+def test_praise(app, tweet):
+    expected = "@yosyuaomenw\n電電お疲れ様だもん"
+    assert app.praise(tweet) == expected
 
 def test_check_exclude_0(app, tweet): # 除外テスト
     assert app.check_exclude(tweet) == False
@@ -96,7 +102,6 @@ def test_check_reply_0(app, tweet):
     assert app.check_reply(tweet) == True
 
 def test_check_reply_1(app, tweet):
-    tweet = Mock()
     tweet.text = "元気いっぱい"
     assert app.check_reply(tweet) == False
 
@@ -118,7 +123,6 @@ def test_check_text_1(app, tweet):
     tweet.user.screen_name = "hogehoge"
     assert app.check_test(tweet) == False
 
-    
 
 
 # def test_classify():

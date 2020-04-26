@@ -34,19 +34,41 @@ def tweet(mocker):
     tweet.user.name = "電電"
     tweet.user.screen_name = "yosyuaomenw"
     tweet.favorited = False
+    tweet.id = 123
     return tweet
 
 def test_greeting_morning(app, tweet):
     expected = "@yosyuaomenw\n電電おはようだもん"
     assert app.greeting_morning(tweet) == expected
+    app.api.update_status.assert_called_once_with(
+        status = expected,
+        in_reply_to_status_id = 123
+        )
+    app.api.create_favorite.assert_called_once_with(
+        tweet.id
+    )
 
 def test_greeting_night(app, tweet):
     expected = "@yosyuaomenw\n電電おやすみだもん"
     assert app.greeting_night(tweet) == expected
+    app.api.update_status.assert_called_once_with(
+        status = expected,
+        in_reply_to_status_id = tweet.id
+        )
+    app.api.create_favorite.assert_called_once_with(
+        tweet.id
+    )
 
 def test_praise(app, tweet):
     expected = "@yosyuaomenw\n電電お疲れ様だもん"
     assert app.praise(tweet) == expected
+    app.api.update_status.assert_called_once_with(
+        status = expected,
+        in_reply_to_status_id = tweet.id
+        )
+    app.api.create_favorite.assert_called_once_with(
+        tweet.id
+    )
 
 def test_check_exclude_0(app, tweet): # 除外テスト
     assert app.check_exclude(tweet) == False
@@ -123,17 +145,63 @@ def test_check_text_1(app, tweet):
     tweet.user.screen_name = "hogehoge"
     assert app.check_test(tweet) == False
 
+def test_classify_0(app, tweet):
+    tweet.text = "http"
+    expected = ""
+    assert app.classify(tweet) == expected
+    app.api.update_statussert_called_once_with(
+        status = expected,
+        in_reply_to_status_id = tweet.id
+        )
+    app.api.create_favorite.assert_not_called()
+
+def test_classify_1(app, tweet):
+    tweet.text = "おはよう"
+    tweet.user.name = "青い鳥"
+    expected = "@yosyuaomenw\n青い鳥おはようだもん"
+    app.JST = dt.datetime(2020, 2, 21, 8, 0)
+    assert app.classify(tweet) == expected
+    app.api.update_status.assert_called_once_with(
+        status = expected,
+        in_reply_to_status_id = tweet.id
+        )
+    app.api.create_favorite.assert_called_once_with(
+        tweet.id
+    )
+
+def test_classify_2(app, tweet):
+    tweet.text = "寝る"
+    expected = "@yosyuaomenw\n電電おやすみだもん"
+    app.JST = dt.datetime(2020, 2, 21, 22, 0)
+    assert app.classify(tweet) == expected
+    app.api.update_status.assert_called_once_with(
+        status = expected,
+        in_reply_to_status_id = tweet.id
+        )
+    app.api.create_favorite.assert_called_once_with(
+        tweet.id
+    )
+
+def text_classify_3(app, tweet):
+    tweet.text = "疲れた"
+    expected = "@yosyuaomens\n電電お疲れ様だもん"
+    assert app.classify(tweet) == expected
+    app.api.update_status.assert_called_once_with(
+        status = expected,
+        in_reply_to_status_id = tweet.id
+    )
+    app.api.create_favorite.assert_called_once_with(
+        tweet.id
+    )
+
+def test_classify_4(app, tweet):
+    tweet.text = "今日のメニューはカレーだ"
+    expected = ""
+    assert app.classify(tweet) == expected
+    app.api.update_status.assert_not_called()
+    app.api.create_favorite.assert_not_called()
 
 
-# def test_classify():
-#     app = hometamon2.Hometamon()
-#     app.manuscript = FakeManuscript()
-    
-#     tweet = Mock()
-#     tweet.text = "寝る"
-#     tweet.user.name = "ほげ"
-#     tweet.favorited = False 
-#     app.JST = dt.datetime(2020, 11, 11, 1, 59)
-#     assert app.classify(tweet) == "greeting_night"
+
 
 

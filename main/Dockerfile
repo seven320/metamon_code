@@ -18,11 +18,14 @@ RUN pip install \
     tweepy==3.8.0 \
     tqdm==4.36.1\
     pykakasi==1.2\
-    python-dotenv==0.10.5
+    python-dotenv==0.10.5\
+    pytest==5.4.1\
+    pytest-mock==3.1.0
 
 # RUN service cron start
 # RUN git clone https://github.com/seven320/metamon_code.git
 COPY ./src src
+COPY ./tests tests
 COPY ./crontab /var/spool/cron/crontabs/root
 CMD busybox crond -l 2 -L /dev/stderr -f
 

@@ -22,28 +22,32 @@ pytest-mock == 3.1.0
 #### 1 clone this repository
 ~~~
 git clone https://github.com/seven320/metamon_code.git
-cd metamon_code
 ~~~
 #### 2 get twitter api and input 
 
 input your api keys into "main/src/.env" like "main/src/exam_env"
 
 ~~~
-cd main/src
+cd hometamon/main/src
 cp exam_env .env
 vim .env
 ~~~
 
 #### 3 run code
 ~~~
-python hometamon.py --test 1
+python hometamon.py
 ~~~
 #### 4 deploy with docker(optional)
 ~~~
-cd /metamon_code/
+cd hometamon/
 make re-run
 ~~~
-run hometamon.py with busybox every 8 min.
+
+#### 5 test (optional)
+~~~
+cd metamon_code/main
+pytest
+~~~
 
 ## about hometamon (記事)
 [褒めたもんについて（コンセプト編）](https://denden-seven.hatenablog.com/entry/2019/01/09/131220)  

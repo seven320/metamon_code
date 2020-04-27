@@ -11,7 +11,6 @@ align = "middle">
 褒めたもんを実行するためのコード
 
 ## Requirement
-s
 tweepy == 3.8.0  
 python-dotenv == 0.10.5  
 pytest == 5.4.1  

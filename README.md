@@ -11,11 +11,11 @@ align = "middle">
 褒めたもんを実行するためのコード
 
 ## Requirement
-
-tweepy == 3.8.0
-python-dotenv == 0.10.5
-pytest == 5.4.1
-pytest-mock == 3.1.0
+s
+tweepy == 3.8.0  
+python-dotenv == 0.10.5  
+pytest == 5.4.1  
+pytest-mock == 3.1.0  
 
 ## 使い方 How to USE
 

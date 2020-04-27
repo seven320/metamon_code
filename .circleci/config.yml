@@ -13,13 +13,12 @@ jobs:
           tweepy==3.8.0\
           pytest==5.4.1\
           pytest-mock==3.1.0
-
         command: |
           pytest
 
       - store_test_results:
         path: test-results
-      - store_artifacts
+      - store_artifacts:
         path: test-results
         destination: tr1
 

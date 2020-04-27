@@ -198,7 +198,7 @@ class Hometamon():
                     print(e)
 
     def report(self):
-        result = "time:{}\n褒めた数:{}\n除外したｓ:{}\n挨拶した数:{}\n反応しなかった数:{}\n変身:{}\nテスト数:{}\n合計:{}だもん！".format(
+        result = "time:{}\n褒めた数:{}\n除外した数:{}\n挨拶した数:{}\n反応しなかった数:{}\n変身:{}\nテスト数:{}\n合計:{}だもん！".format(
             self.JST.strftime("%Y/%m/%d %H:%M:%S"),
             self.counts["praise"],
             self.counts["ignore"],

@@ -244,6 +244,6 @@ def test_report(app):
     app.report()
     app.api.send_direct_message.assert_called_once_with(
         999,
-        'time:2020/04/27 17:40:30\n褒めた数:0\n無効な数:0\n挨拶した数:0\n反応しなかった数:0\n変身:0\nテスト数:0\n合計:0だもん！'
+        'time:2020/04/27 17:40:30\n褒めた数:0\n除外した数:0\n挨拶した数:0\n反応しなかった数:0\n変身:0\nテスト数:0\n合計:0だもん！'
     )
 

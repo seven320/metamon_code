@@ -1,11 +1,9 @@
 # README
-<p>
-    <img alt="hometamon" 
-    src = "https://user-images.githubusercontent.com/33506506/74358523-e9594980-4e04-11ea-8130-ee86a32fef74.jpg" 
-    width = "100"
-    align = "middle">
-    褒めたもん
-<\p>
+<img alt="hometamon" 
+src = "https://user-images.githubusercontent.com/33506506/74358523-e9594980-4e04-11ea-8130-ee86a32fef74.jpg" 
+width = "100"
+align = "middle">
+褒めたもん
 
 [![CircleCI](https://circleci.com/gh/seven320/metamon_code.svg?style=svg)](https://circleci.com/gh/seven320/metamon_code)
 

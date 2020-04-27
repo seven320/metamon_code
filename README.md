@@ -1,5 +1,11 @@
 # README
-<img alt="hometamon" src = "https://user-images.githubusercontent.com/33506506/74358523-e9594980-4e04-11ea-8130-ee86a32fef74.jpg" width = "100">
+<p>
+    <img alt="hometamon" 
+    src = "https://user-images.githubusercontent.com/33506506/74358523-e9594980-4e04-11ea-8130-ee86a32fef74.jpg" 
+    width = "100"
+    align = "middle">
+    褒めたもん
+<\p>
 
 [![CircleCI](https://circleci.com/gh/seven320/metamon_code.svg?style=svg)](https://circleci.com/gh/seven320/metamon_code)
 
@@ -7,8 +13,11 @@
 褒めたもんを実行するためのコード
 
 ## Requirement
-tweepy==3.8.0  
-dotenv==0.10.3
+
+tweepy == 3.8.0
+python-dotenv == 0.10.5
+pytest == 5.4.1
+pytest-mock == 3.1.0
 
 ## 使い方 How to USE
 

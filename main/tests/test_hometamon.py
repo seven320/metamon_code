@@ -240,9 +240,10 @@ def test_followback(app, mocker):
 
 def test_report(app):
     app.JST = dt.datetime(2020, 4, 27, 17, 40 , 30)
+    app.admin_twitter_id = 999
     app.report()
     app.api.send_direct_message.assert_called_once_with(
-        '4745437604',
+        999,
         'time:2020/04/27 17:40:30\n褒めた数:0\n無効な数:0\n挨拶した数:0\n反応しなかった数:0\n変身:0\nテスト数:0\n合計:0だもん！'
     )
 

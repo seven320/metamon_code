@@ -23,7 +23,7 @@ jobs:
           command: pytest
 
       - store-test-results:
-        path: test-reports
+          path: test-reports
       # - store_test_results:
       #   path: test-results
       # - store_artifacts:

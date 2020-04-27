@@ -13,8 +13,8 @@ jobs:
       - run: 
         name: install dependencies
         command: |
-          pip install tweepy==3.8.0
-          pip install pytest==5.4.1
+          pip install tweepy==3.8.0 |
+          pip install pytest==5.4.1 |
           pip install pytest-mock==3.1.0
 
       - run:

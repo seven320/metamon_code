@@ -5,11 +5,11 @@ import pytest
 import datetime as dt
 sys.path.insert(0, os.path.dirname(__file__))
 
-from src import hometamon2
+from src import hometamon
 
 @pytest.fixture(scope = "function")
 def app(mocker):
-    app = hometamon2.Hometamon()
+    app = hometamon.Hometamon()
     app.manuscript = mocker.Mock()
     app.manuscript.reply = ["お疲れ様だもん"]
     app.manuscript.greeting_morning = ["おはようだもん"]

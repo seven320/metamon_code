@@ -288,6 +288,10 @@ class Hometamon():
                         print(e)
                         print("error")
 
+    def check_sweet(self):
+        if self.jst_now.hour == 15 and 0 <= self.jst_now.minute <= 5 or self.test:# 15:00 ~ 15:05までの間ならツイートする
+            self.tweet_sweet()
+
     def tweet_sweet(self):
         status = random.choice(self.manuscript.sweet_tweet_before)
         status += "\n⊂・ー・つ" + chr(int(random.choice(self.manuscript.sweets)[2:], 16)) + "\n" # 16進数から変換
@@ -295,8 +299,7 @@ class Hometamon():
         if self.test:
             print("15時 tweet:", status)
         else:
-            pass
-            # self.api.update_status(status = status)
+            self.api.update_status(status = status)
 
     def tweet(self):
         status = "順調だもん!"
@@ -344,17 +347,14 @@ class Hometamon():
             # print(tweet.user.name,tweet.user.screen_name)
 
 def main(test):
-    local_time = dt.datetime.now()
     # test command
     hometamon = Hometamon(test)
     # hometamon.check_api()
     # hometamon.get_user_info()
     # """
-
     public_tweets = hometamon.get_tweets()
     hometamon.classify(public_tweets)
-    if local_time.hour == 15 and 0 <= local_time.minute <= 5 or hometamon.test: # 15:00 ~ 15:05までの間ならツイートする
-        hometamon.tweet_sweet()
+    hometamon.check_sweet()
     hometamon.followback()
     # """
 

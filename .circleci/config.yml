@@ -2,24 +2,28 @@ version: 2 # circle ci のversion
 
 jobs:
   build:
-    working_directory: ~/main
     docker:
       -image: circleci/python:3.8
+
+    working_directory: ~/main
+
     steps:
       - checkout # code to docker image
-      - run:
-        command: | # Pipenv を使用して依存関係をインストール
-          sudo pip install \
-          tweepy==3.8.0\
-          pytest==5.4.1\
-          pytest-mock==3.1.0
+
+      - run: 
+        name: install dependencies
         command: |
-          pytest
+          pip install
+          pip tweepy==3.8.0\
+          pip pytest==5.4.1\
+          pip pytest-mock==3.1.0
 
-      - store_test_results:
-        path: test-results
-      - store_artifacts:
-        path: test-results
-        destination: tr1
+      - run:
+        name: Test
+        command: pytest
 
-      
+      # - store_test_results:
+      #   path: test-results
+      # - store_artifacts:
+      #   path: test-results
+      #   destination: tr1

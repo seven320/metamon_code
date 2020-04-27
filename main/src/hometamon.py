@@ -4,11 +4,10 @@ import sys
 import random
 import time
 from distutils.util import strtobool
-import datetime as dt
+import datetime
 
 import tweepy
 import argparse
-import datetime
 
 pardir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(pardir)
@@ -354,7 +353,9 @@ def main(test):
     # """
     public_tweets = hometamon.get_tweets()
     hometamon.classify(public_tweets)
-    hometamon.check_sweet()
+
+    if hometamon.check_sweet():
+      hometamon.tweet_sweet()
     hometamon.followback()
     # """
 

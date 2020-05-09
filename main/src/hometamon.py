@@ -53,7 +53,8 @@ class Hometamon():
             "バオワ", "ばおわ", "バイト終", "バおわ", 
             "実験終", "実験おわ", "らぼりだ", "ラボ離脱", "ラボりだ", 
             "帰宅", "帰る", "疲れた","つかれた", 
-            "仕事納め", "掃除終", "掃除した", "がこおわ", "学校終"]
+            "仕事納め", "仕事した",
+            "掃除終", "掃除した", "がこおわ", "学校終"]
         self.transform_words = ["変身"]
         self.test_words = ["__test__"]
 
@@ -70,22 +71,30 @@ class Hometamon():
     def get_tweets(self):
         return self.api.home_timeline(count = 50, since_id = None)
 
+    def user_name_changer(self, tweet):
+        user_name = tweet.user.name
+        if "@" in user_name:
+            user_name = user_name.split("@")[0]
+        elif  "＠" in user_name:
+            user_name = user_name.split("＠")[0]
+        return user_name
+
     def greeting_morning(self, tweet):
-        reply = "@" + tweet.user.screen_name + "\n" + tweet.user.name + random.choice(self.manuscript.greeting_morning)
+        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet) + random.choice(self.manuscript.greeting_morning)
         self.counts["greeting_morning"] += 1
         self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
         return reply
     
     def greeting_night(self, tweet):
-        reply = "@" + tweet.user.screen_name + "\n" + tweet.user.name + random.choice(self.manuscript.greeting_night)
+        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet)  + random.choice(self.manuscript.greeting_night)
         self.counts["greeting_night"] += 1
         self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
         return reply
 
     def praise(self, tweet):
-        reply = "@" + tweet.user.screen_name + "\n" + tweet.user.name + random.choice(self.manuscript.reply)
+        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet)  + random.choice(self.manuscript.reply)
         self.counts["praise"] += 1
         self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)

@@ -31,6 +31,14 @@ def tweet(mocker):
     tweet.id = 123
     return tweet
 
+def test_user_screen_name_changer(app, tweet):
+    tweet.user.name = "電電@テスト頑張る"
+    expected = "電電"
+    assert app.user_name_changer(tweet) == expected
+    tweet.user.name = "nasa＠webアプリ楽しい"
+    expected = "nasa"
+    assert app.user_name_changer(tweet) == expected
+
 def test_greeting_morning(app, tweet):
     expected = "@yosyuaomenww\n電電おはようだもん"
     assert app.greeting_morning(tweet) == expected
@@ -41,6 +49,18 @@ def test_greeting_morning(app, tweet):
     app.api.create_favorite.assert_called_once_with(
         tweet.id
     )
+
+def test_greeting_morning_user_name(app, tweet):
+    expected = "@yosyuaomenww\n電電おはようだもん"
+    tweet.user.name = "電電＠TOEIC999点！！！なんてね"
+    assert app.greeting_morning(tweet) == expected
+    app.api.update_status.assert_called_once_with(
+        status = expected,
+        in_reply_to_status_id = 123
+        )
+    app.api.create_favorite.assert_called_once_with(
+        tweet.id
+    ) 
 
 def test_greeting_night(app, tweet):
     expected = "@yosyuaomenww\n電電おやすみだもん"
@@ -60,6 +80,18 @@ def test_praise(app, tweet):
         status = expected,
         in_reply_to_status_id = tweet.id
         )
+    app.api.create_favorite.assert_called_once_with(
+        tweet.id
+    )
+
+def test_praise_user_name(app, tweet):
+    expected = "@yosyuaomenww\n電電お疲れ様だもん"
+    tweet.user.name = "電電@最近寝不足"
+    assert app.praise(tweet) == expected
+    app.api.update_status.assert_called_once_with(
+        status = expected,
+        in_reply_to_status_id = tweet.id
+    )
     app.api.create_favorite.assert_called_once_with(
         tweet.id
     )

@@ -6,9 +6,7 @@ align = "middle">
 褒めたもん
 
 [![CircleCI](https://circleci.com/gh/seven320/metamon_code.svg?style=svg)](https://circleci.com/gh/seven320/metamon_code)
-https://img.shields.io/github/stars/seven320/metamon_code
-https://img.shields.io/github/license/seven320/metamon_code
-https://img.shields.io/twitter/url?style=social
+[![License]](https://img.shields.io/github/license/seven320/metamon_code)](https://github.com/seven320/metamon_code/stargazers)
 # metamon_code
 # metamon_code
 褒めたもんを実行するためのコード

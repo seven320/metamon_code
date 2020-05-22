@@ -69,7 +69,7 @@ class Hometamon():
         }
 
     def get_tweets(self):
-        return self.api.home_timeline(count = 50, since_id = None)
+        return self.api.home_timeline(count = 100, since_id = None)
 
     def user_name_changer(self, tweet):
         user_name = tweet.user.name

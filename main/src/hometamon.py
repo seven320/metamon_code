@@ -182,7 +182,7 @@ class Hometamon():
     #     """
     #     return True
 
-    def reply_set_task(self, tweet):
+    def set_task_reply(self, tweet):
         reply = "@" + tweet.user.screen_name + "\n" + "「本を1秒でもいいから読む」を覚えたもん！今日から頑張るもん！！"
         self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
@@ -198,7 +198,8 @@ class Hometamon():
             elif self.check_greeting_night(tweet):
                 reply = self.greeting_night(tweet)
             elif self.check_task(tweet):
-                reply = self.reply_set_task(tweet)
+                reply = self.set_task_reply(tweet)
+
             elif self.check_reply(tweet):
                 reply = self.praise(tweet)
             elif self.check_transform(tweet):

@@ -260,15 +260,14 @@ def test_classify_5(app, tweet):
 
 def test_classify_6(app, task_tweet):
     expected = "@cocoa\n「本を1秒でもいいから読む」を覚えたもん！今日から頑張るもん！！"
-    # expected = ""
-
     assert app.classify(task_tweet) == expected
-    # app.api.update_status.assert_called_once_with(
-    #     status = expected
-    # )
-    # app.api.create_favorite.assert_called_once_with(
-    #     task_tweet.id
-    # )
+    app.api.update_status.assert_called_once_with(
+        status = expected,
+        in_reply_to_status_id = task_tweet.id
+    )
+    app.api.create_favorite.assert_called_once_with(
+        task_tweet.id
+    )
 
 def test_transform(app):
     expected = ""

@@ -120,9 +120,9 @@ class Hometamon():
         elif tweet.text.split(" ")[0] == "RT":
             return True
         elif tweet.text.split(" ")[0][0] == "@":
-            if "@denden_by" in tweet.text: # 自分へのreplyへはファボする
+            if "@denden_by" in tweet.text and not "task" in tweet.text:# 自分へのreplyへはファボし，taskはここではpass
                 self.api.create_favorite(id = tweet.id)
-            return True
+                return True
         elif len(tweet.text) >= 80: # if tweet is more than 80 words, it will be ignored
             return True
         for exclusion_name in self.exclusion_user_names:
@@ -155,6 +155,7 @@ class Hometamon():
             if classify_word in tweet.text:
                 return True
         return False
+    
 
     def check_transform(self, tweet):
         for transform_word in self.transform_words:
@@ -168,6 +169,25 @@ class Hometamon():
                 return True
         return False
 
+    def check_task(self, tweet):
+        if "task" in tweet.text and "@denden_by" in tweet.text:
+            return True
+        return False
+
+    # def set_task(self, tweet):
+    #     """
+    #     DBへの登録を行う．まだ
+    #     return [True, False]
+    #     DBへの登録がうまくいけばTrue,を返す
+    #     """
+    #     return True
+
+    def reply_set_task(self, tweet):
+        reply = "@" + tweet.user.screen_name + "\n" + "「本を1秒でもいいから読む」を覚えたもん！今日から頑張るもん！！"
+        self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
+        self.api.create_favorite(tweet.id)
+        return reply
+    
     def classify(self, tweet):
         reply = ""
         if self.check_exclude(tweet):
@@ -177,6 +197,8 @@ class Hometamon():
                 reply = self.greeting_morning(tweet)
             elif self.check_greeting_night(tweet):
                 reply = self.greeting_night(tweet)
+            elif self.check_task(tweet):
+                reply = self.reply_set_task(tweet)
             elif self.check_reply(tweet):
                 reply = self.praise(tweet)
             elif self.check_transform(tweet):

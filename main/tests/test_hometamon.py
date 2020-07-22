@@ -34,7 +34,7 @@ def tweet(mocker):
 @pytest.fixture(scope = "function")
 def task_tweet(mocker):
     task_tweet = mocker.MagicMock()
-    task_tweet.text = "@denden_by\ntask\n本を1秒でも読む"
+    task_tweet.text = "@denden_by\ntask\n本を1秒でもいいから読む"
     task_tweet.user.name = "ココア"
     task_tweet.user.screen_name = "cocoa"
     task_tweet.favorited = False
@@ -191,6 +191,15 @@ def test_check_task(app, task_tweet, tweet):
     assert app.check_task(task_tweet) == True
     assert app.check_task(tweet) == False
 
+def test_extract_task(app):
+    expected = "本を読む"
+    tweet_text = "@denden_by task 本を読む"
+    assert app.extract_task(tweet_text) == expected
+    tweet_text = "@denden_by\ntask 本を読む"
+    assert app.extract_task(tweet_text) == expected
+    tweet_text = "@denden_by\ntask本を読む"
+    assert app.extract_task(tweet_text) == expected
+
 def test_classify_0(app, tweet):
     tweet.text = "http"
     expected = ""
@@ -304,31 +313,3 @@ def test_report(app):
         999,
         'time:2020/04/27 17:40:30\n褒めた数:0\n除外した数:0\n挨拶した数:0\n反応しなかった数:0\n変身:0\nテスト数:0\n合計:0だもん！'
     )
-
-"""
-@pytest.fixture(scope = "function")
-def task_tweet(mocker):
-    tweet = mocker.MagicMock()
-    tweet.text = "@denden_by\ntask\n本を1秒でもいいから読む"
-    tweet.user.name = "ココア"
-    tweet.user.screen_name = "cocoa"
-    tweet.favorited = False
-    tweet.id = 987654
-    return tweet
-
-"""
-# def test_check_task(app, task_tweet):
-#     expected = "@cocoa\n「本を1秒でもいいから読む」を覚えたもん！今日から頑張るもん！！"
-#     assert app.get_task(task_tweet) == expected
-#     app.api.update_status.assert_called_once_with(
-#         status = expected,
-#         in_reply_to_status_id = tweet.id
-#     )
-#     app.api.create_favorite.assert_called_once_with(
-#         tweet.id
-#     ) 
-# def test_set_task(app):
-
-
-
-# def test_reply_set_task(app):

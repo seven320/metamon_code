@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+    database:
+        # build: ./database
+        image: mysql
+        # container_name: hometask-database
+        restart: always
+        environment:
+          MYSQL_ROOT_PASSWORD: password
+        # 永続化
+        volumes:
+          - ./database/mysql_data:/var/lib/mysql
+        tty: true
+        # environment:
+        #     TZ: Asia/Tokyo
+        
+      

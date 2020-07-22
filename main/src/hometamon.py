@@ -182,8 +182,13 @@ class Hometamon():
     #     """
     #     return True
 
+    def extract_task(self, tweet_text):
+        task = tweet_text.replace("@denden_by","").replace("\n", "").replace("task", "").replace(" ", "")
+        return task
+
     def set_task_reply(self, tweet):
-        reply = "@" + tweet.user.screen_name + "\n" + "「本を1秒でもいいから読む」を覚えたもん！今日から頑張るもん！！"
+        task = self.extract_task(tweet.text)
+        reply = "@" + tweet.user.screen_name + "\n" + "「{}」を覚えたもん！今日から頑張るもん！！".format(task)
         self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
         return reply
@@ -199,7 +204,6 @@ class Hometamon():
                 reply = self.greeting_night(tweet)
             elif self.check_task(tweet):
                 reply = self.set_task_reply(tweet)
-
             elif self.check_reply(tweet):
                 reply = self.praise(tweet)
             elif self.check_transform(tweet):

@@ -16,7 +16,7 @@ services:
         restart: always
         # 永続化
         # volumes:
-        #   - ./database/mysql_data:/var/lib/mysql
+        #   - ./mysql_data:/var/lib/mysql
         tty: true
         environment:
             TZ: Asia/Tokyo

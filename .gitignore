@@ -1,5 +1,4 @@
 /main/src/.env
 .env
-/hometask/database/mysql_data
-hometask/database
+hometask/database/mysql_data
 

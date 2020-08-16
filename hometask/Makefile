@@ -2,7 +2,7 @@ export GO111MODULE := off # ???
 
 DBNAME:=hometask
 PASSWORD = root
-DATASOURCE:=root:$(PASSWORD)@tcp(127.0.0.1:3306)/$(DBNAME)
+DATASOURCE:=root:$(PASSWORD)@tcp(127.0.0.1:3307)/$(DBNAME)
 
 GOOSE:=$(shell which goose)
 
@@ -18,7 +18,7 @@ exec:
 	docker exec -it mysql_host bash
 
 migrate/init:
-	mysql -u root -p -h 127.0.0.1 --port=3306 --protocol=tcp -e "create database $(DBNAME);"
+	mysql -u root -p -h 127.0.0.1 --port=3307 --protocol=tcp -e "create database $(DBNAME);"
 
 migrate/up:
 	@goose -dir database/migrations mysql "$(DATASOURCE)" up

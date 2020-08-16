@@ -11,7 +11,6 @@ services:
     #     #   - connect
 
     database:
-        # build: ./database
         image: mysql:5.7
         container_name: mysql_host
         environment:
@@ -22,13 +21,12 @@ services:
         # restart: always
         # 永続化
         volumes:
-        #   - ./mysql_data:/var/lib/mysql
         #   - ./database/mysql_data:/var/lib/mysql
           - ./database/my.cnf:/etc/mysql/conf.d/my.cnf
         tty: true
 
         ports:
-          - 3306:3306
+          - 3307:3307
         
 
 

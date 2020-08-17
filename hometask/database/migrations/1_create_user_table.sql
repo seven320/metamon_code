@@ -2,7 +2,7 @@
     CREATE table if not exists user(
         id int auto_increment not null,
         username varchar(255) not null,
-        user_id varchar(255) not null,
+        user_id varchar(255) UNIQUE not null,
         twitter_id varchar(255),
         created_at timestamp default current_timestamp not null,
         secret_account boolean default 0 not null,

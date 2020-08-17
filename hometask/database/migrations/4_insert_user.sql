@@ -17,7 +17,7 @@ SELECT 'up SQL query';
 -- +goose StatementEnd
 
 -- +goose Down
-DELETE FROM user WHERE user_id == '123456'
+DELETE FROM user WHERE user_id = '123456';
 -- +goose StatementBegin
 SELECT 'down SQL query';
 -- +goose StatementEnd

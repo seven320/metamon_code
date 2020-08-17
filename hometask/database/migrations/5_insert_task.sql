@@ -13,7 +13,7 @@ SELECT 'up SQL query';
 -- +goose StatementEnd
 
 -- +goose Down
-DELETE FROM task WHERE user_id == '123456'
+DELETE FROM task WHERE user_id = '123456';
 -- +goose StatementBegin
-SELECT 'down SQL query';
+-- SELECT 'down SQL query';
 -- +goose StatementEnd

@@ -20,6 +20,8 @@ jobs:
 
       - run:
           name: Test
+
+          # cd でテストの領域を指定
           command: |
             mkdir test-reports
             cd main

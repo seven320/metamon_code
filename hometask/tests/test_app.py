@@ -71,6 +71,29 @@ def test_get_task(db):
     assert fake_user_id == user_id
     assert fake_task == task
 
+def test_get_new_task(db):
+    fake_user_id = "123456"
+    fake_task = "本を読む"
+    task = db.get_new_task(fake_user_id)
+
+    id, user_id, task, created_at = task
+    assert id == 3
+    assert fake_user_id == user_id
+    assert fake_task == task
+
+def test_insert_task(db):
+    fake_user_id = "123456"
+    fake_task = "走る"
+    db.insert_task(fake_user_id, fake_task)
+
+    id, user_id, task, created_at = db.get_new_task(fake_user_id)
+    assert fake_user_id == user_id
+    assert fake_task == task
+
+# def 
+
+
+
 
 
 

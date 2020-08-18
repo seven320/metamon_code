@@ -6,12 +6,8 @@
         secret_account
     )
     values
-    (
-        '電電',
-        '123456',
-        'yosyuaomenww',
-        0
-    );
+    ('電電','123456','yosyuaomenww',0),
+    ('しげ', '7','seven320', 1);
 -- +goose StatementBegin
 SELECT 'up SQL query';
 -- +goose StatementEnd

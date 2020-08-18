@@ -62,8 +62,25 @@ WHERE user_id = '{}'".format(username, twitter_id, secret_account, user_id))
             cur.execute(sql)
             tasks = cur.fetchall()
         return tasks
+
+    # 一番直近のタスクを表示
+    def get_new_task(self, user_id):
+        with MySQLdb.connect(**self.args) as con:
+            cur = con.cursor()
+            sql = ("SELECT * FROM task WHERE user_id = '{}' ORDER BY id DESC LIMIT 1".format(user_id))
+            cur.execute(sql)
+            task = cur.fetchall()[0]
+        return task
+
+    def insert_task(self, user_id, task):
+        with MySQLdb.connect(**self.args) as con:
+            cur = con.cursor()
+            sql = ("INSERT INTO task (user_id, task) VALUES ('{}', '{}')".format(user_id, task))
+            cur.execute(sql)
+            con.commit()
     
-    # def get_task
+    # def get_task_history(self, )
+
 
 """
 show user

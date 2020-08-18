@@ -5,7 +5,7 @@ jobs:
     docker:
       - image: circleci/python:3.8
 
-    working_directory: ~/hometamon/main
+    working_directory: ~/hometamon
 
     steps:
       - checkout # code to docker image
@@ -22,6 +22,7 @@ jobs:
           name: Test
           command: |
             mkdir test-reports
+            cd main
             pytest --junitxml=test-reports/junit.xml
 
       - store_test_results:

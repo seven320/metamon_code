@@ -5,7 +5,7 @@ jobs:
     docker:
       - image: circleci/python:3.8
 
-    working_directory: ~/main
+    working_directory: ~/hometamon/main
 
     steps:
       - checkout # code to docker image

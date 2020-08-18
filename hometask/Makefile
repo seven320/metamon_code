@@ -26,5 +26,18 @@ migrate/up:
 migrate/down:
 	@goose -dir database/migrations mysql "$(DATASOURCE)" down
 
+migrate/reset:
+	make migrate/down
+	make migrate/down	
+	make migrate/down
+	make migrate/down
+	make migrate/down	
+	make migrate/down
+	make migrate/up
+
+test:
+	make migrate/reset
+	pytest
+
 migrate/new: # make new migrations
 	$(GOOSE) -dir database/migrations create $(NAME) sql

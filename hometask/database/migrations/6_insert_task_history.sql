@@ -1,11 +1,15 @@
 -- +goose Up
     INSERT into task_history(
         task_id,
+        tweet_id,
+        tweet_text,
         praised
     )
     value
     (
         '1',
+        '1295657389354409985',
+        '#hometask 今日も新機能開発',
         0
     );
 -- +goose StatementBegin

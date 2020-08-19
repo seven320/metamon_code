@@ -1,16 +1,5 @@
 import MySQLdb
 
-# connect = MySQLdb.connect(
-#     host = "127.0.0.1",
-#     port = 3306,
-#     user = "root",
-#     passwd = "root",
-#     db = "hometask",
-#     charset = 'utf8'
-# )
-# cursor = connect.cursor()
-
-
 class ConnectDB():
     def __init__(self, **args):
         self.args = {    
@@ -79,67 +68,23 @@ WHERE user_id = '{}'".format(username, twitter_id, secret_account, user_id))
             cur.execute(sql)
             con.commit()
     
-    # def get_task_history(self, )
+    def get_task_history(self, task_id):
+        with MySQLdb.connect(**self.args) as con:
+            cur = con.cursor()
+            sql = ("SELECT * FROM task_history WHERE task_id = '{}'".format(task_id))
+            cur.execute(sql)
+            task_histories = cur.fetchall()
 
+        return task_histories
 
-"""
-show user
-"""
+    def get_task_count_by_day(self, task_id):
+        with MySQLdb.connect(**self.args) as con:
+            cur = con.cursor()
+            sql = ("SELECT date_format(created_at,'%Y%m%d'),count(*) \
+FROM task_history where task_id = '{}' GROUP BY date_format(created_at,'%Y%m%d')".format(task_id))
+            cur.execute(sql)
+            task_histories_by_day = cur.fetchall()
+            task_count = len(task_histories_by_day)
 
-# sql = "select * from user"
-# cursor.execute(sql)
-
-# for row in cursor:
-#     print(row)
-
-
-# def set_task(user_id, task):
-#     # set_user()
-
-#     sql = (
-#         'INSERT INTO task(user_id, task) ' +
-#         'values ("{}", "{}")'.format(user_id, task)
-#     )
-#     cursor.execute(sql)
-#     connect.commit()
-
-# # set_task(
-# #     user_id = "966247026416472064",
-# #     task = "早寝早起き！！"
-# #     )
-
-# def set_task_history(task_id, tweet_id, tweet_text, praised):
-#     sql = (
-#         'INSERT INTO task_history(task_id, tweet_id, tweet_text, praised) ' +
-#         'value("{}", "{}", "{}", "{}")'.format(task_id, tweet_id, tweet_text, praised)
-#     )
-#     cursor.execute(sql)
-#     connect.commit()
-
-# # set_task_history(
-# #     task_id = 1,
-# #     tweet_id = 123456786543,
-# #     tweet_text = '#hometask 今日も頑張ったぞ',
-# #     praised = 1
-# #     )
-
-# args = {    
-#     "host":"127.0.0.1",
-#     "port":3306,
-#     "user":"root",
-#     "passwd":"root",
-#     "db":"hometask",
-#     "charset":'utf8'}
-
-
-# with MySQLdb.connect(**args) as con:
-#     print("hoge")
-#     sql = "INSERT INTO user (username, user_id, twitter_id, secret_account) VALUES ('{}', '{}', '{}', '{}')".format("hoddgddde", "12dddddddd34", "1234111", "0")
-#     print(sql)
-#     con.cursor().execute(sql)
-#     con.cursor().execute(sql)
-#     con.commit()
-
-
-
-
+        # return task_histories_by_day
+        return task_count

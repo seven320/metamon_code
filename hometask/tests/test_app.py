@@ -90,12 +90,18 @@ def test_insert_task(db):
     assert fake_user_id == user_id
     assert fake_task == task
 
-# def 
+def test_get_task_history(db):
+    fake_task_id = 4
+    task_histories = db.get_task_history(fake_task_id)
 
+    assert len(task_histories) == 3
 
+    id, task_id, tweeet_id, weet_text, created_at, praised = task_histories[0]
+    assert fake_task_id == task_id
 
+def test_get_task_count(db):
+    fake_task_id = 4
+    task_count = db.get_task_count_by_day(fake_task_id)
 
-
-
-#     assert db.find_user(user_id) == True
+    assert task_count == 1
 

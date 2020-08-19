@@ -11,7 +11,7 @@ jobs:
           - DB_USERNAME=circleci
           - DB_PASSWORD=circleci
 
-      -image: circleci/mysql:5.7-ram
+      - image: circleci/mysql:5.7-ram
         environment:
           - MYSQL_ROOT_PASSWORD=circleci
           - MYSQL_DATABASE=circleci
@@ -41,7 +41,7 @@ jobs:
       - run:
         name: Wait for db
         command: dockerize -wait tcp://localhost:3306 -timeout 1m
-        
+
       - run:
           name: Test
 

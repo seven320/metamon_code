@@ -3,8 +3,8 @@ version: '3'
 services:
   web:
     build: ./main
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: python3 manage.py runserver 0.0.0.0:8001
     volumes:
       - ./main:/code
     ports:
-      - "8000:8000"
+      - "8001:8001"

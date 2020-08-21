@@ -10,6 +10,7 @@ class ConnectDB():
             "db":"hometask",
             "charset":'utf8'}
 
+    # api
     def get_user(self, user_id):
         with MySQLdb.connect(**self.args) as con:
             cur = con.cursor()
@@ -22,6 +23,7 @@ class ConnectDB():
         user = self.get_user(user_id)
         return len(user) > 0
 
+    # POST 
     def insert_user(self, username, user_id, twitter_id, secret_account):
         with MySQLdb.connect(**self.args) as con:
             cur = con.cursor()
@@ -78,6 +80,9 @@ WHERE user_id = '{}'".format(username, twitter_id, secret_account, user_id))
         return task_histories
 
     def get_task_count_by_day(self, task_id):
+        """
+        get_task_count_by_day(self_id)
+        """
         with MySQLdb.connect(**self.args) as con:
             cur = con.cursor()
             sql = ("SELECT date_format(created_at,'%Y%m%d'),count(*) \

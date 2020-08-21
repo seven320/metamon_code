@@ -4,7 +4,6 @@ import random
 
 import pytest
 import datetime as dt
-sys.path.insert(0, os.path.dirname(__file__))
 
 from src import hometamon
 
@@ -34,7 +33,7 @@ def tweet(mocker):
 @pytest.fixture(scope = "function")
 def task_tweet(mocker):
     task_tweet = mocker.MagicMock()
-    task_tweet.text = "@denden_by\ntask\n本を1秒でもいいから読む"
+    task_tweet.text = "@denden_by\nsettask\n本を読む"
     task_tweet.user.name = "ココア"
     task_tweet.user.screen_name = "cocoa"
     task_tweet.favorited = False
@@ -193,11 +192,13 @@ def test_check_task(app, task_tweet, tweet):
 
 def test_extract_task(app):
     expected = "本を読む"
-    tweet_text = "@denden_by task 本を読む"
+    tweet_text = "@denden_by settask 本を読む"
     assert app.extract_task(tweet_text) == expected
-    tweet_text = "@denden_by\ntask 本を読む"
+    tweet_text = "@denden_by\nsettask 本を読む"
     assert app.extract_task(tweet_text) == expected
-    tweet_text = "@denden_by\ntask本を読む"
+    tweet_text = "@denden_by\nsettask本を読む"
+    assert app.extract_task(tweet_text) == expected
+    tweet_text = "@denden_by\n\n 設定本を読む"
     assert app.extract_task(tweet_text) == expected
 
 def test_classify_0(app, tweet):
@@ -268,7 +269,7 @@ def test_classify_5(app, tweet):
     assert app.classify(tweet) == expected
 
 def test_classify_6(app, task_tweet):
-    expected = "@cocoa\n「本を1秒でもいいから読む」を覚えたもん！今日から頑張るもん！！"
+    expected = "@cocoa\n本を読むを覚えたもん！今日から頑張るもん！！"
     assert app.classify(task_tweet) == expected
     app.api.update_status.assert_called_once_with(
         status = expected,
@@ -313,3 +314,4 @@ def test_report(app):
         999,
         'time:2020/04/27 17:40:30\n褒めた数:0\n除外した数:0\n挨拶した数:0\n反応しなかった数:0\n変身:0\nテスト数:0\n合計:0だもん！'
     )
+

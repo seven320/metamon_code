@@ -11,6 +11,7 @@ sys.path.append(pardir)
 from src import meta_manuscript
 from dotenv import load_dotenv
 
+
 class Hometamon():
     def __init__(self):
         if os.path.exists(".env"):
@@ -55,6 +56,8 @@ class Hometamon():
             "帰宅", "帰る", "疲れた","つかれた", 
             "仕事納め", "仕事した",
             "掃除終", "掃除した", "がこおわ", "学校終"]
+        self.set_task_words = ["settask", "設定"]
+        self.task_words = ["#hometask"]
         self.transform_words = ["変身"]
         self.test_words = ["__test__"]
 
@@ -155,7 +158,6 @@ class Hometamon():
             if classify_word in tweet.text:
                 return True
         return False
-    
 
     def check_transform(self, tweet):
         for transform_word in self.transform_words:
@@ -170,8 +172,11 @@ class Hometamon():
         return False
 
     def check_task(self, tweet):
-        if "task" in tweet.text and "@denden_by" in tweet.text:
-            return True
+        if not "@denden_by" in tweet.text:
+            return False
+        for set_task_word in self.set_task_words:
+            if set_task_word in tweet.text:
+                return True
         return False
 
     # def set_task(self, tweet):
@@ -182,13 +187,16 @@ class Hometamon():
     #     """
     #     return True
 
+    # task を取り出す
     def extract_task(self, tweet_text):
-        task = tweet_text.replace("@denden_by","").replace("\n", "").replace("task", "").replace(" ", "")
+        task = tweet_text.replace("@denden_by","").replace("\n", "").replace(" ", "").replace(":", "").replace("：", "")
+        for set_task_word in self.set_task_words:
+            task = task.replace(set_task_word, "")
         return task
 
     def set_task_reply(self, tweet):
         task = self.extract_task(tweet.text)
-        reply = "@" + tweet.user.screen_name + "\n" + "「{}」を覚えたもん！今日から頑張るもん！！".format(task)
+        reply = "@" + tweet.user.screen_name + "\n" + "{}を覚えたもん！今日から頑張るもん！！".format(task)
         self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
         return reply

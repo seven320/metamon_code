@@ -1,4 +1,4 @@
-/ain/src/.env
+/main/src/.env
 .env
 /hometask/database/mysql_data
 /Django/main_db.sqlite3

@@ -178,6 +178,8 @@ class Hometamon():
             if set_task_word in tweet.text:
                 return True
         return False
+    
+    
 
     # def set_task(self, tweet):
     #     """

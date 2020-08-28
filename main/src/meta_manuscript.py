@@ -186,3 +186,26 @@ class Manuscript:
             "U+1F36E", # custard
             "U+1F36C" # candy
         ]
+
+        self.rewards = [
+            "U+1F435", # monkey
+            "U+1F98D", # gorilla
+            "U+1F436", # dog
+            "U+1F98A", # fox 
+            "U+1F99D", # raccoon
+            "U+1F431", # cat
+            "U+1F434", # horse
+            "U+1F993", # zebra
+            "U+1F98C", # deer
+            "U+1F404", # cow
+            "U+1F417" # boar
+            # "", #
+            # "", #
+            # "", #
+            # "", #
+            # "", #
+            # "", #
+            # "", #
+            # "", #
+            # "" #
+        ]

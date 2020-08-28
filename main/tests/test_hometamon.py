@@ -26,6 +26,7 @@ def tweet(mocker):
     tweet.text = "おはよう"
     tweet.user.name = "電電"
     tweet.user.screen_name = "yosyuaomenww"
+    tweet.user.id = 555555
     tweet.favorited = False
     tweet.id = 123
     return tweet
@@ -130,6 +131,14 @@ def test_check_exclude_text(app, tweet, mocker):
     app.api.create_favorite.assert_called_once_with(
         id = 123
     )
+
+def test_check_exclude_text_with_mytweet(app,tweet, mocker): 
+    mocker.patch.object(tweet.user, "id", 966247026416472064)
+    assert app.check_exclude(tweet) == True
+
+def test_check_exclude_text_with_othertweet(app, tweet, mocker):
+    mocker.patch.object(tweet.user, "id", 12345)
+    assert app.check_exclude(tweet) == False
 
 def test_check_exclude_user(app, tweet):
     tweet.user.name = "botほげ"
@@ -268,16 +277,16 @@ def test_classify_5(app, tweet):
     tweet.user.screen_name = "twitter"
     assert app.classify(tweet) == expected
 
-def test_classify_6(app, task_tweet):
-    expected = "@cocoa\n本を読むを覚えたもん！今日から頑張るもん！！"
-    assert app.classify(task_tweet) == expected
-    app.api.update_status.assert_called_once_with(
-        status = expected,
-        in_reply_to_status_id = task_tweet.id
-    )
-    app.api.create_favorite.assert_called_once_with(
-        task_tweet.id
-    )
+# def test_classify_6(app, task_tweet):
+#     expected = "@cocoa\n本を読むを覚えたもん！今日から頑張るもん！！"
+#     assert app.classify(task_tweet) == expected
+#     app.api.update_status.assert_called_once_with(
+#         status = expected,
+#         in_reply_to_status_id = task_tweet.id
+#     )
+#     app.api.create_favorite.assert_called_once_with(
+#         task_tweet.id
+#     )
 
 def test_transform(app):
     expected = ""

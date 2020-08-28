@@ -17,7 +17,7 @@ search/user:
 # 
 post/user:
 		curl -X POST -H "Content-Type: application/json" \
-		 -d '{"user_name": "test", "user_id": 123, "screen_name": "test", "secret_status": 0}' localhost:8001/api/users/
+		 -d '{"user_name": "test", "user_id": 1323, "screen_name": "test", "secret_status": 0}' localhost:8001/api/users/
 
 # return 
 # {"user_name":"test","user_id":123,"screen_name":"test","created_at":"2020-08-27T17:57:39.706357","secret_status":"public"}
@@ -34,7 +34,7 @@ post/task_history:
 
 search/task_history:
 		curl -X GET -H "Content-Type: application/json" \
-		 localhost:8001/api/search/task_history/?task_id=1
+		 localhost:8001/api/search/task_historys/?user_id=123
 
 new/data:
 		make post/user

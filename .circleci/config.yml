@@ -11,13 +11,6 @@ jobs:
           - DB_USERNAME=root
           - DB_PASSWORD=root
 
-      # - image: circleci/mysql:5.7-ram
-      #   environment:
-      #     - MYSQL_ROOT_PASSWORD=circleci
-      #     - MYSQL_DATABASE=circleci
-      #     - MYSQL_USER=circleci
-      #     - MYSQL_PASSWORD=circleci
-
     working_directory: ~/hometamon
 
     steps:

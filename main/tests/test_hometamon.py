@@ -17,6 +17,7 @@ def app(mocker):
     app.manuscript.sweet_tweet_before = ["3時"]
     app.manuscript.sweet_tweet_after = ["休憩するもん"]
     app.manuscript.sweets = ["U+1F950"] # croissant
+    app.my_twitter_user_id = "966247026416472064"
     app.api = mocker.MagicMock()
     return app
 

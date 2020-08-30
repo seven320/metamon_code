@@ -19,6 +19,14 @@ post/user:
 		curl -X POST -H "Content-Type: application/json" \
 		 -d '{"user_name": "test", "user_id": 1323, "screen_name": "test", "secret_status": 0}' localhost:8001/api/users/
 
+put/user:
+		curl -X PUT -H "Content-Type: application/json" \
+		-d '{"user_name": "put test", "user_id": 1323, "screen_name": "put test"}' localhost:8001/api/users/1323/
+
+delete/user:
+		curl -X DELETE -H "Content-Type: application/json" \
+		localhost:8001/api/users/1323/
+
 # return 
 # {"user_name":"test","user_id":123,"screen_name":"test","created_at":"2020-08-27T17:57:39.706357","secret_status":"public"}
 
@@ -26,7 +34,9 @@ post/task:
 		curl -X POST -H "Content-Type: application/json" \
 		 -d '{"task":"プログラミング勉強", "user_id":"123"}' localhost:8001/api/tasks/
 
+
 # {"id":3,"task":"プログラミング勉強","user_id":123,"created_at":"2020-08-28T14:54:42.287769"
+
 
 post/task_history:
 		curl -X POST -H "Content-Type: application/json" \

@@ -42,4 +42,3 @@ class Task_history(models.Model):
     def __repr__(self):
         return "{}".format(self.tweet_text)
     __str__ = __repr__
-    

@@ -211,7 +211,7 @@ class Hometamon():
     def set_task_history_and_reply(self, tweet):
         if hometask.set_task_history(tweet.id, tweet.text, tweet.user.id):
             reply = hometask.make_reply(user_id = tweet.user.id)
-        reply = "@" + tweet.user.screen_name + "\n" + reply
+        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet) + reply
         self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
         return reply

@@ -61,6 +61,7 @@ class Hometamon():
         self.task_words = ["#hometask"]
         self.transform_words = ["変身"]
         self.test_words = ["__test__"]
+        self.hometask_api = hometask.API()
 
         self.counts = {
             "ignore": 0,
@@ -199,7 +200,7 @@ class Hometamon():
 
     def set_task_and_reply(self, tweet):
         task = self.extract_task(tweet.text)
-        if hometask.set_task(tweet.user, task):
+        if self.hometask_api.set_task(tweet.user, task):
             intent_url = tweet_intent.make(text = "", hashtag = "hometask")
             reply = "@" + tweet.user.screen_name + "\n" + "{}を覚えたもん！今日から頑張るもん!!\n報告は #hometask をつけてもん!!\n{}\n".format(task, intent_url)
         else:
@@ -209,7 +210,7 @@ class Hometamon():
         return reply
 
     def set_task_history_and_reply(self, tweet):
-        if hometask.set_task_history(tweet.id, tweet.text, tweet.user.id):
+        if self.hometask_api.set_task_history(tweet.id, tweet.text, tweet.user.id):
             reply = hometask.make_reply(user_id = tweet.user.id)
         reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet) + reply
         self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)

@@ -92,28 +92,28 @@ def test_count_hometask_streak_4():
 def test_make_icon(manuscript):
     fake_count = 1
     icon = hometask.make_icon(fake_count, manuscript)
-    assert icon == manuscript.icon[1]
+    assert icon == chr(int(manuscript.icon[1][2:],16))
     fake_count = 2
     icon = hometask.make_icon(fake_count, manuscript)
-    assert icon == manuscript.icon[1]
+    assert icon == chr(int(manuscript.icon[1][2:],16))
     fake_count = 4
     icon = hometask.make_icon(fake_count, manuscript)
-    assert icon == manuscript.icon[1]
+    assert icon == chr(int(manuscript.icon[1][2:],16))
     fake_count = 5
     icon = hometask.make_icon(fake_count, manuscript)
-    assert icon == manuscript.icon[5]
+    assert icon == chr(int(manuscript.icon[5][2:],16))
     fake_count = 6
     icon = hometask.make_icon(fake_count, manuscript)
-    assert icon == manuscript.icon[5]
+    assert icon == chr(int(manuscript.icon[5][2:],16))
     fake_count = 10
     icon = hometask.make_icon(fake_count, manuscript)
-    assert icon == manuscript.icon[10]
+    assert icon == chr(int(manuscript.icon[10][2:],16))
     fake_count = 30
     icon = hometask.make_icon(fake_count, manuscript)
-    assert icon == manuscript.icon[30]
+    assert icon == chr(int(manuscript.icon[30][2:],16))
     fake_count = 50
     icon = hometask.make_icon(fake_count, manuscript)
-    assert icon == manuscript.icon[30]
+    assert icon == chr(int(manuscript.icon[30][2:],16))
 
 def test_praised_random(manuscript):
     reply = hometask.praised_random(manuscript)
@@ -121,7 +121,7 @@ def test_praised_random(manuscript):
 
 def test_praised_count_hometask(manuscript):
     for fake_count in [1,5,10,30]:
-        expected_reply = manuscript.count_reply[fake_count] + manuscript.icon[fake_count]
+        expected_reply = manuscript.count_reply[fake_count] + chr(int(manuscript.icon[fake_count][2:], 16))
         reply = hometask.praised_count_hometask(count = fake_count, manuscript = manuscript)
         assert expected_reply == reply
 
@@ -130,3 +130,5 @@ def test_praised_streak(manuscript):
         reply = hometask.praised_streak(streak_count = fake_streak_count, manuscript = manuscript)
         expected_reply = manuscript.streak_reply[fake_streak_count]
         assert expected_reply == reply
+
+

@@ -122,7 +122,6 @@ def count_hometask_streak(task_historys):
     streak_count = (newest_created_at - pre_created_at).days + 1
     return streak_count
 
-
 api = API()
 
 """
@@ -151,7 +150,7 @@ def make_icon(count, manuscript = manuscript):
     for key in icons.keys():
         if count >= key:
             icon = icons[key]
-    return icon
+    return chr(int(icon[2:], 16))
 
 def make_reply(user_id):
     reply, count = classify_reply(user_id)

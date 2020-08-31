@@ -3,3 +3,4 @@
 /hometask/database/mysql_data
 /Django/main_db.sqlite3
 /Django/main/hometask/local_settings.py
+*.pyc

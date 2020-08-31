@@ -83,10 +83,11 @@ class API():
     def set_user(self, user):
         r = self.get_user(user.id)
         if r.status_code != 200:# user登録されてない
+            print("set user")
             try:
                 r = post_user(user.name, user.id, user.screen_name, secret_status = user.protected)
             except:
-
+                traceback.print_exc()
                 return False
             if r.status_code != 201:
                 print("error:", r.json)

@@ -16,7 +16,7 @@ tweepy == 3.8.0
 python-dotenv == 0.10.5  
 pytest == 5.4.1  
 pytest-mock == 3.1.0  
-Django == 3.0.4  
+Django == 3.1
 django-filter == 2.3.0  
 djangorestframework == 3.11.1  
 

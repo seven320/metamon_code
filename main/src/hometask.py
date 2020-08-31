@@ -86,6 +86,7 @@ class API():
             try:
                 r = post_user(user.name, user.id, user.screen_name, secret_status = user.protected)
             except:
+
                 return False
             if r.status_code != 201:
                 print("error:", r.json)
@@ -102,6 +103,7 @@ class API():
             traceback.print_exc()
             return False
         if r.status_code != 201:
+            print("error: post_task", r.status_code)
             return False
         return True
 
@@ -118,7 +120,7 @@ class API():
             return False
         try:
             r = self.post_task_history(tweet_id, tweet_text, user_id, task_id)
-        
+            traceback.print_exc()
         except:
             tryceback.print_exc()
             return False

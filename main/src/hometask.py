@@ -101,8 +101,10 @@ class API():
             return False
         tasks = json.loads(r.content)["results"]
         print(tasks)
-        task_id = tasks[-1]["id"]
-
+        try: 
+            task_id = tasks[-1]["id"]
+        except: # taskが存在してないとき
+            return False
         r = self.post_task_history(tweet_id, tweet_text, user_id, task_id)
         if r.status_code != 201:
             return False
@@ -150,7 +152,7 @@ def make_icon(count, manuscript = manuscript):
     for key in icons.keys():
         if count >= key:
             icon = icons[key]
-    return chr(int(icon[2:], 16))
+    return chr(int(icon, 16))
 
 def make_reply(user_id):
     reply, count = classify_reply(user_id)

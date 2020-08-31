@@ -107,7 +107,7 @@ class Hometamon():
 
     def tweet_sweet(self):
         status = random.choice(self.manuscript.sweet_tweet_before)
-        status += "\n⊂・ー・つ" + chr(int(random.choice(self.manuscript.sweets)[2:], 16)) + "\n" # 16進数から変換
+        status += "\n⊂・ー・つ" + chr(int(random.choice(self.manuscript.sweets), 16)) + "\n" # 16進数から変換
         status += random.choice(self.manuscript.sweet_tweet_after)
         self.api.update_status(status = status)
 
@@ -212,6 +212,9 @@ class Hometamon():
     def set_task_history_and_reply(self, tweet):
         if self.hometask_api.set_task_history(tweet.id, tweet.text, tweet.user.id):
             reply = hometask.make_reply(user_id = tweet.user.id)
+        else:
+            reply = "まだtaskが設定されてないもん!!下のurlからツイートして設定するもん."
+            reply = reply + "\n" + tweet_intent.make(text = "settask:", tweet_to="denden_by")
         reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet) + reply
         self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)

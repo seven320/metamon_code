@@ -114,7 +114,7 @@ class Manuscript:
             "今日もがんばるもん！！",
             "えらいんだもん",
             "\nおはようだもん⊂・ー・つ",
-            "朝起きれて偉いんだもん!!",
+            "朝起きれて偉いんだもん!!"
         ]
 
         self.greeting_night = [
@@ -170,19 +170,74 @@ class Manuscript:
             "もう少しだもん",
             "がんばるもんよ〜"
         ]
-
-        #  ref [https://lets-emoji.com/food-emoji/]
+ 
+ #  ref [https://lets-emoji.com/food-emoji/]
         self.sweets = [
-            "U+1F950", # croissant
-            "U+1F95E", #pancakes
-            "U+1F9C7", # waffle
-            "U+1F361", # dango
-            "U+1F366", # soft ice cream
-            "U+1F368", # ice cream
-            "U+1F369", # doughnut
-            "U+1F36A", # cookie
-            "U+1F370", #shortcake
-            "U+1F36B", # chocolate bar
-            "U+1F36E", # custard
-            "U+1F36C" # candy
+            "1F950", # croissant
+            "1F95E", #pancakes
+            "1F9C7", # waffle
+            "1F361", # dango
+            "1F366", # soft ice cream
+            "1F368", # ice cream
+            "1F369", # doughnut
+            "1F36A", # cookie
+            "1F370", #shortcake
+            "1F36B", # chocolate bar
+            "1F36E", # custard
+            "1F36C" # candy
         ]
+
+        self.hometask_random_reply = [
+            "よく頑張ったもん！！！",
+            "とても優秀だもんよ！",
+            "頑張り屋さんだもん",
+            "今日も頑張ってるもんよ",
+            "#hometask やって今日もわんだふるだもん！！！",
+            "仕事を頑張る姿が素敵だもん!!",
+            "今日もお疲れ様だもんよ",
+            "おつかれさまだもんよ！",
+            "は今日も頑張って偉いんだもん",
+            "よしよしもん\nヾ⊂・ー・つなでなで",
+            "大好きだもんよ〜\nゆっくりするもん！！",
+            "よしよしだもん！！",
+            "今日はあったかいもの飲むもん!!",
+            "ちょっと休むんだもん",
+            "#hometask 今日も頑張ってるもん",
+            "#hometask できて偉いもん!!!",
+            "お疲れ様だもん #hometask",
+            "よく頑張ったもん #hometask"
+        ]
+
+        self.count_reply = {
+            1:"最初の達成だもんね．偉いもん！！この称号あげるもん\n\nつ",
+            5:"5回目だもん，すごいもん!!称号あげるもん!!!\n\nつ",
+            10:"10回目だもん!!お疲れ様だもん!!この調子で続けるもん!!!\n\nつ",
+            30:"30回目だもん!!この調子で頑張るもん!!!\n\nつ"
+        }
+
+        self.streak_reply = {
+            3:"連続3日達成だもん!!!すごいもん!!これあげるもん\n銅メダルあげるもん!\n\nつ🥉",
+            7:"連続7日hometask達成だもん!!!この調子で続けるもん!!\n銀メダルあげるもん\n\nつ🥈",
+            14:"連続14日hometask達成だもん!!偉いもん!!\nこの調子で続けるもん\n金メダルあげるもん\n\nつ🥇"
+        }
+
+        # self.rewards = [
+        #     "U+1F435", # monkey
+        #     "U+1F98D", # gorilla
+        #     "U+1F436", # dog
+        #     "U+1F98A", # fox 
+        #     "U+1F99D", # raccoon
+        #     "U+1F431", # cat
+        #     "U+1F434", # horse
+        #     "U+1F993", # zebra
+        #     "U+1F98C", # deer
+        #     "U+1F404", # cow
+        #     "U+1F417" # boar
+        # ]
+
+        self.icon = {
+            1:"1F95A", # egg
+            5:"1F423", # hatching chick
+            10:"1F413", # rooster
+            30:"1F985", # eagle
+        }

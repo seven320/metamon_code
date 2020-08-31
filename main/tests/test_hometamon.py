@@ -4,7 +4,6 @@ import random
 
 import pytest
 import datetime as dt
-sys.path.insert(0, os.path.dirname(__file__))
 
 from src import hometamon
 
@@ -17,7 +16,8 @@ def app(mocker):
     app.manuscript.greeting_night = ["おやすみだもん"]
     app.manuscript.sweet_tweet_before = ["3時"]
     app.manuscript.sweet_tweet_after = ["休憩するもん"]
-    app.manuscript.sweets = ["U+1F950"] # croissant
+    app.manuscript.sweets = ["1F950"] # croissant
+    app.my_twitter_user_id = "966247026416472064"
     app.api = mocker.MagicMock()
     return app
 
@@ -27,9 +27,20 @@ def tweet(mocker):
     tweet.text = "おはよう"
     tweet.user.name = "電電"
     tweet.user.screen_name = "yosyuaomenww"
+    tweet.user.id = 555555
     tweet.favorited = False
     tweet.id = 123
     return tweet
+
+@pytest.fixture(scope = "function")
+def task_tweet(mocker):
+    task_tweet = mocker.MagicMock()
+    task_tweet.text = "@denden_by\nsettask\n本を読む"
+    task_tweet.user.name = "ココア"
+    task_tweet.user.screen_name = "cocoa"
+    task_tweet.favorited = False
+    task_tweet.id = 987654
+    return task_tweet
 
 def test_user_screen_name_changer(app, tweet):
     tweet.user.name = "電電@テスト頑張る"
@@ -114,13 +125,21 @@ def test_check_exclude_text(app, tweet, mocker):
     assert app.check_exclude(tweet) == False
     assert app.check_exclude(mocker.patch.object(tweet, "method", favorited = True)) == True # tweetの属性をpatchで変化させた．
     assert app.check_exclude(mocker.patch.object(tweet, "method", text = "RT おはよう", favorited = False)) == True 
-    assert app.check_exclude(mocker.patch.object(tweet, "method", text = "@yosyuaomew おはよう", favorited = False)) == True
+    assert app.check_exclude(mocker.patch.object(tweet, "method", text = "@yosyuaomew おはよう", favorited = False)) == False
     assert app.check_exclude(mocker.patch.object(tweet, "method", text = "*" * 80, favorited = False)) == True 
     assert app.check_exclude(mocker.patch.object(tweet, "method", text = "https://www.google.com/", favorited = False)) == True 
-    assert app.check_exclude(mocker.patch.object(tweet, "method", text = "@denden_by ありがとう", favorited = False, id = 123))
+    assert app.check_exclude(mocker.patch.object(tweet, "method", text = "@denden_by ありがとう", favorited = False, id = 123)) == True
     app.api.create_favorite.assert_called_once_with(
         id = 123
     )
+
+def test_check_exclude_text_with_mytweet(app,tweet, mocker): 
+    mocker.patch.object(tweet.user, "id", 966247026416472064)
+    assert app.check_exclude(tweet) == True
+
+def test_check_exclude_text_with_othertweet(app, tweet, mocker):
+    mocker.patch.object(tweet.user, "id", 12345)
+    assert app.check_exclude(tweet) == False
 
 def test_check_exclude_user(app, tweet):
     tweet.user.name = "botほげ"
@@ -176,6 +195,21 @@ def test_check_text_1(app, tweet):
     tweet.text = "__test__"
     tweet.user.screen_name = "hogehoge"
     assert app.check_test(tweet) == False
+
+def test_check_task(app, task_tweet, tweet):
+    assert app.check_task(task_tweet) == True
+    assert app.check_task(tweet) == False
+
+def test_extract_task(app):
+    expected = "本を読む"
+    tweet_text = "@denden_by settask 本を読む"
+    assert app.extract_task(tweet_text) == expected
+    tweet_text = "@denden_by\nsettask 本を読む"
+    assert app.extract_task(tweet_text) == expected
+    tweet_text = "@denden_by\nsettask本を読む"
+    assert app.extract_task(tweet_text) == expected
+    tweet_text = "@denden_by\n\n 設定本を読む"
+    assert app.extract_task(tweet_text) == expected
 
 def test_classify_0(app, tweet):
     tweet.text = "http"
@@ -243,6 +277,17 @@ def test_classify_5(app, tweet):
     expected = ""
     tweet.user.screen_name = "twitter"
     assert app.classify(tweet) == expected
+
+# def test_classify_6(app, task_tweet):
+#     expected = "@cocoa\n本を読むを覚えたもん！今日から頑張るもん！！"
+#     assert app.classify(task_tweet) == expected
+#     app.api.update_status.assert_called_once_with(
+#         status = expected,
+#         in_reply_to_status_id = task_tweet.id
+#     )
+#     app.api.create_favorite.assert_called_once_with(
+#         task_tweet.id
+#     )
 
 def test_transform(app):
     expected = ""

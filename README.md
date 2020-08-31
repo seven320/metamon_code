@@ -16,6 +16,9 @@ tweepy == 3.8.0
 python-dotenv == 0.10.5  
 pytest == 5.4.1  
 pytest-mock == 3.1.0  
+Django == 3.1
+django-filter == 2.3.0  
+djangorestframework == 3.11.1  
 
 ## 使い方 How to USE
 
@@ -33,17 +36,23 @@ cp exam_env .env
 vim .env
 ~~~
 
-#### 3 run code
+#### server 起動
+~~~
+cd hometamon/Django
+docker-compose up
+~~~
+
+#### 4 run code
 ~~~
 python hometamon.py
 ~~~
-#### 4 deploy with docker(optional)
+#### 5 deploy with docker(optional)
 ~~~
 cd hometamon/
 make re-run
 ~~~
 
-#### 5 test (optional)
+#### test (optional)
 ~~~
 cd metamon_code/main
 pytest

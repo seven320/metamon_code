@@ -11,7 +11,7 @@ re-run:
 	docker-compose up -d
 
 exec:
-	docker exec -it hometamon-container /bin/sh
+	docker exec -it hometamon /bin/sh
   
 run:
 	python3 main/src/hometamon.py --test 1

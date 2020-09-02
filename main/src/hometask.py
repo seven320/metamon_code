@@ -41,6 +41,7 @@ class API():
         url = self.base_url + "/users/"
 
         response = requests.post(url, data = json.dumps(data), headers = headers)
+        print(response)
         return response
 
     def post_task(self, task, user_id):
@@ -85,7 +86,7 @@ class API():
         if r.status_code != 200:# user登録されてない
             print("set user")
             try:
-                r = post_user(user.name, user.id, user.screen_name, secret_status = user.protected)
+                r = self.post_user(user.name, user.id, user.screen_name, user.protected)
             except:
                 traceback.print_exc()
                 return False

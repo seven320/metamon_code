@@ -246,6 +246,8 @@ class HomeTask(hometamon.Hometamon):
             if "@denden_by" in tweet.text:
                 if self.set_task_words[0] in tweet.text:
                     return False
+                if self.task_words[0] in tweet.text:
+                    return False
                 self.api.create_favorite(id = tweet.id)
             return True
         return False  

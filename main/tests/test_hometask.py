@@ -159,10 +159,17 @@ def test_extract_task(app):
 def test_hometask_exclude(app, tweet, mocker):
     tweet_text = "@denden_by 設定:早起き"
     assert app.hometask_exclude(mocker.patch.object(tweet,"method", text = tweet_text, favorited = False)) == False
+    tweet_text = "@denden_by #hometask 起きれた"
+    assert app.hometask_exclude(mocker.patch.object(tweet,"method", text = tweet_text, favorited = False))  == False
+    tweet_text = "@denden_by #hometask https://www.google.com/?hl=ja"
+    assert app.hometask_exclude(mocker.patch.object(tweet,"method", text = tweet_text, favorited = False))  == False
+    tweet_text = "@denden_by #hometask https://www.google.com/?hl=ja"
+    assert app.hometask_exclude(mocker.patch.object(tweet,"method", text = tweet_text, favorited = True))  == True
     tweet_text = "@yosyuaomenww その設定は草"
     assert app.hometask_exclude(mocker.patch.object(tweet,"method", text = tweet_text, favorited = False))  == True
     tweet_text = "@denden_by ありがとうねえ"
     assert app.hometask_exclude(mocker.patch.object(tweet,"method", text = tweet_text, favorited = False, id = 123))  == True
     app.api.create_favorite.assert_called_once_with(id = tweet.id)
+
 
     

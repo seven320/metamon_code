@@ -26,9 +26,9 @@ manuscript = meta_manuscript.Manuscript()
 class API():
     def __init__(self):
         # local
-        self.base_url = "http://localhost:8001/api"
+        # self.base_url = "http://localhost:8001/api"
         # dokcer
-        # self.base_url = "http://hometask:8001/api"
+        self.base_url = "http://hometask:8001/api"
 
     def get_user(self, user_id):
         url = self.base_url + "/users/{}/".format(user_id)

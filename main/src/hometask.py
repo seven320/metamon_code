@@ -143,9 +143,8 @@ class HomeTask(hometamon.Hometamon):
     def check_task(self, tweet):
         if not "@denden_by" in tweet.text:
             return False
-        for set_task_word in self.set_task_words:
-            if set_task_word in tweet.text:
-                return True
+        if self.set_task_words[0] in tweet.text:
+            return True
         return False
 
     def check_task_history(self, tweet):
@@ -247,6 +246,8 @@ class HomeTask(hometamon.Hometamon):
             return True
         elif tweet.text.split(" ")[0][0] == "@":
             if "@denden_by" in tweet.text:
+                if self.set_task_words[0] in tweet.text:
+                    return False
                 self.api.create_favorite(id = tweet.id)
             return True
         return False  
@@ -259,9 +260,12 @@ def main():
             pass
         else:
             if ht.check_task(tweet): # set taskをする
+                print("settask")
                 reply = ht.set_task_and_reply(tweet)
             elif ht.check_task_history(tweet): # hometask
+                print("set task_history")
                 reply = ht.set_task_history_and_reply(tweet)
 
 if __name__ == "__main__":
+    print("te")
     main()

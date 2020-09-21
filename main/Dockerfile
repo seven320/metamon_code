@@ -1,7 +1,5 @@
 FROM python:3.8-alpine
 
-MAINTAINER KenKato <github: seven320>
-
 RUN apk update && \
     apk --no-cache add \
     curl \

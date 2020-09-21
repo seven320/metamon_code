@@ -200,17 +200,6 @@ def test_check_text_1(app, tweet):
 #     assert app.check_task(task_tweet) == True
 #     assert app.check_task(tweet) == False
 
-# def test_extract_task(app):
-#     expected = "本を読む"
-#     tweet_text = "@denden_by settask 本を読む"
-#     assert app.extract_task(tweet_text) == expected
-#     tweet_text = "@denden_by\nsettask 本を読む"
-#     assert app.extract_task(tweet_text) == expected
-#     tweet_text = "@denden_by\nsettask本を読む"
-#     assert app.extract_task(tweet_text) == expected
-#     tweet_text = "@denden_by\n\n 設定本を読む"
-#     assert app.extract_task(tweet_text) == expected
-
 def test_classify_0(app, tweet):
     tweet.text = "http"
     expected = ""

@@ -44,7 +44,11 @@ class Hometamon():
         self.JST = dt.datetime.now(JST)
         self.admin_twitter_id = os.environ.get("ADMIN_RECIPIENT_ID")
 
-        self.exclusion_user_names = ["bot", "ビジネス", "副業", "公式", "株", "FX", "ブランド", "無料", "キャリア", "エージェント"] # user name
+        self.exclusion_user_names = [
+            "bot", "ビジネス", "副業", "公式", 
+            "株", "FX", "ブランド", "無料", 
+            "キャリア", "エージェント", "LINE", "エロ"
+            ] # user name
         self.exclusion_words = ["peing", "http"]
         self.greeting_morning_words = ["おはよう", "ぽきた", "起きた", "起床", "早起き"]
         self.greeting_nighy_words = ["おやすみ", "寝よう", "寝る", "寝ます"]

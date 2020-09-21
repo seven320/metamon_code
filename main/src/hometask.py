@@ -15,8 +15,6 @@ from src import meta_manuscript
 from src import hometamon
 from src import tweet_intent
 
-
-
 """
 DjangoのサーバーとCRUDを行う．
 """

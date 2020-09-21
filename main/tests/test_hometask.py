@@ -34,6 +34,7 @@ def manuscript():
 def app(mocker, manuscript):
     app = hometask.HomeTask()
     app.manuscript = manuscript
+    app.api = mocker.MagicMock()
     return app
 
 @pytest.fixture(scope = "function")
@@ -55,6 +56,17 @@ def api(mocker):
     api.search_task_history.return_value = response
     return api
 
+@pytest.fixture(scope = "function")
+def tweet(mocker):
+    tweet = mocker.MagicMock()
+    tweet.text = "おはよう"
+    tweet.user.name = "電電"
+    tweet.user.screen_name = "yosyuaomenww"
+    tweet.user.id = 555555
+    tweet.favorited = False
+    tweet.id = 123
+    return tweet
+
 def test_count_hometask_streak_1(app, task_historys):
     streak_count = app.count_hometask_streak(task_historys)
     assert streak_count == 1
@@ -62,10 +74,6 @@ def test_count_hometask_streak_1(app, task_historys):
 def test_count_hometask_streak_2(app, task_historys_3days):
     streak_count = app.count_hometask_streak(task_historys_3days)
     assert streak_count == 3
-
-# def test_classify_reply(manuscript, api):
-#     reply, count = hometask.classify_reply(user_id = 4745437604, manuscript = manuscript, api = api)
-
 
 def test_count_hometask_streak_3(app):
     fake_task_historys = [
@@ -137,4 +145,24 @@ def test_praised_streak(app, manuscript):
         expected_reply = manuscript.streak_reply[fake_streak_count]
         assert expected_reply == reply
 
+def test_extract_task(app):
+    expected = "本を読む"
+    tweet_text = "@denden_by 設定本を読む"
+    assert app.extract_task(tweet_text) == expected
+    tweet_text = "@denden_by\n設定：本を読む"
+    assert app.extract_task(tweet_text) == expected
+    tweet_text = "@denden_by\n設定:本を読む"
+    assert app.extract_task(tweet_text) == expected
+    tweet_text = "@denden_by\n\n 設定本を読む"
+    assert app.extract_task(tweet_text) == expected
 
+def test_hometask_exclude(app, tweet, mocker):
+    tweet_text = "@denden_by 設定:早起き"
+    assert app.hometask_exclude(mocker.patch.object(tweet,"method", text = tweet_text, favorited = False)) == False
+    tweet_text = "@yosyuaomenww その設定は草"
+    assert app.hometask_exclude(mocker.patch.object(tweet,"method", text = tweet_text, favorited = False))  == True
+    tweet_text = "@denden_by ありがとうねえ"
+    assert app.hometask_exclude(mocker.patch.object(tweet,"method", text = tweet_text, favorited = False, id = 123))  == True
+    app.api.create_favorite.assert_called_once_with(id = tweet.id)
+
+    

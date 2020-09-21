@@ -55,7 +55,7 @@ class Hometamon():
             "帰宅", "帰る", "疲れた","つかれた", 
             "仕事納め", "仕事した",
             "掃除終", "掃除した", "がこおわ", "学校終"]
-        self.set_task_words = ["settask", "設定"]
+        self.set_task_words = ["設定"]
         self.transform_words = ["変身"]
         self.test_words = ["__test__"]
 
@@ -122,7 +122,11 @@ class Hometamon():
             return True
         elif tweet.text.split(" ")[0][0] == "@":
             if "@denden_by" in tweet.text:
-                self.api.create_favorite(id = tweet.id)
+                # hometaskの設定が入っていれば無視．
+                if self.set_task_words[0] in tweet.text:
+                    return True
+                else: # 自分に向けてのtweetかつ，設定が入っていないならファボ
+                    self.api.create_favorite(id = tweet.id)
             return True
         elif len(tweet.text) >= 80: # if tweet is more than 80 words, it will be ignored
             return True

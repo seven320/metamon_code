@@ -1,2 +1,2 @@
-*/7 * * * * python3 /src/hometamon.py
-*/9 * * * * python3 /src/hometask.py
+*/6 * * * * python3 /src/hometamon.py
+*/6 * * * * python3 /src/hometask.py

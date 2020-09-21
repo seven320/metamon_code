@@ -31,6 +31,12 @@ def manuscript():
     return manuscript
 
 @pytest.fixture(scope = "function")
+def app(mocker, manuscript):
+    app = hometask.HomeTask()
+    app.manuscript = manuscript
+    return app
+
+@pytest.fixture(scope = "function")
 def api(mocker):
     api = mocker.MagicMock()
     response = mocker.MagicMock()
@@ -49,35 +55,35 @@ def api(mocker):
     api.search_task_history.return_value = response
     return api
 
-def test_count_hometask_streak1(task_historys):
-    streak_count = hometask.count_hometask_streak(task_historys)
+def test_count_hometask_streak_1(app, task_historys):
+    streak_count = app.count_hometask_streak(task_historys)
     assert streak_count == 1
 
-def test_count_hometask_streak2(task_historys_3days):
-    streak_count = hometask.count_hometask_streak(task_historys_3days)
+def test_count_hometask_streak_2(app, task_historys_3days):
+    streak_count = app.count_hometask_streak(task_historys_3days)
     assert streak_count == 3
 
 # def test_classify_reply(manuscript, api):
 #     reply, count = hometask.classify_reply(user_id = 4745437604, manuscript = manuscript, api = api)
 
 
-def test_count_hometask_streak_1():
+def test_count_hometask_streak_3(app):
     fake_task_historys = [
         {"tweet_id":12,"tweet_text":"#hometask","praised":"false","task_id":2,"created_at":"2020-08-24T02:58:56.298619","user_id":4745437604}
     ]
-    assert 1 == hometask.count_hometask_streak(task_historys = fake_task_historys)
+    assert 1 == app.count_hometask_streak(task_historys = fake_task_historys)
 
 
-def test_count_hometask_streak_2():
+def test_count_hometask_streak_4(app):
     # 不連続
     fake_task_historys = [
         {"tweet_id":12,"tweet_text":"#hometask","praised":"false","task_id":2,"created_at":"2020-08-24T02:58:56.298619","user_id":4745437604},
         {"tweet_id":1299,"tweet_text":"#hometask","praised":"false","task_id":2,"created_at":"2020-08-25T03:09:18.066556","user_id":4745437604},
         {"tweet_id":129940,"tweet_text":"#hometask","praised":"false","task_id":2,"created_at":"2020-08-25T03:09:29.865963","user_id":4745437604}
     ]
-    assert 2 == hometask.count_hometask_streak(task_historys = fake_task_historys)
+    assert 2 == app.count_hometask_streak(task_historys = fake_task_historys)
 
-def test_count_hometask_streak_4():
+def test_count_hometask_streak_5(app):
     fake_task_historys = [
         {"tweet_id":12,"tweet_text":"#hometask","praised":"false","task_id":2,"created_at":"2020-08-24T02:58:56.298619","user_id":4745437604},
         {"tweet_id":1299,"tweet_text":"#hometask","praised":"false","task_id":2,"created_at":"2020-08-25T03:09:18.066556","user_id":4745437604},
@@ -85,49 +91,49 @@ def test_count_hometask_streak_4():
         {"tweet_id":12994,"tweet_text":"#hometask","praised":"false","task_id":2,"created_at":"2020-08-26T03:09:45.205176","user_id":4745437604},
         {"tweet_id":133,"tweet_text":"#hometask","praised":"false","task_id":2,"created_at":"2020-08-27T03:09:53.256988","user_id":4745437604}
     ]
-    streak_count = hometask.count_hometask_streak(task_historys = fake_task_historys)
+    streak_count = app.count_hometask_streak(task_historys = fake_task_historys)
     expected_streak_count = 4
     assert expected_streak_count == streak_count
 
-def test_make_icon(manuscript):
+def test_make_icon(app, manuscript):
     fake_count = 1
-    icon = hometask.make_icon(fake_count, manuscript)
+    icon = app.make_icon(fake_count)
     assert icon == chr(int(manuscript.icon[1],16))
     fake_count = 2
-    icon = hometask.make_icon(fake_count, manuscript)
+    icon = app.make_icon(fake_count)
     assert icon == chr(int(manuscript.icon[1],16))
     fake_count = 4
-    icon = hometask.make_icon(fake_count, manuscript)
+    icon = app.make_icon(fake_count)
     assert icon == chr(int(manuscript.icon[1],16))
     fake_count = 5
-    icon = hometask.make_icon(fake_count, manuscript)
+    icon = app.make_icon(fake_count)
     assert icon == chr(int(manuscript.icon[5],16))
     fake_count = 6
-    icon = hometask.make_icon(fake_count, manuscript)
+    icon = app.make_icon(fake_count)
     assert icon == chr(int(manuscript.icon[5],16))
     fake_count = 10
-    icon = hometask.make_icon(fake_count, manuscript)
+    icon = app.make_icon(fake_count)
     assert icon == chr(int(manuscript.icon[10],16))
     fake_count = 30
-    icon = hometask.make_icon(fake_count, manuscript)
+    icon = app.make_icon(fake_count)
     assert icon == chr(int(manuscript.icon[30],16))
     fake_count = 50
-    icon = hometask.make_icon(fake_count, manuscript)
+    icon = app.make_icon(fake_count)
     assert icon == chr(int(manuscript.icon[30],16))
 
-def test_praised_random(manuscript):
-    reply = hometask.praised_random(manuscript)
+def test_praised_random(app, manuscript):
+    reply = app.praised_random()
     assert reply == manuscript.hometask_random_reply[0]
 
-def test_praised_count_hometask(manuscript):
+def test_praised_count_hometask(app, manuscript):
     for fake_count in [1,5,10,30]:
         expected_reply = manuscript.count_reply[fake_count] + chr(int(manuscript.icon[fake_count], 16))
-        reply = hometask.praised_count_hometask(count = fake_count, manuscript = manuscript)
+        reply = app.praised_count_hometask(count = fake_count)
         assert expected_reply == reply
 
-def test_praised_streak(manuscript):
+def test_praised_streak(app, manuscript):
     for fake_streak_count in [3, 7, 14]:
-        reply = hometask.praised_streak(streak_count = fake_streak_count, manuscript = manuscript)
+        reply = app.praised_streak(streak_count = fake_streak_count)
         expected_reply = manuscript.streak_reply[fake_streak_count]
         assert expected_reply == reply
 

@@ -35,5 +35,4 @@ class SearchTask_historySerializer(filters.FilterSet):
     Task_history_name = filters.CharFilter(lookup_expr = 'user_id')
     class Meta:
         model = Task_history
-        fields = ('tweet_id', 'tweet_text', 'praised', 'task_id', 'created_at')
-        # , 'user_id')
+        fields = ('tweet_id', 'tweet_text', 'praised', 'task_id', 'created_at', 'user_id')

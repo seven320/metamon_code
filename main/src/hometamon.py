@@ -10,8 +10,6 @@ pardir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(pardir)
 
 from src import meta_manuscript
-from src import hometask
-from src import tweet_intent
 
 class Hometamon():
     def __init__(self):
@@ -58,10 +56,8 @@ class Hometamon():
             "仕事納め", "仕事した",
             "掃除終", "掃除した", "がこおわ", "学校終"]
         self.set_task_words = ["settask", "設定"]
-        self.task_words = ["#hometask"]
         self.transform_words = ["変身"]
         self.test_words = ["__test__"]
-        self.hometask_api = hometask.API()
 
         self.counts = {
             "ignore": 0,
@@ -125,13 +121,9 @@ class Hometamon():
         elif tweet.text.split(" ")[0] == "RT":
             return True
         elif tweet.text.split(" ")[0][0] == "@":
-            for task_word in self.task_words + self.set_task_words:
-                if task_word in tweet.text:
-                    break
-            else: # 通常のメンションは無視する
-                if "@denden_by" in tweet.text:
-                    self.api.create_favorite(id = tweet.id)
-                    return True
+            if "@denden_by" in tweet.text:
+                self.api.create_favorite(id = tweet.id)
+            return True
         elif len(tweet.text) >= 80: # if tweet is more than 80 words, it will be ignored
             return True
         for exclusion_name in self.exclusion_user_names:
@@ -176,49 +168,6 @@ class Hometamon():
             if tweet.user.screen_name == "yosyuaomenww" and test_word in tweet.text:
                 return True
         return False
-
-    def check_task(self, tweet):
-        if "@denden_by" in tweet.text:
-            pass
-        else:
-            return False
-        for set_task_word in self.set_task_words:
-            if set_task_word in tweet.text:
-                return True
-        return False
-
-    def check_task_history(self, tweet):
-        if "#hometask" in tweet.text:
-            return True
-        return False
-
-    def extract_task(self, tweet_text):
-        task = tweet_text.replace("@denden_by","").replace("\n", "").replace(" ", "").replace(":", "").replace("：", "")
-        for set_task_word in self.set_task_words:
-            task = task.replace(set_task_word, "")
-        return task
-
-    def set_task_and_reply(self, tweet):
-        task = self.extract_task(tweet.text)
-        if self.hometask_api.set_task(tweet.user, task):
-            intent_url = tweet_intent.make(text = "", hashtag = "hometask")
-            reply = "@" + tweet.user.screen_name + "\n" + "{}を覚えたもん！今日から頑張るもん!!\n報告は #hometask をつけてもん!!\n{}\n".format(task, intent_url)
-        else:
-            reply = "@" + tweet.user.screen_name + "\n" + "うまく覚えれなかったもん\nごめんなさいもん"
-        self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
-        self.api.create_favorite(tweet.id)
-        return reply
-
-    def set_task_history_and_reply(self, tweet):
-        if self.hometask_api.set_task_history(tweet.id, tweet.text, tweet.user.id):
-            reply = hometask.make_reply(user_id = tweet.user.id)
-        else:
-            reply = "まだtaskが設定されてないもん!!下のurlからツイートして設定するもん."
-            reply = reply + "\n" + tweet_intent.make(text = "settask:", tweet_to="denden_by")
-        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet) + reply
-        self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
-        self.api.create_favorite(tweet.id)
-        return reply
     
     def classify(self, tweet):
         reply = ""
@@ -229,10 +178,6 @@ class Hometamon():
                 reply = self.greeting_morning(tweet)
             elif self.check_greeting_night(tweet):
                 reply = self.greeting_night(tweet)
-            elif self.check_task(tweet):
-                reply = self.set_task_and_reply(tweet)
-            elif self.check_task_history(tweet):
-                reply = self.set_task_history_and_reply(tweet)
             elif self.check_reply(tweet):
                 reply = self.praise(tweet)
             elif self.check_transform(tweet):

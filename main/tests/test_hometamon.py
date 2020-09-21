@@ -125,7 +125,7 @@ def test_check_exclude_text(app, tweet, mocker):
     assert app.check_exclude(tweet) == False
     assert app.check_exclude(mocker.patch.object(tweet, "method", favorited = True)) == True # tweetの属性をpatchで変化させた．
     assert app.check_exclude(mocker.patch.object(tweet, "method", text = "RT おはよう", favorited = False)) == True 
-    assert app.check_exclude(mocker.patch.object(tweet, "method", text = "@yosyuaomew おはよう", favorited = False)) == False
+    assert app.check_exclude(mocker.patch.object(tweet, "method", text = "@yosyuaomew おはよう", favorited = False)) == True
     assert app.check_exclude(mocker.patch.object(tweet, "method", text = "*" * 80, favorited = False)) == True 
     assert app.check_exclude(mocker.patch.object(tweet, "method", text = "https://www.google.com/", favorited = False)) == True 
     assert app.check_exclude(mocker.patch.object(tweet, "method", text = "@denden_by ありがとう", favorited = False, id = 123)) == True
@@ -196,20 +196,20 @@ def test_check_text_1(app, tweet):
     tweet.user.screen_name = "hogehoge"
     assert app.check_test(tweet) == False
 
-def test_check_task(app, task_tweet, tweet):
-    assert app.check_task(task_tweet) == True
-    assert app.check_task(tweet) == False
+# def test_check_task(app, task_tweet, tweet):
+#     assert app.check_task(task_tweet) == True
+#     assert app.check_task(tweet) == False
 
-def test_extract_task(app):
-    expected = "本を読む"
-    tweet_text = "@denden_by settask 本を読む"
-    assert app.extract_task(tweet_text) == expected
-    tweet_text = "@denden_by\nsettask 本を読む"
-    assert app.extract_task(tweet_text) == expected
-    tweet_text = "@denden_by\nsettask本を読む"
-    assert app.extract_task(tweet_text) == expected
-    tweet_text = "@denden_by\n\n 設定本を読む"
-    assert app.extract_task(tweet_text) == expected
+# def test_extract_task(app):
+#     expected = "本を読む"
+#     tweet_text = "@denden_by settask 本を読む"
+#     assert app.extract_task(tweet_text) == expected
+#     tweet_text = "@denden_by\nsettask 本を読む"
+#     assert app.extract_task(tweet_text) == expected
+#     tweet_text = "@denden_by\nsettask本を読む"
+#     assert app.extract_task(tweet_text) == expected
+#     tweet_text = "@denden_by\n\n 設定本を読む"
+#     assert app.extract_task(tweet_text) == expected
 
 def test_classify_0(app, tweet):
     tweet.text = "http"

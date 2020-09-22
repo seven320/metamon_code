@@ -169,7 +169,7 @@ class HomeTask(hometamon.Hometamon):
 
     def set_task_history_and_reply(self, tweet):
         if self.django_api.set_task_history(tweet.id, tweet.text, tweet.user.id):
-            reply = sjjelf.make_reply(user_id = tweet.user.id)
+            reply = self.make_reply(user_id = tweet.user.id)
         else:
             reply = "まだtaskが設定されてないもん!!下のurlからツイートして設定するもん."
             reply = reply + "\n" + tweet_intent.make(text = "設定:", tweet_to="denden_by")

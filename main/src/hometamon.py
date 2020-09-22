@@ -101,7 +101,10 @@ class Hometamon():
     def praise(self, tweet):
         reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet)  + random.choice(self.manuscript.reply)
         self.counts["praise"] += 1
-        self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
+        if random.random() > 0.99:
+            self.api.update_with_media(filename="../../image/hometamon1.jpg", status = reply, in_reply_to_status_id = tweet.id)
+        else:
+            self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
         return reply
 

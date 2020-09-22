@@ -86,7 +86,7 @@ def test_greeting_night(app, tweet):
 
 def test_praise(app, tweet):
     expected = "@yosyuaomenww\n電電お疲れ様だもん"
-    assert app.praise(tweet) == expected
+    assert app.praise(tweet, image_ratio = 0) == expected
     app.api.update_status.assert_called_once_with(
         status = expected,
         in_reply_to_status_id = tweet.id
@@ -98,8 +98,21 @@ def test_praise(app, tweet):
 def test_praise_user_name(app, tweet):
     expected = "@yosyuaomenww\n電電お疲れ様だもん"
     tweet.user.name = "電電@最近寝不足"
-    assert app.praise(tweet) == expected
+    assert app.praise(tweet, image_ratio = 0) == expected
     app.api.update_status.assert_called_once_with(
+        status = expected,
+        in_reply_to_status_id = tweet.id
+    )
+    app.api.create_favorite.assert_called_once_with(
+        tweet.id
+    )
+
+def test_praise_with_image(app, tweet):
+    expected = "@yosyuaomenww\n電電お疲れ様だもん"
+    tweet.user.name = "電電@最近寝不足"
+    assert app.praise(tweet, image_ratio = 1) == expected
+    app.api.update_with_media.assert_called_once_with(
+        filename = "../image/hometamon1.jpg",
         status = expected,
         in_reply_to_status_id = tweet.id
     )

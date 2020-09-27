@@ -24,6 +24,7 @@ RUN pip install \
 # RUN git clone https://github.com/seven320/metamon_code.git
 COPY ./src src
 COPY ./tests tests
+COPY ./images images
 COPY ./crontab /var/spool/cron/crontabs/root
 CMD busybox crond -l 2 -L /dev/stderr -f
 

@@ -102,7 +102,7 @@ class Hometamon():
         reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet)  + random.choice(self.manuscript.reply)
         self.counts["praise"] += 1
         if random.random() < image_ratio:
-            self.api.update_with_media(filename="../image/hometamon1.jpg", status = reply, in_reply_to_status_id = tweet.id)
+            self.api.update_with_media(filename="image/hometamon1.jpg", status = reply, in_reply_to_status_id = tweet.id)
         else:
             self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)

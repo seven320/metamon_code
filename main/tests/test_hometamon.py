@@ -49,7 +49,10 @@ def test_user_screen_name_changer(app, tweet):
     tweet.user.name = "nasa＠webアプリ楽しい"
     expected = "nasa"
     assert app.user_name_changer(tweet) == expected
-
+    tweet.user.name = "電電＠テスト頑張る"
+    expected = "電電"
+    assert app.user_name_changer(tweet) == expected
+    
 def test_greeting_morning(app, tweet):
     expected = "@yosyuaomenww\n電電おはようだもん"
     assert app.greeting_morning(tweet) == expected

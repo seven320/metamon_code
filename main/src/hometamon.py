@@ -2,6 +2,8 @@
 import os, sys
 import random 
 import datetime as dt
+import unicodedata
+
 from dotenv import load_dotenv
 
 import tweepy
@@ -78,11 +80,11 @@ class Hometamon():
 
     def user_name_changer(self, tweet):
         user_name = tweet.user.name
-        if "@" in user_name:
-            user_name = user_name.split("@")[0]
-        elif  "＠" in user_name:
-            user_name = user_name.split("＠")[0]
-        return user_name
+        #  正規化
+        normalize_user_name = unicodedata.normalize("NFKC", user_name)
+        if "@" in normalize_user_name:
+            normalize_user_name = normalize_user_name.split("@")[0]
+        return normalize_user_name
 
     def greeting_morning(self, tweet):
         reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet) + random.choice(self.manuscript.greeting_morning)

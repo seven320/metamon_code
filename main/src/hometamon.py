@@ -212,9 +212,7 @@ class Hometamon():
         random.shuffle(follow_back)
         user_statuses = self.api.lookup_users(follow_back[:10])
         for user_status in user_statuses:
-            if user_status.follow_request_sent:
-                pass
-            else:
+            if not user_status.follow_request_sent:
                 try:
                     self.api.create_friendship(id = user_status.id)
                 except tweepy.error.TweepError as e:

@@ -78,8 +78,20 @@ def test_greeting_morning_user_name(app, tweet):
 
 def test_greeting_night(app, tweet):
     expected = "@yosyuaomenww\n電電おやすみだもん"
-    assert app.greeting_night(tweet) == expected
+    assert app.greeting_night(tweet, image_ratio=0) == expected
     app.api.update_status.assert_called_once_with(
+        status = expected,
+        in_reply_to_status_id = tweet.id
+        )
+    app.api.create_favorite.assert_called_once_with(
+        tweet.id
+    )
+
+def test_greeting_night_with_image(app, tweet):
+    expected = "@yosyuaomenww\n電電おやすみだもん"
+    assert app.greeting_night(tweet, image_ratio=1) == expected
+    app.api.update_with_media.assert_called_once_with(
+        filename="images/oyasumi_w_newtext.jpg",
         status = expected,
         in_reply_to_status_id = tweet.id
         )
@@ -133,9 +145,14 @@ def test_tweet_sweet(app):
 def test_test_tweet(app):
     expected = "起きてるもん！\n⊂・ー・つ"
     assert app.test_tweet() == expected
+    app.api.update_status.assert_called_once_with(
+        status = expected
+    )
+
+def test_test_tweet_with_image(app):
+    expected = "起きてるもん！\n⊂・ー・つ"
+    assert app.test_tweet(image_flg=True) == expected
     app.api.update_with_media.assert_called_once_with(
-    # app.api.update_status.assert_called_once_with(
-        # status = expected
         filename="images/icon.jpg", status = expected
     )
 
@@ -214,6 +231,18 @@ def test_check_text_1(app, tweet):
     tweet.user.screen_name = "hogehoge"
     assert app.check_test(tweet) == False
 
+def test_check_image_flg(app, tweet):
+    tweet.user.screen_name = "yosyuaomenww"
+    tweet.text = "__test__"
+    assert app.check_image_flg(tweet) == False
+    tweet.text = "__test__ image"
+    assert app.check_image_flg(tweet) == True
+
+def test_check_image_flg_1(app, tweet):
+    tweet.user.screen_name = "dummy"
+    tweet.text = "__test__"
+    assert app.check_image_flg(tweet) == False
+
 # def test_check_task(app, task_tweet, tweet):
 #     assert app.check_task(task_tweet) == True
 #     assert app.check_task(tweet) == False
@@ -278,26 +307,26 @@ def test_classify_5(app, tweet):
     tweet.text = "__test__"
     expected = "起きてるもん！\n⊂・ー・つ"
     assert app.classify(tweet) == expected
-    # app.api.update_status.assert_called_once_with(
-    #     status = expected
-    # )
-    app.api.update_with_media.assert_called_once_with(
-        filename="images/icon.jpg", status = expected
+    app.api.update_status.assert_called_once_with(
+        status = expected
     )
+    # app.api.update_with_media.assert_called_once_with(
+    #     filename="images/icon.jpg", status = expected
+    # )
     expected = ""
     tweet.user.screen_name = "twitter"
     assert app.classify(tweet) == expected
 
-# def test_classify_6(app, task_tweet):
-#     expected = "@cocoa\n本を読むを覚えたもん！今日から頑張るもん！！"
-#     assert app.classify(task_tweet) == expected
-#     app.api.update_status.assert_called_once_with(
-#         status = expected,
-#         in_reply_to_status_id = task_tweet.id
-#     )
-#     app.api.create_favorite.assert_called_once_with(
-#         task_tweet.id
-#     )
+def test_classify_6(app, tweet):
+    tweet.text = "__test__ image"
+    expected = "起きてるもん！\n⊂・ー・つ"
+    assert app.classify(tweet) == expected
+    app.api.update_with_media.assert_called_once_with(
+        status = expected, filename="images/icon.jpg"
+    )
+    expected = ""
+    tweet.user.screen_name = "twitter"
+    assert app.classify(tweet) == expected
 
 def test_transform(app):
     expected = ""

@@ -92,14 +92,17 @@ class Hometamon():
         self.api.create_favorite(tweet.id)
         return reply
     
-    def greeting_night(self, tweet):
+    def greeting_night(self, tweet, image_ratio=0.05):
         reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet)  + random.choice(self.manuscript.greeting_night)
         self.counts["greeting_night"] += 1
-        self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
+        if random.random() < image_ratio:
+            self.api.update_with_media(filename="images/oyasumi_w_newtext.jpg", status = reply, in_reply_to_status_id = tweet.id)
+        else:
+            self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
         return reply
 
-    def praise(self, tweet, image_ratio = 0.03):
+    def praise(self, tweet, image_ratio = 0.00):
         reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet)  + random.choice(self.manuscript.reply)
         self.counts["praise"] += 1
         if random.random() < image_ratio:
@@ -115,10 +118,12 @@ class Hometamon():
         status += random.choice(self.manuscript.sweet_tweet_after)
         self.api.update_status(status = status)
 
-    def test_tweet(self):
+    def test_tweet(self, image_flg = False):
         status = "起きてるもん！\n⊂・ー・つ"
-        # self.api.update_status(status = status)
-        self.api.update_with_media(filename="images/icon.jpg", status = status)
+        if image_flg:
+            self.api.update_with_media(filename="images/icon.jpg", status = status)
+        else:
+            self.api.update_status(status = status)
         self.counts["test"] += 1
         return status
 
@@ -181,7 +186,10 @@ class Hometamon():
             if tweet.user.screen_name == "yosyuaomenww" and test_word in tweet.text:
                 return True
         return False
-    
+
+    def check_image_flg(self, tweet):
+        return tweet.user.screen_name == "yosyuaomenww" and "image" in tweet.text
+
     def classify(self, tweet):
         reply = ""
         if self.check_exclude(tweet):
@@ -196,7 +204,7 @@ class Hometamon():
             elif self.check_transform(tweet):
                 reply = self.transform()
             elif self.check_test(tweet):
-                reply = self.test_tweet()
+                reply = self.test_tweet(image_flg = self.check_image_flg(tweet))
             else:
                 self.counts["pass"] += 1
         return reply

@@ -81,7 +81,6 @@ def test_count_hometask_streak_3(app):
     ]
     assert 1 == app.count_hometask_streak(task_historys = fake_task_historys)
 
-
 def test_count_hometask_streak_4(app):
     # 不連続
     fake_task_historys = [
@@ -170,8 +169,3 @@ def test_hometask_exclude(app, tweet, mocker):
     tweet_text = "@denden_by ありがとうねえ"
     assert app.hometask_exclude(mocker.patch.object(tweet,"method", text = tweet_text, favorited = False, id = 123))  == True
     app.api.create_favorite.assert_called_once_with(id = tweet.id)
-
-
-
-
-    

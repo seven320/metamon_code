@@ -55,7 +55,7 @@ def test_user_screen_name_changer(app, tweet):
     
 def test_greeting_morning(app, tweet):
     expected = "@yosyuaomenww\n電電おはようだもん"
-    assert app.greeting_morning(tweet) == expected
+    assert app.greeting_morning(tweet) == (expected, False)
     app.api.update_status.assert_called_once_with(
         status = expected,
         in_reply_to_status_id = 123
@@ -67,7 +67,7 @@ def test_greeting_morning(app, tweet):
 def test_greeting_morning_user_name(app, tweet):
     expected = "@yosyuaomenww\n電電おはようだもん"
     tweet.user.name = "電電＠TOEIC999点！！！なんてね"
-    assert app.greeting_morning(tweet) == expected
+    assert app.greeting_morning(tweet) == (expected, False)
     app.api.update_status.assert_called_once_with(
         status = expected,
         in_reply_to_status_id = 123
@@ -78,7 +78,7 @@ def test_greeting_morning_user_name(app, tweet):
 
 def test_greeting_night(app, tweet):
     expected = "@yosyuaomenww\n電電おやすみだもん"
-    assert app.greeting_night(tweet, image_ratio=0) == expected
+    assert app.greeting_night(tweet, image_ratio=0) == (expected,  False)
     app.api.update_status.assert_called_once_with(
         status = expected,
         in_reply_to_status_id = tweet.id
@@ -89,7 +89,7 @@ def test_greeting_night(app, tweet):
 
 def test_greeting_night_with_image(app, tweet):
     expected = "@yosyuaomenww\n電電おやすみだもん"
-    assert app.greeting_night(tweet, image_ratio=1) == expected
+    assert app.greeting_night(tweet, image_ratio=1) == (expected, True)
     app.api.update_with_media.assert_called_once_with(
         filename="images/oyasumi_w_newtext.jpg",
         status = expected,
@@ -101,7 +101,7 @@ def test_greeting_night_with_image(app, tweet):
 
 def test_praise(app, tweet):
     expected = "@yosyuaomenww\n電電お疲れ様だもん"
-    assert app.praise(tweet, image_ratio = 0) == expected
+    assert app.praise(tweet, image_ratio = 0) == (expected, False)
     app.api.update_status.assert_called_once_with(
         status = expected,
         in_reply_to_status_id = tweet.id
@@ -113,7 +113,7 @@ def test_praise(app, tweet):
 def test_praise_user_name(app, tweet):
     expected = "@yosyuaomenww\n電電お疲れ様だもん"
     tweet.user.name = "電電@最近寝不足"
-    assert app.praise(tweet, image_ratio = 0) == expected
+    assert app.praise(tweet, image_ratio = 0) == (expected, False)
     app.api.update_status.assert_called_once_with(
         status = expected,
         in_reply_to_status_id = tweet.id
@@ -125,7 +125,7 @@ def test_praise_user_name(app, tweet):
 def test_praise_with_image(app, tweet):
     expected = "@yosyuaomenww\n電電お疲れ様だもん"
     tweet.user.name = "電電@最近寝不足"
-    assert app.praise(tweet, image_ratio = 1) == expected
+    assert app.praise(tweet, image_ratio = 1) == (expected, True)
     app.api.update_with_media.assert_called_once_with(
         filename = "images/icon.jpg",
         status = expected,
@@ -144,14 +144,14 @@ def test_tweet_sweet(app):
 
 def test_test_tweet(app):
     expected = "起きてるもん！\n⊂・ー・つ"
-    assert app.test_tweet() == expected
+    assert app.test_tweet() == (expected, False)
     app.api.update_status.assert_called_once_with(
         status = expected
     )
 
 def test_test_tweet_with_image(app):
     expected = "起きてるもん！\n⊂・ー・つ"
-    assert app.test_tweet(image_flg=True) == expected
+    assert app.test_tweet(image_flg=True) == (expected, True)
     app.api.update_with_media.assert_called_once_with(
         filename="images/icon.jpg", status = expected
     )
@@ -250,7 +250,7 @@ def test_check_image_flg_1(app, tweet):
 def test_classify_0(app, tweet):
     tweet.text = "http"
     expected = ""
-    assert app.classify(tweet) == expected
+    assert app.classify(tweet) == (expected, False)
     app.api.update_statussert_called_once_with(
         status = expected,
         in_reply_to_status_id = tweet.id
@@ -262,7 +262,7 @@ def test_classify_1(app, tweet):
     tweet.user.name = "青い鳥"
     expected = "@yosyuaomenww\n青い鳥おはようだもん"
     app.JST = dt.datetime(2020, 2, 21, 8, 0)
-    assert app.classify(tweet) == expected
+    assert app.classify(tweet) == (expected, False)
     app.api.update_status.assert_called_once_with(
         status = expected,
         in_reply_to_status_id = tweet.id
@@ -275,7 +275,7 @@ def test_classify_2(app, tweet):
     tweet.text = "寝る"
     expected = "@yosyuaomenww\n電電おやすみだもん"
     app.JST = dt.datetime(2020, 2, 21, 22, 0)
-    assert app.classify(tweet) == expected
+    assert app.classify(tweet, image_ratio=0) == (expected, False)
     app.api.update_status.assert_called_once_with(
         status = expected,
         in_reply_to_status_id = tweet.id
@@ -283,11 +283,12 @@ def test_classify_2(app, tweet):
     app.api.create_favorite.assert_called_once_with(
         tweet.id
     )
+    assert app.classify(tweet, image_ratio=1) == (expected, True)
 
 def text_classify_3(app, tweet):
     tweet.text = "疲れた"
     expected = "@yosyuaomenww\n電電お疲れ様だもん"
-    assert app.classify(tweet) == expected
+    assert app.classify(tweet) == (expected, False)
     app.api.update_status.assert_called_once_with(
         status = expected,
         in_reply_to_status_id = tweet.id
@@ -299,14 +300,14 @@ def text_classify_3(app, tweet):
 def test_classify_4(app, tweet):
     tweet.text = "今日のメニューはカレーだ"
     expected = ""
-    assert app.classify(tweet) == expected
+    assert app.classify(tweet) == (expected, False)
     app.api.update_status.assert_not_called()
     app.api.create_favorite.assert_not_called()
 
 def test_classify_5(app, tweet):
     tweet.text = "__test__"
     expected = "起きてるもん！\n⊂・ー・つ"
-    assert app.classify(tweet) == expected
+    assert app.classify(tweet) == (expected, False)
     app.api.update_status.assert_called_once_with(
         status = expected
     )
@@ -315,22 +316,22 @@ def test_classify_5(app, tweet):
     # )
     expected = ""
     tweet.user.screen_name = "twitter"
-    assert app.classify(tweet) == expected
+    assert app.classify(tweet) == (expected, False)
 
 def test_classify_6(app, tweet):
     tweet.text = "__test__ image"
     expected = "起きてるもん！\n⊂・ー・つ"
-    assert app.classify(tweet) == expected
+    assert app.classify(tweet) == (expected, True)
     app.api.update_with_media.assert_called_once_with(
         status = expected, filename="images/icon.jpg"
     )
     expected = ""
     tweet.user.screen_name = "twitter"
-    assert app.classify(tweet) == expected
+    assert app.classify(tweet) == (expected, False)
 
 def test_transform(app):
     expected = ""
-    assert app.transform() == expected
+    assert app.transform() == (expected, False)
     assert app.counts["transform"] == 1
 
 def test_followback(app, mocker):

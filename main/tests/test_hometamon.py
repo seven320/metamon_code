@@ -115,7 +115,7 @@ def test_praise_with_image(app, tweet):
     tweet.user.name = "電電@最近寝不足"
     assert app.praise(tweet, image_ratio = 1) == expected
     app.api.update_with_media.assert_called_once_with(
-        filename = "images/hometamon1.jpg",
+        filename = "images/icon.jpg",
         status = expected,
         in_reply_to_status_id = tweet.id
     )
@@ -133,8 +133,10 @@ def test_tweet_sweet(app):
 def test_test_tweet(app):
     expected = "起きてるもん！\n⊂・ー・つ"
     assert app.test_tweet() == expected
-    app.api.update_statussert_called_once_with(
-        status = expected
+    app.api.update_with_media.assert_called_once_with(
+    # app.api.update_status.assert_called_once_with(
+        # status = expected
+        filename="images/icon.jpg", status = expected
     )
 
 def test_check_exclude_text(app, tweet, mocker):
@@ -276,8 +278,11 @@ def test_classify_5(app, tweet):
     tweet.text = "__test__"
     expected = "起きてるもん！\n⊂・ー・つ"
     assert app.classify(tweet) == expected
-    app.api.update_status.assert_called_once_with(
-        status = expected
+    # app.api.update_status.assert_called_once_with(
+    #     status = expected
+    # )
+    app.api.update_with_media.assert_called_once_with(
+        filename="images/icon.jpg", status = expected
     )
     expected = ""
     tweet.user.screen_name = "twitter"

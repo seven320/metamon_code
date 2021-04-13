@@ -55,16 +55,15 @@ class Hometamon():
         self.greeting_morning_words = ["おはよう", "ぽきた", "起きた", "起床", "早起き"]
         self.greeting_nighy_words = ["おやすみ", "寝よう", "寝る", "寝ます"]
         self.classify_words = [
-            "褒めて", "ほめて",
+            "褒めて", "ほめて", 
             "バオワ", "ばおわ", "バイト終", "バおわ", 
             "実験終", "実験おわ", "らぼりだ", "ラボ離脱", "ラボりだ", "ラボリダ",
-            "帰宅", "疲れた","つかれた", 
-            "仕事納め", "仕事した",
+            "帰宅", "疲れた","つかれた", "ちゅかれた", 
+            "仕事納め", "仕事おわり", 
             "掃除終", "掃除した", "がこおわ", "学校終"]
         self.set_task_words = ["設定"]
         self.transform_words = ["変身"]
         self.test_words = ["__test__"]
-
         self.counts = {
             "ignore": 0,
             "praise": 0,
@@ -104,7 +103,7 @@ class Hometamon():
         reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet)  + random.choice(self.manuscript.reply)
         self.counts["praise"] += 1
         if random.random() < image_ratio:
-            self.api.update_with_media(filename="images/hometamon1.jpg", status = reply, in_reply_to_status_id = tweet.id)
+            self.api.update_with_media(filename="images/icon.jpg", status = reply, in_reply_to_status_id = tweet.id)
         else:
             self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
@@ -118,7 +117,8 @@ class Hometamon():
 
     def test_tweet(self):
         status = "起きてるもん！\n⊂・ー・つ"
-        self.api.update_status(status = status)
+        # self.api.update_status(status = status)
+        self.api.update_with_media(filename="images/icon.jpg", status = status)
         self.counts["test"] += 1
         return status
 

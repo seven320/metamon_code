@@ -20,8 +20,6 @@ services:
         environment:
             TZ: Asia/Tokyo
 
-
-
     # database:
     #     image: mysql:5.7
     #     container_name: mysql_host

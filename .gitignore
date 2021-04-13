@@ -1,5 +1,9 @@
 /main/src/.env
 .env
+
 /Django/main/hometask/local_settings.py
 *.pyc
 *.sqlite3
+
+__pycache__/
+.DS_Store

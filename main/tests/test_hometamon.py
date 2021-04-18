@@ -159,28 +159,26 @@ class Test_Hometamon():
         def test_check_exclude_text_with_at_me(self, app, tweet, mocker):
             assert app.check_exclude(mocker.patch.object(tweet, "method", text = "@denden_by ありがとう", favorited = False, id = 123)) == True
 
-    def test_check_exclude_text_with_mytweet(self, app,tweet, mocker): 
-        mocker.patch.object(tweet.user, "id", 966247026416472064)
-        assert app.check_exclude(tweet) == True
+        def test_check_exclude_text_with_mytweet(self, app, tweet, mocker): 
+            mocker.patch.object(tweet.user, "id", 966247026416472064)
+            assert app.check_exclude(tweet) == True
 
-    def test_check_exclude_text_with_othertweet(self, app, tweet, mocker):
-        mocker.patch.object(tweet.user, "id", 12345)
-        assert app.check_exclude(tweet) == False
+        def test_check_exclude_with_exclude_user(self, app, tweet):
+            tweet.user.name = "botほげ"
+            assert app.check_exclude(tweet) == True
 
-    def test_check_exclude_user(self, app, tweet):
-        tweet.user.name = "botほげ"
-        assert app.check_exclude(tweet) == True
+    class 朝の挨拶は日本時間の5_10時でしか行わない:
+        def test_check_greeting_morning_with_night(self, app, tweet):
+            app.JST = dt.datetime(2020, 11, 11, 4, 59)
+            assert app.check_greeting_morning(tweet) == False
 
-    def test_check_greeting_morning(self, app, tweet):
-        app.JST = dt.datetime(2020, 11, 11, 4, 59)
-        assert app.check_greeting_morning(tweet) == False
+        def test_check_greeting_night_with_early_morning(self, app, tweet):
+            app.JST = dt.datetime(2020, 11, 11, 5, 0)
+            assert app.check_greeting_morning(tweet) == True
 
-        app.JST = dt.datetime(2020, 11, 11, 5, 0)
-        assert app.check_greeting_morning(tweet) == True
-
-        tweet.text = "こんにちは"
-        app.JST = dt.datetime(2020, 11, 11, 6, 0)
-        assert app.check_greeting_morning(tweet) == False
+        def test_check_greeting_morning_with_noon(self, app, tweet):
+            app.JST = dt.datetime(2020, 11, 11, 10, 1)
+            assert app.check_greeting_morning(tweet) == False
 
     def test_check_greeting_night(self, app, tweet):
         tweet.text = "寝る"

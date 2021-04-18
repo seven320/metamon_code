@@ -77,8 +77,7 @@ class Hometamon():
     def get_tweets(self):
         return self.api.home_timeline(count = 100, since_id = None)
 
-    def user_name_changer(self, tweet):
-        user_name = tweet.user.name
+    def user_name_changer(self, user_name):
         #  正規化
         normalize_user_name = unicodedata.normalize("NFKC", user_name)
         if "@" in normalize_user_name:
@@ -86,7 +85,8 @@ class Hometamon():
         return normalize_user_name
 
     def greeting_morning(self, tweet, image_ratio=0):
-        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet) + random.choice(self.manuscript.greeting_morning)
+
+        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name) + random.choice(self.manuscript.greeting_morning)
         self.counts["greeting_morning"] += 1
         image_flg = False
         self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
@@ -94,7 +94,7 @@ class Hometamon():
         return reply, image_flg
     
     def greeting_night(self, tweet, image_ratio=0.5):
-        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet)  + random.choice(self.manuscript.greeting_night)
+        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name)  + random.choice(self.manuscript.greeting_night)
         self.counts["greeting_night"] += 1
         image_flg = False
         if random.random() < image_ratio:
@@ -106,7 +106,7 @@ class Hometamon():
         return reply, image_flg
 
     def praise(self, tweet, image_ratio = 0.00):
-        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet)  + random.choice(self.manuscript.reply)
+        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name)  + random.choice(self.manuscript.reply)
         self.counts["praise"] += 1
         image_flg = False
         if random.random() < image_ratio:

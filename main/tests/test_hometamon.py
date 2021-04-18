@@ -193,15 +193,18 @@ class Test_Hometamon():
             app.JST = dt.datetime(2020, 11, 11, 5, 00)
             assert app.check_greeting_night(tweet) == False
 
-    def test_check_sweet(self, app):
-        app.JST = dt.datetime(2020, 11, 11, 14, 59)
-        assert app.check_sweet() == False
+    class 日本時間の15時にTrueを返す:
+        def test_check_sweet_before(self, app):
+            app.JST = dt.datetime(2020, 11, 11, 14, 59)
+            assert app.check_sweet() == False
 
-        app.JST = dt.datetime(2020, 11, 11, 15, 0)
-        assert app.check_sweet() == True
+        def test_check_sweet_with_15(self, app):
+            app.JST = dt.datetime(2020, 11, 11, 15, 0)
+            assert app.check_sweet() == True
 
-        app.JST = dt.datetime(2020, 12, 25, 20, 8)
-        assert app.check_sweet() == False
+        def test_check_sweet_with_after(self, app):
+            app.JST = dt.datetime(2020, 12, 25, 20, 8)
+            assert app.check_sweet() == False
 
     def test_check_reply(self, app, tweet, mocker):
         assert app.check_reply(mocker.patch.object(tweet, "method", text = "疲れた")) == True

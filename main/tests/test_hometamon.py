@@ -69,7 +69,7 @@ class Test_Hometamon():
     class Test_夜の挨拶を行う:
         def test_greeting_night(self, app, tweet):
             expected = "@yosyuaomenww\n電電おやすみだもん"
-            assert app.greeting_night(tweet) == (expected, False)
+            assert app.greeting_night(tweet, image_ratio = 0) == (expected, False)
             app.api.update_status.assert_called_once_with(
                 status = expected,
                 in_reply_to_status_id = 123
@@ -90,41 +90,29 @@ class Test_Hometamon():
                 tweet.id
             )
 
-    def test_praise(self, app, tweet):
-        expected = "@yosyuaomenww\n電電お疲れ様だもん"
-        assert app.praise(tweet, image_ratio = 0) == (expected, False)
-        app.api.update_status.assert_called_once_with(
-            status = expected,
-            in_reply_to_status_id = tweet.id
+    class Test_褒める:
+        def test_praise(self, app, tweet):
+            expected = "@yosyuaomenww\n電電お疲れ様だもん"
+            assert app.praise(tweet, image_ratio = 0) == (expected, False)
+            app.api.update_status.assert_called_once_with(
+                status = expected,
+                in_reply_to_status_id = tweet.id
+                )
+            app.api.create_favorite.assert_called_once_with(
+                tweet.id
             )
-        app.api.create_favorite.assert_called_once_with(
-            tweet.id
-        )
 
-    def test_praise_user_name(self, app, tweet):
-        expected = "@yosyuaomenww\n電電お疲れ様だもん"
-        tweet.user.name = "電電@最近寝不足"
-        assert app.praise(tweet, image_ratio = 0) == (expected, False)
-        app.api.update_status.assert_called_once_with(
-            status = expected,
-            in_reply_to_status_id = tweet.id
-        )
-        app.api.create_favorite.assert_called_once_with(
-            tweet.id
-        )
-
-    def test_praise_with_image(self, app, tweet):
-        expected = "@yosyuaomenww\n電電お疲れ様だもん"
-        tweet.user.name = "電電@最近寝不足"
-        assert app.praise(tweet, image_ratio = 1) == (expected, True)
-        app.api.update_with_media.assert_called_once_with(
-            filename = "images/icon.jpg",
-            status = expected,
-            in_reply_to_status_id = tweet.id
-        )
-        app.api.create_favorite.assert_called_once_with(
-            tweet.id
-        )
+        def test_praise_with_image(self, app, tweet):
+            expected = "@yosyuaomenww\n電電お疲れ様だもん"
+            assert app.praise(tweet, image_ratio = 1) == (expected, True)
+            app.api.update_with_media.assert_called_once_with(
+                filename = "images/icon.jpg",
+                status = expected,
+                in_reply_to_status_id = tweet.id
+            )
+            app.api.create_favorite.assert_called_once_with(
+                tweet.id
+            )
 
     def test_tweet_sweet(self, app):
         expected = "3時\n⊂・ー・つ🥐\n休憩するもん"

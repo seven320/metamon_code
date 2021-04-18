@@ -137,17 +137,27 @@ class Test_Hometamon():
                 filename="images/icon.jpg", status = expected
             )
 
-    def test_check_exclude_text(self, app, tweet, mocker):
-        assert app.check_exclude(tweet) == False
-        assert app.check_exclude(mocker.patch.object(tweet, "method", favorited = True)) == True # tweetの属性をpatchで変化させた．
-        assert app.check_exclude(mocker.patch.object(tweet, "method", text = "RT おはよう", favorited = False)) == True 
-        assert app.check_exclude(mocker.patch.object(tweet, "method", text = "@yosyuaomew おはよう", favorited = False)) == True
-        assert app.check_exclude(mocker.patch.object(tweet, "method", text = "*" * 80, favorited = False)) == True 
-        assert app.check_exclude(mocker.patch.object(tweet, "method", text = "https://www.google.com/", favorited = False)) == True 
-        assert app.check_exclude(mocker.patch.object(tweet, "method", text = "@denden_by ありがとう", favorited = False, id = 123)) == True
-        app.api.create_favorite.assert_called_once_with(
-            id = 123
-        )
+    class Test_定められたツイートに対しては反応しない:
+        def test_check_exclude_text(self, app, tweet):
+            assert app.check_exclude(tweet) == False
+
+        def test_check_exclude_text_with_favorited(self, app, tweet, mocker):
+            assert app.check_exclude(mocker.patch.object(tweet, "method", favorited=True)) == True
+
+        def test_check_exclude_text_with_RT(self, app, tweet, mocker):
+            assert app.check_exclude(mocker.patch.object(tweet, "method", text = "RT おはよう", favorited = False)) == True 
+
+        def test_check_exclude_text_with_at(self, app, tweet, mocker):
+            assert app.check_exclude(mocker.patch.object(tweet, "method", text = "@yosyuaomew おはよう", favorited = False)) == True
+
+        def test_check_exclude_text_with_long_tweet(self, app, tweet, mocker):
+            assert app.check_exclude(mocker.patch.object(tweet, "method", text = "*" * 80, favorited = False)) == True 
+
+        def test_check_exclude_text_with_url(self, app, tweet, mocker):
+            assert app.check_exclude(mocker.patch.object(tweet, "method", text = "https://www.google.com/", favorited = False)) == True 
+
+        def test_check_exclude_text_with_at_me(self, app, tweet, mocker):
+            assert app.check_exclude(mocker.patch.object(tweet, "method", text = "@denden_by ありがとう", favorited = False, id = 123)) == True
 
     def test_check_exclude_text_with_mytweet(self, app,tweet, mocker): 
         mocker.patch.object(tweet.user, "id", 966247026416472064)

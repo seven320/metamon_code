@@ -7,7 +7,7 @@ import datetime as dt
 
 from src import hometamon
 
-@pytest.fixture(scope = "function")
+@pytest.fixture()
 def app(mocker):
     app = hometamon.Hometamon()
     app.manuscript = mocker.Mock()
@@ -21,7 +21,7 @@ def app(mocker):
     app.api = mocker.MagicMock()
     return app
 
-@pytest.fixture(scope = "function")
+@pytest.fixture()
 def tweet(mocker):
     tweet = mocker.MagicMock()
     tweet.text = "おはよう"
@@ -32,7 +32,7 @@ def tweet(mocker):
     tweet.id = 123
     return tweet
 
-@pytest.fixture(scope = "function")
+@pytest.fixture()
 def task_tweet(mocker):
     task_tweet = mocker.MagicMock()
     task_tweet.text = "@denden_by\nsettask\n本を読む"

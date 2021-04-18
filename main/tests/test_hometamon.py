@@ -167,7 +167,7 @@ class Test_Hometamon():
             tweet.user.name = "botほげ"
             assert app.check_exclude(tweet) == True
 
-    class 朝の挨拶は日本時間の5_10時でしか行わない:
+    class 日本時間の5_10時の時Trueを返す:
         def test_check_greeting_morning_with_night(self, app, tweet):
             app.JST = dt.datetime(2020, 11, 11, 4, 59)
             assert app.check_greeting_morning(tweet) == False
@@ -180,16 +180,18 @@ class Test_Hometamon():
             app.JST = dt.datetime(2020, 11, 11, 10, 1)
             assert app.check_greeting_morning(tweet) == False
 
-    def test_check_greeting_night(self, app, tweet):
-        tweet.text = "寝る"
-        app.JST = dt.datetime(2020, 11, 11, 4, 59)
-        assert app.check_greeting_night(tweet) == False
+    class 日本時間の22_2時の時Trueを返す:
+        def test_check_greeting_night(self, app, tweet):
+            app.JST = dt.datetime(2020, 11, 11, 22, 00)
+            assert app.check_greeting_night(tweet) == True
 
-        app.JST = dt.datetime(2020, 11, 11, 22, 00)
-        assert app.check_greeting_night(tweet) == True
+        def test_check_greeting_night_with_last(self, app, tweet):
+            app.JST = dt.datetime(2020, 11, 11, 1, 59)
+            assert app.check_greeting_night(tweet) == True
 
-        app.JST = dt.datetime(2020, 11, 11, 1, 59)
-        assert app.check_greeting_night(tweet) == True
+        def test_check_greeting_night_with_morning(self, app, tweet):
+            app.JST = dt.datetime(2020, 11, 11, 5, 00)
+            assert app.check_greeting_night(tweet) == False
 
     def test_check_sweet(self, app):
         app.JST = dt.datetime(2020, 11, 11, 14, 59)

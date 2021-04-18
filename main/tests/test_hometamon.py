@@ -67,42 +67,28 @@ class Test_Hometamon():
             pass
     
     class Test_夜の挨拶を行う:
-        def test_greeting_morning_user_name(self, app, tweet)
+        def test_greeting_night(self, app, tweet):
+            expected = "@yosyuaomenww\n電電おやすみだもん"
+            assert app.greeting_night(tweet) == (expected, False)
+            app.api.update_status.assert_called_once_with(
+                status = expected,
+                in_reply_to_status_id = 123
+                )
+            app.api.create_favorite.assert_called_once_with(
+                tweet.id
+            ) 
 
-    def test_greeting_morning_user_name(self, app, tweet):
-        expected = "@yosyuaomenww\n電電おはようだもん"
-        tweet.user.name = "電電＠TOEIC999点！！！なんてね"
-        assert app.greeting_morning(tweet) == (expected, False)
-        app.api.update_status.assert_called_once_with(
-            status = expected,
-            in_reply_to_status_id = 123
+        def test_greeting_night_with_image(self, app, tweet):
+            expected = "@yosyuaomenww\n電電おやすみだもん"
+            assert app.greeting_night(tweet, image_ratio=1) == (expected, True)
+            app.api.update_with_media.assert_called_once_with(
+                filename="images/oyasumi_w_newtext.jpg",
+                status = expected,
+                in_reply_to_status_id = tweet.id
+                )
+            app.api.create_favorite.assert_called_once_with(
+                tweet.id
             )
-        app.api.create_favorite.assert_called_once_with(
-            tweet.id
-        ) 
-
-    def test_greeting_night(self, app, tweet):
-        expected = "@yosyuaomenww\n電電おやすみだもん"
-        assert app.greeting_night(tweet, image_ratio=0) == (expected,  False)
-        app.api.update_status.assert_called_once_with(
-            status = expected,
-            in_reply_to_status_id = tweet.id
-            )
-        app.api.create_favorite.assert_called_once_with(
-            tweet.id
-        )
-
-    def test_greeting_night_with_image(self, app, tweet):
-        expected = "@yosyuaomenww\n電電おやすみだもん"
-        assert app.greeting_night(tweet, image_ratio=1) == (expected, True)
-        app.api.update_with_media.assert_called_once_with(
-            filename="images/oyasumi_w_newtext.jpg",
-            status = expected,
-            in_reply_to_status_id = tweet.id
-            )
-        app.api.create_favorite.assert_called_once_with(
-            tweet.id
-        )
 
     def test_praise(self, app, tweet):
         expected = "@yosyuaomenww\n電電お疲れ様だもん"

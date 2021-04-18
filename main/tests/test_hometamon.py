@@ -114,26 +114,28 @@ class Test_Hometamon():
                 tweet.id
             )
 
-    def test_tweet_sweet(self, app):
-        expected = "3時\n⊂・ー・つ🥐\n休憩するもん"
-        app.tweet_sweet()
-        app.api.update_status.assert_called_once_with(
-            status = expected
-        )
+    class Test_休憩を促すツイートを行う:
+        def test_tweet_sweet(self, app):
+            expected = "3時\n⊂・ー・つ🥐\n休憩するもん"
+            app.tweet_sweet()
+            app.api.update_status.assert_called_once_with(
+                status = expected
+            )
 
-    def test_test_tweet(self, app):
-        expected = "起きてるもん！\n⊂・ー・つ"
-        assert app.test_tweet() == (expected, False)
-        app.api.update_status.assert_called_once_with(
-            status = expected
-        )
+    class Test_電電のテストツイートに対して反応する:
+        def test_test_tweet(self, app):
+            expected = "起きてるもん！\n⊂・ー・つ"
+            assert app.test_tweet() == (expected, False)
+            app.api.update_status.assert_called_once_with(
+                status = expected
+            )
 
-    def test_test_tweet_with_image(self, app):
-        expected = "起きてるもん！\n⊂・ー・つ"
-        assert app.test_tweet(image_flg=True) == (expected, True)
-        app.api.update_with_media.assert_called_once_with(
-            filename="images/icon.jpg", status = expected
-        )
+        def test_test_tweet_with_image(self, app):
+            expected = "起きてるもん！\n⊂・ー・つ"
+            assert app.test_tweet(image_flg=True) == (expected, True)
+            app.api.update_with_media.assert_called_once_with(
+                filename="images/icon.jpg", status = expected
+            )
 
     def test_check_exclude_text(self, app, tweet, mocker):
         assert app.check_exclude(tweet) == False

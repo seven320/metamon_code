@@ -85,7 +85,6 @@ class Hometamon():
         return normalize_user_name
 
     def greeting_morning(self, tweet, image_ratio=0):
-
         reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name) + random.choice(self.manuscript.greeting_morning)
         self.counts["greeting_morning"] += 1
         image_flg = False

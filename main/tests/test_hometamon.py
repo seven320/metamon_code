@@ -42,6 +42,7 @@ class Test_Hometamon():
         task_tweet.favorited = False
         task_tweet.id = 987654
         return task_tweet
+
     class Test_スクリーンネームからat以降の文字を削除する:
         def test_user_screen_name_changer_small(self, app):
             assert app.user_name_changer("電電@テスト頑張る") == "電電"
@@ -51,17 +52,22 @@ class Test_Hometamon():
 
         def test_user_screen_name_changer(self, app):
             assert app.user_name_changer("電電") == "電電"
-        
-    def test_greeting_morning(self, app, tweet):
-        expected = "@yosyuaomenww\n電電おはようだもん"
-        assert app.greeting_morning(tweet) == (expected, False)
-        app.api.update_status.assert_called_once_with(
-            status = expected,
-            in_reply_to_status_id = 123
+
+    class Test_朝の挨拶を行う:
+        def test_greeting_morning(self, app, tweet):
+            expected = "@yosyuaomenww\n電電おはようだもん"
+            assert app.greeting_morning(tweet) == (expected, False)
+            app.api.update_status.assert_called_once_with(
+                status = expected,
+                in_reply_to_status_id = 123
             )
-        app.api.create_favorite.assert_called_once_with(
-            tweet.id
-        )
+            app.api.create_favorite.assert_called_once_with(tweet.id)
+        
+        def test_greeting_morning_with_image(self):
+            pass
+    
+    class Test_夜の挨拶を行う:
+        def test_greeting_morning_user_name(self, app, tweet)
 
     def test_greeting_morning_user_name(self, app, tweet):
         expected = "@yosyuaomenww\n電電おはようだもん"

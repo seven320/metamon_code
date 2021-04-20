@@ -295,27 +295,25 @@ class Test_Hometamon():
                     tweet.id
                 )
 
+        class Test_褒める:
+            def test_classify(self, app, tweet):
+                tweet.text = "疲れた"
+                expected = "@yosyuaomenww\n電電お疲れ様だもん"
+                assert app.classify(tweet) == (expected, False)
+                app.api.update_status.assert_called_once_with(
+                    status = expected,
+                    in_reply_to_status_id = tweet.id
+                )
+                app.api.create_favorite.assert_called_once_with(
+                    tweet.id
+                )
 
-    
-
-    def text_classify_3(self, app, tweet):
-        tweet.text = "疲れた"
-        expected = "@yosyuaomenww\n電電お疲れ様だもん"
-        assert app.classify(tweet) == (expected, False)
-        app.api.update_status.assert_called_once_with(
-            status = expected,
-            in_reply_to_status_id = tweet.id
-        )
-        app.api.create_favorite.assert_called_once_with(
-            tweet.id
-        )
-
-    def test_classify_4(self, app, tweet):
-        tweet.text = "今日のメニューはカレーだ"
-        expected = ""
-        assert app.classify(tweet) == (expected, False)
-        app.api.update_status.assert_not_called()
-        app.api.create_favorite.assert_not_called()
+            def test_classify_with_false(self, app, tweet):
+                tweet.text = "今日のメニューはカレーだ"
+                expected = ""
+                assert app.classify(tweet) == (expected, False)
+                app.api.update_status.assert_not_called()
+                app.api.create_favorite.assert_not_called()
 
     def test_classify_5(self, app, tweet):
         tweet.text = "__test__"

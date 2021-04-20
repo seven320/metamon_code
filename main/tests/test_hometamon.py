@@ -221,69 +221,82 @@ class Test_Hometamon():
             assert app.check_transform(mocker.patch.object(tweet, "method", text = "返信")) == False
 
     class Test_test_tweetに対してツイートするかどうか:
-        def test_check_text(self, app, tweet):
-            tweet.text = "__test__"
-            tweet.user.screen_name = "yosyuaomenww"
-            assert app.check_test(tweet) == True
+        class Test_起動ツイート:
+            def test_check_text(self, app, tweet):
+                tweet.text = "__test__"
+                tweet.user.screen_name = "yosyuaomenww"
+                assert app.check_test(tweet) == True
 
-        def test_check_text_with_false(self, app, tweet):
-            tweet.text = "__test__"
-            tweet.user.screen_name = "hogehoge"
-            assert app.check_test(tweet) == False
+            def test_check_text_with_false(self, app, tweet):
+                tweet.text = "__test__"
+                tweet.user.screen_name = "hogehoge"
+                assert app.check_test(tweet) == False
 
-    def test_check_image_flg(self, app, tweet):
-        tweet.user.screen_name = "yosyuaomenww"
-        tweet.text = "__test__"
-        assert app.check_image_flg(tweet) == False
-        tweet.text = "__test__ image"
-        assert app.check_image_flg(tweet) == True
+        class Test_imageを含んだ起動ツイート:
+            def test_check_image_flg(self, app, tweet):
+                tweet.text = "__test__ image"
+                assert app.check_image_flg(tweet) == True
 
-    def test_check_image_flg_1(self, app, tweet):
-        tweet.user.screen_name = "dummy"
-        tweet.text = "__test__"
-        assert app.check_image_flg(tweet) == False
+    #################
+    ### Join test ### 
+    #################
 
-    # def test_check_task(self, app, task_tweet, tweet):
-    #     assert app.check_task(task_tweet) == True
-    #     assert app.check_task(tweet) == False
+    class Test_ツイート内容に基づいた分類とその反応ができている:
+        def test_classify_with_false(self, app, tweet):
+            tweet.text = "http"
+            expected = ""
+            assert app.classify(tweet) == (expected, False)
+            app.api.update_statussert_called_once_with(
+                status = expected,
+                in_reply_to_status_id = tweet.id
+                )
+            app.api.create_favorite.assert_not_called()
 
-    def test_classify_0(self, app, tweet):
-        tweet.text = "http"
-        expected = ""
-        assert app.classify(tweet) == (expected, False)
-        app.api.update_statussert_called_once_with(
-            status = expected,
-            in_reply_to_status_id = tweet.id
-            )
-        app.api.create_favorite.assert_not_called()
+        class Test_おはよう:
+            def test_classify_good_morning(self, app, tweet):
+                tweet.text = "おはよう"
+                tweet.user.name = "青い鳥"
+                expected = "@yosyuaomenww\n青い鳥おはようだもん"
+                app.JST = dt.datetime(2020, 2, 21, 8, 0)
+                assert app.classify(tweet) == (expected, False)
+                app.api.update_status.assert_called_once_with(
+                    status = expected,
+                    in_reply_to_status_id = tweet.id
+                    )
+                app.api.create_favorite.assert_called_once_with(
+                    tweet.id
+                )
+        
+        class Test_おやすみ:
+            def test_classify_goodnight(self, app, tweet):
+                tweet.text = "寝る"
+                expected = "@yosyuaomenww\n電電おやすみだもん"
+                app.JST = dt.datetime(2020, 2, 21, 22, 0)
+                assert app.classify(tweet, image_ratio=0) == (expected, False)
+                app.api.update_status.assert_called_once_with(
+                    status = expected,
+                    in_reply_to_status_id = tweet.id
+                    )
+                app.api.create_favorite.assert_called_once_with(
+                    tweet.id
+                )
 
-    def test_classify_1(self, app, tweet):
-        tweet.text = "おはよう"
-        tweet.user.name = "青い鳥"
-        expected = "@yosyuaomenww\n青い鳥おはようだもん"
-        app.JST = dt.datetime(2020, 2, 21, 8, 0)
-        assert app.classify(tweet) == (expected, False)
-        app.api.update_status.assert_called_once_with(
-            status = expected,
-            in_reply_to_status_id = tweet.id
-            )
-        app.api.create_favorite.assert_called_once_with(
-            tweet.id
-        )
+            def test_classify_goodnight_with_image(self, app, tweet):
+                tweet.text = "寝る"
+                expected = "@yosyuaomenww\n電電おやすみだもん"
+                app.JST = dt.datetime(2020, 2, 21, 22, 0)
+                assert app.classify(tweet, image_ratio=1) == (expected, True)
+                app.api.update_with_media.assert_called_once_with(
+                    filename="images/oyasumi_w_newtext.jpg",
+                    status = expected,
+                    in_reply_to_status_id = tweet.id
+                    )
+                app.api.create_favorite.assert_called_once_with(
+                    tweet.id
+                )
 
-    def test_classify_2(self, app, tweet):
-        tweet.text = "寝る"
-        expected = "@yosyuaomenww\n電電おやすみだもん"
-        app.JST = dt.datetime(2020, 2, 21, 22, 0)
-        assert app.classify(tweet, image_ratio=0) == (expected, False)
-        app.api.update_status.assert_called_once_with(
-            status = expected,
-            in_reply_to_status_id = tweet.id
-            )
-        app.api.create_favorite.assert_called_once_with(
-            tweet.id
-        )
-        assert app.classify(tweet, image_ratio=1) == (expected, True)
+
+    
 
     def text_classify_3(self, app, tweet):
         tweet.text = "疲れた"

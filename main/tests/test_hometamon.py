@@ -213,10 +213,12 @@ class Test_Hometamon():
         def test_check_reply_with_false(self, app, tweet, mocker):
             assert app.check_reply(mocker.patch.object(tweet, "method", text = "元気いっぱい")) == False
 
-    def test_check_transform(self, app, tweet, mocker):
-        tweet.text = "変身"
-        assert app.check_transform(mocker.patch.object(tweet, "method", text = "変身")) == True
-        assert app.check_transform(mocker.patch.object(tweet, "method", text = "返信")) == False
+    class Test_予備機能_変身:
+        def test_check_transform(self, app, tweet, mocker):
+            assert app.check_transform(mocker.patch.object(tweet, "method", text = "変身")) == True
+
+        def test_check_transform_with_false(self, app, tweet, mocker):
+            assert app.check_transform(mocker.patch.object(tweet, "method", text = "返信")) == False
 
     def test_check_text(self, app, tweet):
         tweet.text = "__test__"

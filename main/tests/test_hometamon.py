@@ -3,6 +3,7 @@ import sys
 import random
 
 import pytest
+from unittest.mock import patch
 import datetime as dt
 
 from src import hometamon
@@ -56,7 +57,7 @@ class Test_Hometamon():
     class Test_朝の挨拶を行う:
         def test_good_morning(self, app, tweet):
             expected = "@yosyuaomenww\n電電おはようだもん"
-            assert app.good_morning(tweet) == (expected, False)
+            assert app.good_morning(tweet) == expected
             app.api.update_status.assert_called_once_with(
                 status = expected,
                 in_reply_to_status_id = 123
@@ -67,9 +68,10 @@ class Test_Hometamon():
             pass
     
     class Test_夜の挨拶を行う:
-        def test_good_night(self, app, tweet):
+        def test_good_night(self, app, tweet, mocker):
             expected = "@yosyuaomenww\n電電おやすみだもん"
-            assert app.good_night(tweet, image_ratio = 0) == (expected, False)
+            random.random = mocker.Mock(return_value = 1)
+            assert app.good_night(tweet) == expected
             app.api.update_status.assert_called_once_with(
                 status = expected,
                 in_reply_to_status_id = 123
@@ -78,9 +80,10 @@ class Test_Hometamon():
                 tweet.id
             ) 
 
-        def test_good_night_with_image(self, app, tweet):
+        def test_good_night_with_image(self, app, tweet, mocker):
             expected = "@yosyuaomenww\n電電おやすみだもん"
-            assert app.good_night(tweet, image_ratio=1) == (expected, True)
+            random.random = mocker.Mock(return_value = 0)
+            assert app.good_night(tweet) == expected
             app.api.update_with_media.assert_called_once_with(
                 filename="images/oyasumi_w_newtext.jpg",
                 status = expected,
@@ -91,9 +94,10 @@ class Test_Hometamon():
             )
 
     class Test_褒める:
-        def test_praise(self, app, tweet):
+        def test_praise(self, app, tweet, mocker):
+            random.random = mocker.Mock(return_value = 1)
             expected = "@yosyuaomenww\n電電お疲れ様だもん"
-            assert app.praise(tweet, image_ratio = 0) == (expected, False)
+            assert app.praise(tweet) == expected
             app.api.update_status.assert_called_once_with(
                 status = expected,
                 in_reply_to_status_id = tweet.id
@@ -102,17 +106,18 @@ class Test_Hometamon():
                 tweet.id
             )
 
-        def test_praise_with_image(self, app, tweet):
-            expected = "@yosyuaomenww\n電電お疲れ様だもん"
-            assert app.praise(tweet, image_ratio = 1) == (expected, True)
-            app.api.update_with_media.assert_called_once_with(
-                filename = "images/icon.jpg",
-                status = expected,
-                in_reply_to_status_id = tweet.id
-            )
-            app.api.create_favorite.assert_called_once_with(
-                tweet.id
-            )
+        # def test_praise_with_image(self, app, tweet, mocker):
+        #     random.random = mocker.Mock(return_value = 0)
+        #     expected = "@yosyuaomenww\n電電お疲れ様だもん"
+        #     assert app.praise(tweet) == expected
+        #     app.api.update_with_media.assert_called_once_with(
+        #         filename = "images/icon.jpg",
+        #         status = expected,
+        #         in_reply_to_status_id = tweet.id
+        #     )
+        #     app.api.create_favorite.assert_called_once_with(
+        #         tweet.id
+        #     )
 
     class Test_休憩を促すツイートを行う:
         def test_tweet_sweet(self, app):
@@ -125,14 +130,14 @@ class Test_Hometamon():
     class Test_電電のテストツイートに対して反応する:
         def test_test_tweet(self, app):
             expected = "起きてるもん！\n⊂・ー・つ"
-            assert app.test_tweet() == (expected, False)
+            assert app.test_tweet() == expected
             app.api.update_status.assert_called_once_with(
                 status = expected
             )
 
         def test_test_tweet_with_image(self, app):
             expected = "起きてるもん！\n⊂・ー・つ"
-            assert app.test_tweet(image_flg=True) == (expected, True)
+            assert app.test_tweet(image_flg=True) == expected
             app.api.update_with_media.assert_called_once_with(
                 filename="images/icon.jpg", status = expected
             )
@@ -276,12 +281,11 @@ class Test_Hometamon():
     #################
     ### Join test ### 
     #################
-
     class Test_ツイート内容に基づいた分類とその反応ができている:
         def test_classify_with_false(self, app, tweet):
             tweet.text = "http"
             expected = ""
-            assert app.classify(tweet) == (expected, False)
+            assert app.classify(tweet) == expected
             app.api.update_statussert_called_once_with(
                 status = expected,
                 in_reply_to_status_id = tweet.id
@@ -294,7 +298,7 @@ class Test_Hometamon():
                 tweet.user.name = "青い鳥"
                 expected = "@yosyuaomenww\n青い鳥おはようだもん"
                 app.JST = dt.datetime(2020, 2, 21, 8, 0)
-                assert app.classify(tweet) == (expected, False)
+                assert app.classify(tweet) == expected
                 app.api.update_status.assert_called_once_with(
                     status = expected,
                     in_reply_to_status_id = tweet.id
@@ -304,11 +308,13 @@ class Test_Hometamon():
                 )
         
         class Test_おやすみ:
-            def test_classify_goodnight(self, app, tweet):
+            def test_classify_goodnight(self, app, tweet, mocker):
+                random.random = mocker.Mock(return_value = 1)
                 tweet.text = "寝る"
                 expected = "@yosyuaomenww\n電電おやすみだもん"
                 app.JST = dt.datetime(2020, 2, 21, 22, 0)
-                assert app.classify(tweet, image_ratio=0) == (expected, False)
+
+                assert app.classify(tweet) == expected
                 app.api.update_status.assert_called_once_with(
                     status = expected,
                     in_reply_to_status_id = tweet.id
@@ -317,11 +323,12 @@ class Test_Hometamon():
                     tweet.id
                 )
 
-            def test_classify_goodnight_with_image(self, app, tweet):
+            def test_classify_goodnight_with_image(self, app, tweet, mocker):
+                random.random = mocker.Mock(return_value = 0)
                 tweet.text = "寝る"
                 expected = "@yosyuaomenww\n電電おやすみだもん"
                 app.JST = dt.datetime(2020, 2, 21, 22, 0)
-                assert app.classify(tweet, image_ratio=1) == (expected, True)
+                assert app.classify(tweet) == expected
                 app.api.update_with_media.assert_called_once_with(
                     filename="images/oyasumi_w_newtext.jpg",
                     status = expected,
@@ -335,7 +342,7 @@ class Test_Hometamon():
             def test_classify(self, app, tweet):
                 tweet.text = "疲れた"
                 expected = "@yosyuaomenww\n電電お疲れ様だもん"
-                assert app.classify(tweet) == (expected, False)
+                assert app.classify(tweet) == expected
                 app.api.update_status.assert_called_once_with(
                     status = expected,
                     in_reply_to_status_id = tweet.id
@@ -347,7 +354,7 @@ class Test_Hometamon():
             def test_classify_with_false(self, app, tweet):
                 tweet.text = "今日のメニューはカレーだ"
                 expected = ""
-                assert app.classify(tweet) == (expected, False)
+                assert app.classify(tweet) == expected
                 app.api.update_status.assert_not_called()
                 app.api.create_favorite.assert_not_called()
 
@@ -355,18 +362,18 @@ class Test_Hometamon():
             def test_classify(self, app, tweet):
                 tweet.text = "__test__"
                 expected = "起きてるもん！\n⊂・ー・つ"
-                assert app.classify(tweet) == (expected, False)
+                assert app.classify(tweet) == expected
                 app.api.update_status.assert_called_once_with(
                     status = expected
                 )
                 expected = ""
                 tweet.user.screen_name = "twitter"
-                assert app.classify(tweet) == (expected, False)
+                assert app.classify(tweet) == expected
 
             def test_classify_with_image(self, app, tweet):
                 tweet.text = "__test__ image"
                 expected = "起きてるもん！\n⊂・ー・つ"
-                assert app.classify(tweet) == (expected, True)
+                assert app.classify(tweet) == expected
                 app.api.update_with_media.assert_called_once_with(
                     status = expected, filename="images/icon.jpg"
                 )
@@ -374,5 +381,5 @@ class Test_Hometamon():
         class Test_変身:
             def test_transform(self, app):
                 expected = ""
-                assert app.transform() == (expected, False)
+                assert app.transform() == expected
                 assert app.counts["transform"] == 1

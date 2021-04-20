@@ -14,7 +14,7 @@ class Test_Hometamon():
         app.manuscript = mocker.Mock()
         app.manuscript.reply = ["お疲れ様だもん"]
         app.manuscript.greeting_morning = ["おはようだもん"]
-        app.manuscript.greeting_night = ["おやすみだもん"]
+        app.manuscript.good_night = ["おやすみだもん"]
         app.manuscript.sweet_tweet_before = ["3時"]
         app.manuscript.sweet_tweet_after = ["休憩するもん"]
         app.manuscript.sweets = ["1F950"] # croissant
@@ -67,9 +67,9 @@ class Test_Hometamon():
             pass
     
     class Test_夜の挨拶を行う:
-        def test_greeting_night(self, app, tweet):
+        def test_good_night(self, app, tweet):
             expected = "@yosyuaomenww\n電電おやすみだもん"
-            assert app.greeting_night(tweet, image_ratio = 0) == (expected, False)
+            assert app.good_night(tweet, image_ratio = 0) == (expected, False)
             app.api.update_status.assert_called_once_with(
                 status = expected,
                 in_reply_to_status_id = 123
@@ -78,9 +78,9 @@ class Test_Hometamon():
                 tweet.id
             ) 
 
-        def test_greeting_night_with_image(self, app, tweet):
+        def test_good_night_with_image(self, app, tweet):
             expected = "@yosyuaomenww\n電電おやすみだもん"
-            assert app.greeting_night(tweet, image_ratio=1) == (expected, True)
+            assert app.good_night(tweet, image_ratio=1) == (expected, True)
             app.api.update_with_media.assert_called_once_with(
                 filename="images/oyasumi_w_newtext.jpg",
                 status = expected,
@@ -167,33 +167,36 @@ class Test_Hometamon():
             tweet.user.name = "botほげ"
             assert app.check_exclude(tweet) == True
 
-    class 日本時間の5_10時の時Trueを返す:
+    class Test_日本時間の5時00分_9時59分の時Trueを返す:
         def test_check_greeting_morning_with_night(self, app, tweet):
             app.JST = dt.datetime(2020, 11, 11, 4, 59)
             assert app.check_greeting_morning(tweet) == False
 
-        def test_check_greeting_night_with_early_morning(self, app, tweet):
-            app.JST = dt.datetime(2020, 11, 11, 5, 0)
+        def test_check_greeting_morning_with_early_morning(self, app, tweet):
+            app.JST = dt.datetime(2020, 11, 11, 8, 0)
             assert app.check_greeting_morning(tweet) == True
 
         def test_check_greeting_morning_with_noon(self, app, tweet):
-            app.JST = dt.datetime(2020, 11, 11, 10, 1)
+            app.JST = dt.datetime(2020, 11, 11, 10, 0)
             assert app.check_greeting_morning(tweet) == False
 
-    class 日本時間の22_2時の時Trueを返す:
-        def test_check_greeting_night(self, app, tweet):
-            app.JST = dt.datetime(2020, 11, 11, 22, 00)
-            assert app.check_greeting_night(tweet) == True
+    class Test_日本時間の22時00分_1時59分の時Trueを返す:
+        def test_check_good_night(self, app, tweet):
+            tweet.text = "おやすみ"
+            app.JST = dt.datetime(2020, 11, 11, 21, 59)
+            assert app.check_good_night(tweet) == False
 
-        def test_check_greeting_night_with_last(self, app, tweet):
-            app.JST = dt.datetime(2020, 11, 11, 1, 59)
-            assert app.check_greeting_night(tweet) == True
+        def test_check_good_night_with_last(self, app, tweet):
+            tweet.text = "おやすみ"
+            app.JST = dt.datetime(2020, 11, 11, 0, 1)
+            assert app.check_good_night(tweet) == True
 
-        def test_check_greeting_night_with_morning(self, app, tweet):
-            app.JST = dt.datetime(2020, 11, 11, 5, 00)
-            assert app.check_greeting_night(tweet) == False
+        def test_check_good_night_with_morning(self, app, tweet):
+            tweet.text = "おやすみ"
+            app.JST = dt.datetime(2020, 11, 11, 2, 00)
+            assert app.check_good_night(tweet) == False
 
-    class 日本時間の15時にTrueを返す:
+    class Test_日本時間の15時にTrueを返す:
         def test_check_sweet_before(self, app):
             app.JST = dt.datetime(2020, 11, 11, 14, 59)
             assert app.check_sweet() == False
@@ -237,7 +240,7 @@ class Test_Hometamon():
                 tweet.text = "__test__ image"
                 assert app.check_image_flg(tweet) == True
 
-    class フォローしてきたユーザーのうちランダムに10人フォローバックする:
+    class Test_フォローしてきたユーザーのうちランダムに10人フォローバックする:
         def test_followback(self, app, mocker):
             app.api.followers_ids.return_value = [1220747547607650304, 1125305225198297089]
             app.api.friends_ids.return_value = [1220747547607650304]
@@ -260,7 +263,7 @@ class Test_Hometamon():
             app.followback()
             app.api.create_friendship.assert_not_called()
 
-    class 実行した行動のログをyosyuaomenwwに送信する:
+    class Test_実行した行動のログをyosyuaomenwwに送信する:
         def test_report(self, app):
             app.JST = dt.datetime(2020, 4, 27, 17, 40 , 30)
             app.admin_twitter_id = 999

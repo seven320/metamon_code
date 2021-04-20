@@ -85,7 +85,7 @@ class Test_Hometamon():
             random.random = mocker.Mock(return_value = 0)
             assert app.good_night(tweet) == expected
             app.api.update_with_media.assert_called_once_with(
-                filename="images/oyasumi_w_newtext.jpg",
+                filename="images/oyasumi_w_newtext.png",
                 status = expected,
                 in_reply_to_status_id = tweet.id
                 )
@@ -330,7 +330,7 @@ class Test_Hometamon():
                 app.JST = dt.datetime(2020, 2, 21, 22, 0)
                 assert app.classify(tweet) == expected
                 app.api.update_with_media.assert_called_once_with(
-                    filename="images/oyasumi_w_newtext.jpg",
+                    filename="images/oyasumi_w_newtext.png",
                     status = expected,
                     in_reply_to_status_id = tweet.id
                     )

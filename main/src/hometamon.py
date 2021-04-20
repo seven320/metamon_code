@@ -96,7 +96,7 @@ class Hometamon():
         return reply
     
     def good_night(self, tweet):
-        image_ratio = 0.4
+        image_ratio = 0.1
         reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name)  + random.choice(self.manuscript.good_night)
         self.counts["good_night"] += 1
         if random.random() < image_ratio:

@@ -1,6 +1,6 @@
 # README
 <img alt="hometamon" 
-src = "https://user-images.githubusercontent.com/33506506/74358523-e9594980-4e04-11ea-8130-ee86a32fef74.jpg" 
+src = "main/images/icon.jpg" 
 width = "100"
 align = "middle">
 褒めたもん
@@ -16,9 +16,10 @@ tweepy == 3.8.0
 python-dotenv == 0.10.5  
 pytest == 5.4.1  
 pytest-mock == 3.1.0  
-Django == 3.1 
+Django == 3.1  
 django-filter == 2.3.0  
-djangorestframework == 3.11.1  
+djangorestframework == 3.11.2
+
 
 ## 使い方 How to USE
 

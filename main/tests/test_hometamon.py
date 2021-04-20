@@ -206,9 +206,12 @@ class Test_Hometamon():
             app.JST = dt.datetime(2020, 12, 25, 20, 8)
             assert app.check_sweet() == False
 
-    def test_check_reply(self, app, tweet, mocker):
-        assert app.check_reply(mocker.patch.object(tweet, "method", text = "疲れた")) == True
-        assert app.check_reply(mocker.patch.object(tweet, "method", text = "元気いっぱい")) == False
+    class Test_返事をするかどうか:
+        def test_check_reply(self, app, tweet, mocker):
+            assert app.check_reply(mocker.patch.object(tweet, "method", text = "疲れた")) == True
+
+        def test_check_reply_with_false(self, app, tweet, mocker):
+            assert app.check_reply(mocker.patch.object(tweet, "method", text = "元気いっぱい")) == False
 
     def test_check_transform(self, app, tweet, mocker):
         tweet.text = "変身"

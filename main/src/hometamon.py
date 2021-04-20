@@ -194,7 +194,7 @@ class Hometamon():
     def check_image_flg(self, tweet):
         return tweet.user.screen_name == "yosyuaomenww" and "image" in tweet.text
 
-    def classify(self, tweet, image_ratio = 0.05):
+    def classify(self, tweet, image_ratio = 0):
         reply = ""
         image_flg = False
         if self.check_exclude(tweet):

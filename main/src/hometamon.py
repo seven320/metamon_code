@@ -52,14 +52,14 @@ class Hometamon():
             "キャリア", "エージェント", "LINE", "エロ"
             ] # user name
         self.exclusion_words = ["peing", "http"]
-        self.greeting_morning_words = ["おはよう", "ぽきた", "起きた", "起床", "早起き"]
-        self.greeting_nighy_words = ["おやすみ", "寝よう", "寝る", "寝ます"]
+        self.good_morning_words = ["おはよう", "ぽきた", "起きた", "起床", "早起き"]
+        self.good_night_words = ["おやすみ", "寝よう", "寝る", "寝ます"]
         self.classify_words = [
             "褒めて", "ほめて", 
             "バオワ", "ばおわ", "バイト終", "バおわ", 
             "実験終", "実験おわ", "らぼりだ", "ラボ離脱", "ラボりだ", "ラボリダ",
             "帰宅", "疲れた","つかれた", "ちゅかれた", 
-            "仕事納め", "仕事おわり", 
+            "仕事納め", "仕事おわり","退勤", "仕事終わり",  
             "掃除終", "掃除した", "がこおわ", "学校終"]
         self.set_task_words = ["設定"]
         self.transform_words = ["変身"]
@@ -67,8 +67,8 @@ class Hometamon():
         self.counts = {
             "ignore": 0,
             "praise": 0,
-            "greeting_morning": 0,
-            "greeting_night": 0,
+            "good_morning": 0,
+            "good_night": 0,
             "pass": 0,
             "transform": 0,
             "test": 0
@@ -77,45 +77,45 @@ class Hometamon():
     def get_tweets(self):
         return self.api.home_timeline(count = 100, since_id = None)
 
-    def user_name_changer(self, tweet):
-        user_name = tweet.user.name
+    def user_name_changer(self, user_name):
         #  正規化
         normalize_user_name = unicodedata.normalize("NFKC", user_name)
         if "@" in normalize_user_name:
             normalize_user_name = normalize_user_name.split("@")[0]
         return normalize_user_name
 
-    def greeting_morning(self, tweet, image_ratio=0):
-        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet) + random.choice(self.manuscript.greeting_morning)
-        self.counts["greeting_morning"] += 1
-        image_flg = False
+    def good_morning(self, tweet):
+        # image_ratio = 0.000001
+        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name) + random.choice(self.manuscript.good_morning)
+        self.counts["good_morning"] += 1
+        # if random.random() < image_ratio:
+        #     pass
+        # else:
         self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
-        return reply, image_flg
+        return reply
     
-    def greeting_night(self, tweet, image_ratio=0.5):
-        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet)  + random.choice(self.manuscript.greeting_night)
-        self.counts["greeting_night"] += 1
-        image_flg = False
+    def good_night(self, tweet):
+        image_ratio = 0.4
+        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name)  + random.choice(self.manuscript.good_night)
+        self.counts["good_night"] += 1
         if random.random() < image_ratio:
-            image_flg = True
             self.api.update_with_media(filename="images/oyasumi_w_newtext.jpg", status = reply, in_reply_to_status_id = tweet.id)
         else:
             self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
-        return reply, image_flg
+        return reply
 
-    def praise(self, tweet, image_ratio = 0.00):
-        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet)  + random.choice(self.manuscript.reply)
+    def praise(self, tweet):
+        image_ratio = 0
+        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name)  + random.choice(self.manuscript.reply)
         self.counts["praise"] += 1
-        image_flg = False
         if random.random() < image_ratio:
-            image_flg = True
             self.api.update_with_media(filename="images/icon.jpg", status = reply, in_reply_to_status_id = tweet.id)
         else:
             self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
-        return reply, image_flg
+        return reply
 
     def tweet_sweet(self):
         status = random.choice(self.manuscript.sweet_tweet_before)
@@ -130,7 +130,7 @@ class Hometamon():
         else:
             self.api.update_status(status = status)
         self.counts["test"] += 1
-        return status, image_flg
+        return status
 
     def check_exclude(self, tweet): # 除外するかどうかcheck
         if str(tweet.user.id) == self.my_twitter_user_id:
@@ -157,17 +157,17 @@ class Hometamon():
                 return True
         return False
 
-    def check_greeting_morning(self, tweet): # 返事するかどうかcheck
-        if 5 <= self.JST.hour <= 10:
-            for greeting_morning_word in self.greeting_morning_words:
-                if greeting_morning_word in tweet.text:
+    def check_good_morning(self, tweet): # 返事するかどうかcheck
+        if 5 <= self.JST.hour <= 9:
+            for good_morning_word in self.good_morning_words:
+                if good_morning_word in tweet.text:
                     return True
         return False
 
-    def check_greeting_night(self, tweet):
-        if 22 <= self.JST.hour or self.JST.hour <= 2:
-            for greeting_night_word in self.greeting_nighy_words:
-                if greeting_night_word in tweet.text:
+    def check_good_night(self, tweet):
+        if 22 <= self.JST.hour or self.JST.hour <= 1:
+            for good_night_word in self.good_night_words:
+                if good_night_word in tweet.text:
                     return True
         return False
 
@@ -195,29 +195,28 @@ class Hometamon():
     def check_image_flg(self, tweet):
         return tweet.user.screen_name == "yosyuaomenww" and "image" in tweet.text
 
-    def classify(self, tweet, image_ratio = 0.05):
+    def classify(self, tweet):
         reply = ""
-        image_flg = False
         if self.check_exclude(tweet):
             self.counts["ignore"] += 1
         else:
-            if self.check_greeting_morning(tweet):
-                reply, image_flg = self.greeting_morning(tweet, image_ratio)
-            elif self.check_greeting_night(tweet):
-                reply, image_flg = self.greeting_night(tweet, image_ratio)
+            if self.check_good_morning(tweet):
+                reply = self.good_morning(tweet)
+            elif self.check_good_night(tweet):
+                reply  = self.good_night(tweet)
             elif self.check_reply(tweet):
-                reply, image_flg = self.praise(tweet, image_ratio)
+                reply  = self.praise(tweet)
             elif self.check_transform(tweet):
-                reply, image_flg = self.transform()
+                reply = self.transform()
             elif self.check_test(tweet):
-                reply, image_flg= self.test_tweet(image_flg = self.check_image_flg(tweet))
+                reply = self.test_tweet(image_flg = self.check_image_flg(tweet))
             else:
                 self.counts["pass"] += 1
-        return reply, image_flg
+        return reply
 
     def transform(self):
         self.counts["transform"] += 1
-        return "", False
+        return "" 
 
     def followback(self):
         followers = self.api.followers_ids(self.my_twitter_user_id)
@@ -237,7 +236,7 @@ class Hometamon():
             self.JST.strftime("%Y/%m/%d %H:%M:%S"),
             self.counts["praise"],
             self.counts["ignore"],
-            self.counts["greeting_morning"] + self.counts["greeting_night"],
+            self.counts["good_morning"] + self.counts["good_night"],
             self.counts["pass"],
             self.counts["transform"],
             self.counts["test"],

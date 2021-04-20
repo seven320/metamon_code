@@ -13,7 +13,7 @@ class Test_Hometamon():
         app = hometamon.Hometamon()
         app.manuscript = mocker.Mock()
         app.manuscript.reply = ["お疲れ様だもん"]
-        app.manuscript.greeting_morning = ["おはようだもん"]
+        app.manuscript.good_morning = ["おはようだもん"]
         app.manuscript.good_night = ["おやすみだもん"]
         app.manuscript.sweet_tweet_before = ["3時"]
         app.manuscript.sweet_tweet_after = ["休憩するもん"]
@@ -54,16 +54,16 @@ class Test_Hometamon():
             assert app.user_name_changer("電電") == "電電"
 
     class Test_朝の挨拶を行う:
-        def test_greeting_morning(self, app, tweet):
+        def test_good_morning(self, app, tweet):
             expected = "@yosyuaomenww\n電電おはようだもん"
-            assert app.greeting_morning(tweet) == (expected, False)
+            assert app.good_morning(tweet) == (expected, False)
             app.api.update_status.assert_called_once_with(
                 status = expected,
                 in_reply_to_status_id = 123
             )
             app.api.create_favorite.assert_called_once_with(tweet.id)
         
-        def test_greeting_morning_with_image(self):
+        def test_good_morning_with_image(self):
             pass
     
     class Test_夜の挨拶を行う:
@@ -168,17 +168,17 @@ class Test_Hometamon():
             assert app.check_exclude(tweet) == True
 
     class Test_日本時間の5時00分_9時59分の時Trueを返す:
-        def test_check_greeting_morning_with_night(self, app, tweet):
+        def test_check_good_morning_with_night(self, app, tweet):
             app.JST = dt.datetime(2020, 11, 11, 4, 59)
-            assert app.check_greeting_morning(tweet) == False
+            assert app.check_good_morning(tweet) == False
 
-        def test_check_greeting_morning_with_early_morning(self, app, tweet):
+        def test_check_good_morning_with_early_morning(self, app, tweet):
             app.JST = dt.datetime(2020, 11, 11, 8, 0)
-            assert app.check_greeting_morning(tweet) == True
+            assert app.check_good_morning(tweet) == True
 
-        def test_check_greeting_morning_with_noon(self, app, tweet):
+        def test_check_good_morning_with_noon(self, app, tweet):
             app.JST = dt.datetime(2020, 11, 11, 10, 0)
-            assert app.check_greeting_morning(tweet) == False
+            assert app.check_good_morning(tweet) == False
 
     class Test_日本時間の22時00分_1時59分の時Trueを返す:
         def test_check_good_night(self, app, tweet):

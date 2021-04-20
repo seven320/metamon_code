@@ -91,7 +91,7 @@ class Manuscript:
             "ちょっと休むんだもん"
         ]
 
-        self.greeting_morning = [
+        self.good_morning = [
             "おはようだもん！！",
             "起きて偉いんだもん",
             "おはよう。。。\nまだ眠いんだもん",

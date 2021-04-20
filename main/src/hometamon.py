@@ -52,7 +52,7 @@ class Hometamon():
             "キャリア", "エージェント", "LINE", "エロ"
             ] # user name
         self.exclusion_words = ["peing", "http"]
-        self.greeting_morning_words = ["おはよう", "ぽきた", "起きた", "起床", "早起き"]
+        self.good_morning_words = ["おはよう", "ぽきた", "起きた", "起床", "早起き"]
         self.good_night_words = ["おやすみ", "寝よう", "寝る", "寝ます"]
         self.classify_words = [
             "褒めて", "ほめて", 
@@ -67,7 +67,7 @@ class Hometamon():
         self.counts = {
             "ignore": 0,
             "praise": 0,
-            "greeting_morning": 0,
+            "good_morning": 0,
             "good_night": 0,
             "pass": 0,
             "transform": 0,
@@ -84,9 +84,9 @@ class Hometamon():
             normalize_user_name = normalize_user_name.split("@")[0]
         return normalize_user_name
 
-    def greeting_morning(self, tweet, image_ratio=0):
-        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name) + random.choice(self.manuscript.greeting_morning)
-        self.counts["greeting_morning"] += 1
+    def good_morning(self, tweet, image_ratio=0):
+        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name) + random.choice(self.manuscript.good_morning)
+        self.counts["good_morning"] += 1
         image_flg = False
         self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
@@ -156,10 +156,10 @@ class Hometamon():
                 return True
         return False
 
-    def check_greeting_morning(self, tweet): # 返事するかどうかcheck
+    def check_good_morning(self, tweet): # 返事するかどうかcheck
         if 5 <= self.JST.hour <= 9:
-            for greeting_morning_word in self.greeting_morning_words:
-                if greeting_morning_word in tweet.text:
+            for good_morning_word in self.good_morning_words:
+                if good_morning_word in tweet.text:
                     return True
         return False
 
@@ -200,8 +200,8 @@ class Hometamon():
         if self.check_exclude(tweet):
             self.counts["ignore"] += 1
         else:
-            if self.check_greeting_morning(tweet):
-                reply, image_flg = self.greeting_morning(tweet, image_ratio)
+            if self.check_good_morning(tweet):
+                reply, image_flg = self.good_morning(tweet, image_ratio)
             elif self.check_good_night(tweet):
                 reply, image_flg = self.good_night(tweet, image_ratio)
             elif self.check_reply(tweet):
@@ -236,7 +236,7 @@ class Hometamon():
             self.JST.strftime("%Y/%m/%d %H:%M:%S"),
             self.counts["praise"],
             self.counts["ignore"],
-            self.counts["greeting_morning"] + self.counts["good_night"],
+            self.counts["good_morning"] + self.counts["good_night"],
             self.counts["pass"],
             self.counts["transform"],
             self.counts["test"],

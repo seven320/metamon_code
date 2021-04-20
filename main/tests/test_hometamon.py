@@ -315,30 +315,25 @@ class Test_Hometamon():
                 app.api.update_status.assert_not_called()
                 app.api.create_favorite.assert_not_called()
 
-    def test_classify_5(self, app, tweet):
-        tweet.text = "__test__"
-        expected = "起きてるもん！\n⊂・ー・つ"
-        assert app.classify(tweet) == (expected, False)
-        app.api.update_status.assert_called_once_with(
-            status = expected
-        )
-        # app.api.update_with_media.assert_called_once_with(
-        #     filename="images/icon.jpg", status = expected
-        # )
-        expected = ""
-        tweet.user.screen_name = "twitter"
-        assert app.classify(tweet) == (expected, False)
+        class Test_テストツイート:
+            def test_classify(self, app, tweet):
+                tweet.text = "__test__"
+                expected = "起きてるもん！\n⊂・ー・つ"
+                assert app.classify(tweet) == (expected, False)
+                app.api.update_status.assert_called_once_with(
+                    status = expected
+                )
+                expected = ""
+                tweet.user.screen_name = "twitter"
+                assert app.classify(tweet) == (expected, False)
 
-    def test_classify_6(self, app, tweet):
-        tweet.text = "__test__ image"
-        expected = "起きてるもん！\n⊂・ー・つ"
-        assert app.classify(tweet) == (expected, True)
-        app.api.update_with_media.assert_called_once_with(
-            status = expected, filename="images/icon.jpg"
-        )
-        expected = ""
-        tweet.user.screen_name = "twitter"
-        assert app.classify(tweet) == (expected, False)
+            def test_classify_with_image(self, app, tweet):
+                tweet.text = "__test__ image"
+                expected = "起きてるもん！\n⊂・ー・つ"
+                assert app.classify(tweet) == (expected, True)
+                app.api.update_with_media.assert_called_once_with(
+                    status = expected, filename="images/icon.jpg"
+                )
 
     def test_transform(self, app):
         expected = ""

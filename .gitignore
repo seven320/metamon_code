@@ -4,6 +4,9 @@
 /Django/main/hometask/local_settings.py
 *.pyc
 *.sqlite3
+exec
+
+.DS_Store
 
 __pycache__/
-.DS_Store
+.ipynb_checkpoints/

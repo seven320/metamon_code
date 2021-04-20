@@ -237,6 +237,39 @@ class Test_Hometamon():
                 tweet.text = "__test__ image"
                 assert app.check_image_flg(tweet) == True
 
+    class フォローしてきたユーザーのうちランダムに10人フォローバックする:
+        def test_followback(self, app, mocker):
+            app.api.followers_ids.return_value = [1220747547607650304, 1125305225198297089]
+            app.api.friends_ids.return_value = [1220747547607650304]
+            user_status = mocker.Mock()
+            user_status.follow_request_sent = False
+            user_status.id = 1125305225198297089
+            app.api.lookup_users.return_value = [
+                user_status
+            ]
+            app.followback()
+            app.api.create_friendship.assert_called_once_with(
+                id = 1125305225198297089
+            )
+
+            app.api.reset_mock() # 呼び出し回数をリセット
+            user_status.follow_request_sent = True
+            app.api.lookup_users.return_value = [
+                user_status
+            ]
+            app.followback()
+            app.api.create_friendship.assert_not_called()
+
+    class 実行した行動のログをyosyuaomenwwに送信する:
+        def test_report(self, app):
+            app.JST = dt.datetime(2020, 4, 27, 17, 40 , 30)
+            app.admin_twitter_id = 999
+            app.report()
+            app.api.send_direct_message.assert_called_once_with(
+                999,
+                'time:2020/04/27 17:40:30\n褒めた数:0\n除外した数:0\n挨拶した数:0\n反応しなかった数:0\n変身:0\nテスト数:0\n合計:0だもん！'
+            )
+
     #################
     ### Join test ### 
     #################
@@ -335,38 +368,8 @@ class Test_Hometamon():
                     status = expected, filename="images/icon.jpg"
                 )
 
-    def test_transform(self, app):
-        expected = ""
-        assert app.transform() == (expected, False)
-        assert app.counts["transform"] == 1
-
-    def test_followback(self, app, mocker):
-        app.api.followers_ids.return_value = [1220747547607650304, 1125305225198297089]
-        app.api.friends_ids.return_value = [1220747547607650304]
-        user_status = mocker.Mock()
-        user_status.follow_request_sent = False
-        user_status.id = 1125305225198297089
-        app.api.lookup_users.return_value = [
-            user_status
-        ]
-        app.followback()
-        app.api.create_friendship.assert_called_once_with(
-            id = 1125305225198297089
-        )
-
-        app.api.reset_mock() # 呼び出し回数をリセット
-        user_status.follow_request_sent = True
-        app.api.lookup_users.return_value = [
-            user_status
-        ]
-        app.followback()
-        app.api.create_friendship.assert_not_called()
-
-    def test_report(self, app):
-        app.JST = dt.datetime(2020, 4, 27, 17, 40 , 30)
-        app.admin_twitter_id = 999
-        app.report()
-        app.api.send_direct_message.assert_called_once_with(
-            999,
-            'time:2020/04/27 17:40:30\n褒めた数:0\n除外した数:0\n挨拶した数:0\n反応しなかった数:0\n変身:0\nテスト数:0\n合計:0だもん！'
-        )
+        class Test_変身:
+            def test_transform(self, app):
+                expected = ""
+                assert app.transform() == (expected, False)
+                assert app.counts["transform"] == 1

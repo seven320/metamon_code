@@ -53,7 +53,7 @@ class Hometamon():
             ] # user name
         self.exclusion_words = ["peing", "http"]
         self.greeting_morning_words = ["おはよう", "ぽきた", "起きた", "起床", "早起き"]
-        self.greeting_nighy_words = ["おやすみ", "寝よう", "寝る", "寝ます"]
+        self.greeting_night_words = ["おやすみ", "寝よう", "寝る", "寝ます"]
         self.classify_words = [
             "褒めて", "ほめて", 
             "バオワ", "ばおわ", "バイト終", "バおわ", 
@@ -165,7 +165,7 @@ class Hometamon():
 
     def check_greeting_night(self, tweet):
         if 22 <= self.JST.hour or self.JST.hour <= 2:
-            for greeting_night_word in self.greeting_nighy_words:
+            for greeting_night_word in self.greeting_night_words:
                 if greeting_night_word in tweet.text:
                     return True
         return False

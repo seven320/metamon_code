@@ -220,15 +220,16 @@ class Test_Hometamon():
         def test_check_transform_with_false(self, app, tweet, mocker):
             assert app.check_transform(mocker.patch.object(tweet, "method", text = "返信")) == False
 
-    def test_check_text(self, app, tweet):
-        tweet.text = "__test__"
-        tweet.user.screen_name = "yosyuaomenww"
-        assert app.check_test(tweet) == True
+    class Test_test_tweetに対してツイートするかどうか:
+        def test_check_text(self, app, tweet):
+            tweet.text = "__test__"
+            tweet.user.screen_name = "yosyuaomenww"
+            assert app.check_test(tweet) == True
 
-    def test_check_text_1(self, app, tweet):
-        tweet.text = "__test__"
-        tweet.user.screen_name = "hogehoge"
-        assert app.check_test(tweet) == False
+        def test_check_text_with_false(self, app, tweet):
+            tweet.text = "__test__"
+            tweet.user.screen_name = "hogehoge"
+            assert app.check_test(tweet) == False
 
     def test_check_image_flg(self, app, tweet):
         tweet.user.screen_name = "yosyuaomenww"

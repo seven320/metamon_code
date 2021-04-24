@@ -137,7 +137,6 @@ class HomeTask(hometamon.Hometamon):
         self.task_words = ["#hometask"]
         self.django_api = API()
 
-
     def check_task(self, tweet):
         if not "@denden_by" in tweet.text:
             return False
@@ -174,7 +173,7 @@ class HomeTask(hometamon.Hometamon):
             reply = "まだtaskが設定されてないもん!!下のurlからツイートして設定するもん."
             reply = reply + "\n" + tweet_intent.make(text = "設定:", tweet_to="denden_by")
         print("reply", reply)
-        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet) + reply
+        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name) + reply
         self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
         return reply

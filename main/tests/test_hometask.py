@@ -169,3 +169,4 @@ def test_hometask_exclude(app, tweet, mocker):
     tweet_text = "@denden_by ありがとうねえ"
     assert app.hometask_exclude(mocker.patch.object(tweet,"method", text = tweet_text, favorited = False, id = 123))  == True
     app.api.create_favorite.assert_called_once_with(id = tweet.id)
+

@@ -25,8 +25,8 @@ RUN pip install \
 COPY ./src src
 COPY ./tests tests
 COPY ./images images
-COPY ./crontab /var/spool/cron/crontabs/root
-CMD busybox crond -l 2 -L /dev/stderr -f
+COPY ./env env
+
 
 ENV USER mother
 ENV HOME /home/${USER}

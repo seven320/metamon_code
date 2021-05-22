@@ -15,18 +15,17 @@ from src import meta_manuscript
 
 class Hometamon():
     def __init__(self):
-        if os.path.exists(".env"):
-            load_dotenv(".env")
-        elif os.path.exists("src/.env"):
-            load_dotenv("src/.env")
-        elif os.path.exists("/src/.env"):
-            load_dotenv("/src/.env")
-        elif os.path.exists("main/src/.env"):
-            load_dotenv("main/src/.env")
-        elif os.path.exists("../src/.env"):
-            load_dotenv("../src/.env")
+        if os.path.exists("/env/.env"):
+            load_dotenv("/env/.env")
+        elif os.path.exists("env/.env"):
+            load_dotenv("env/.env")
         else:
             print("error doesn't exist .env path")
+
+        if os.path.dirname("images"):
+            self.image_dir = "images"
+        elif os.path.dirname("/images"):
+            self.image_dir = "/images"
 
         consumer_key = os.environ.get("CONSUMER_KEY")
         consumer_secret = os.environ.get("CONSUMER_SECRET")
@@ -95,23 +94,35 @@ class Hometamon():
         self.api.create_favorite(tweet.id)
         return reply
     
-    def good_night(self, tweet):
-        image_ratio = 0.1
+    def good_night(self, tweet, image_ratio = 0.2):
         reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name)  + random.choice(self.manuscript.good_night)
         self.counts["good_night"] += 1
         if random.random() < image_ratio:
-            self.api.update_with_media(filename="images/oyasumi_w_newtext.png", status = reply, in_reply_to_status_id = tweet.id)
+            image_file = os.path.join(self.image_dir, "oyasumi_w_newtext.png")
+            self.api.update_with_media(filename=image_file, status = reply, in_reply_to_status_id = tweet.id)
         else:
             self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
         return reply
 
-    def praise(self, tweet):
-        image_ratio = 0
+    def choose_image_by_reply(self, reply:str) -> str:
+        # replyの言葉から画像を選ぶ
+        image_name = "erai_w_newtext.png"
+        for otukare in ["お疲れ", "飲む", "休"]: # 飲み物を運んでくれるようなリプライ
+            if otukare in reply:
+                image_name = "otukare_w_newtext.png"
+        for yosi in ["よし", "えらい", "すごい"]: #頭撫でるイメージのリプライ
+            if yosi in reply:
+                image_name = "yosi_w_newtext.png"
+        return image_name
+
+    def praise(self, tweet, image_ratio = 0.2):
         reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name)  + random.choice(self.manuscript.reply)
         self.counts["praise"] += 1
         if random.random() < image_ratio:
-            self.api.update_with_media(filename="images/icon.jpg", status = reply, in_reply_to_status_id = tweet.id)
+            image_name = self.choose_image_by_reply(reply)
+            image_file = os.path.join(self.image_dir, image_name)
+            self.api.update_with_media(filename=image_file, status = reply, in_reply_to_status_id = tweet.id)
         else:
             self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
         self.api.create_favorite(tweet.id)
@@ -126,7 +137,8 @@ class Hometamon():
     def test_tweet(self, image_flg = False):
         status = "起きてるもん！\n⊂・ー・つ"
         if image_flg:
-            self.api.update_with_media(filename="images/icon.jpg", status = status)
+            image_file = os.path.join(self.image_dir, "icon.jpg")
+            self.api.update_with_media(filename=image_file, status = status)
         else:
             self.api.update_status(status = status)
         self.counts["test"] += 1

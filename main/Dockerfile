@@ -26,7 +26,8 @@ COPY ./src src
 COPY ./tests tests
 COPY ./images images
 COPY ./env env
-
+COPY ./crontab /var/spool/cron/crontabs/root
+CMD ["busybox", "crond", "-l", "2", "-L", "/dev/stderr", "-f"]
 
 ENV USER mother
 ENV HOME /home/${USER}

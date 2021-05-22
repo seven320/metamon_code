@@ -44,6 +44,10 @@ class Test_Hometamon():
         task_tweet.id = 987654
         return task_tweet
 
+    class Test_初期値がうまく読み込めているか調べる:
+        def test_image_dir(self, app):
+            assert app.image_dir in ["images", "/images"]
+
     class Test_スクリーンネームからat以降の文字を削除する:
         def test_user_screen_name_changer_small(self, app):
             assert app.user_name_changer("電電@テスト頑張る") == "電電"
@@ -85,7 +89,7 @@ class Test_Hometamon():
             random.random = mocker.Mock(return_value = 0)
             assert app.good_night(tweet) == expected
             app.api.update_with_media.assert_called_once_with(
-                filename="images/oyasumi_w_newtext.png",
+                filename=os.path.join(app.image_dir, "oyasumi_w_newtext.png"),
                 status = expected,
                 in_reply_to_status_id = tweet.id
                 )
@@ -139,7 +143,8 @@ class Test_Hometamon():
             expected = "起きてるもん！\n⊂・ー・つ"
             assert app.test_tweet(image_flg=True) == expected
             app.api.update_with_media.assert_called_once_with(
-                filename="images/icon.jpg", status = expected
+                filename=os.path.join(app.image_dir, "icon.jpg"),
+                status = expected
             )
 
     class Test_定められたツイートに対しては反応しない:
@@ -330,7 +335,7 @@ class Test_Hometamon():
                 app.JST = dt.datetime(2020, 2, 21, 22, 0)
                 assert app.classify(tweet) == expected
                 app.api.update_with_media.assert_called_once_with(
-                    filename="images/oyasumi_w_newtext.png",
+                    filename=os.path.join(app.image_dir,"oyasumi_w_newtext.png"),
                     status = expected,
                     in_reply_to_status_id = tweet.id
                     )
@@ -339,11 +344,26 @@ class Test_Hometamon():
                 )
 
         class Test_褒める:
-            def test_classify(self, app, tweet):
+            def test_classify(self, app, tweet, mocker):
                 tweet.text = "疲れた"
                 expected = "@yosyuaomenww\n電電お疲れ様だもん"
+                random.random = mocker.Mock(return_value = 1)
                 assert app.classify(tweet) == expected
                 app.api.update_status.assert_called_once_with(
+                    status = expected,
+                    in_reply_to_status_id = tweet.id
+                )
+                app.api.create_favorite.assert_called_once_with(
+                    tweet.id
+                )
+
+            def test_classify_with_image(self, app, tweet, mocker):
+                tweet.text = "疲れた"
+                expected = "@yosyuaomenww\n電電お疲れ様だもん"
+                random.random = mocker.Mock(return_value = 0)
+                assert app.classify(tweet) == expected
+                app.api.update_with_media.assert_called_once_with(
+                    filename = os.path.join(app.image_dir, "otukare_w_newtext.png"),
                     status = expected,
                     in_reply_to_status_id = tweet.id
                 )
@@ -357,6 +377,20 @@ class Test_Hometamon():
                 assert app.classify(tweet) == expected
                 app.api.update_status.assert_not_called()
                 app.api.create_favorite.assert_not_called()
+
+            def test_choose_image_by_reply(self, app):
+                reply = "好きだもんよ"
+                assert app.choose_image_by_reply(reply) == "erai_w_newtext.png"
+
+            def test_choose_image_by_reply_yosi(self, app):
+                reply = "えらいもん"
+                assert app.choose_image_by_reply(reply) == "yosi_w_newtext.png"
+
+            def test_choose_image_by_reply_otu(self, app):
+                reply = "お疲れ様だもん"
+                assert app.choose_image_by_reply(reply) == "otukare_w_newtext.png"
+            
+            
 
         class Test_テストツイート:
             def test_classify(self, app, tweet):
@@ -375,7 +409,8 @@ class Test_Hometamon():
                 expected = "起きてるもん！\n⊂・ー・つ"
                 assert app.classify(tweet) == expected
                 app.api.update_with_media.assert_called_once_with(
-                    status = expected, filename="images/icon.jpg"
+                    status = expected,
+                    filename=os.path.join(app.image_dir,"icon.jpg")
                 )
 
         class Test_変身:

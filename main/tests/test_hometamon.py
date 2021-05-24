@@ -177,6 +177,10 @@ class Test_Hometamon():
             tweet.user.name = "botほげ"
             assert app.check_exclude(tweet) == True
 
+        def test_check_exclude_with_exclude_description(self, app, tweet):
+            tweet.user.description = "セフレになりたいな(///∇︎///) "
+            assert app.check_exclude(tweet) == True
+
     class Test_日本時間の5時00分_9時59分の時Trueを返す:
         def test_check_good_morning_with_night(self, app, tweet):
             app.JST = dt.datetime(2020, 11, 11, 4, 59)
@@ -255,8 +259,10 @@ class Test_Hometamon():
             app.api.followers_ids.return_value = [1220747547607650304, 1125305225198297089]
             app.api.friends_ids.return_value = [1220747547607650304]
             user_status = mocker.Mock()
+            user_status.name = "abap"
             user_status.follow_request_sent = False
             user_status.id = 1125305225198297089
+            user_status.description = None
             app.api.lookup_users.return_value = [
                 user_status
             ]

@@ -48,9 +48,11 @@ class Hometamon():
         self.exclusion_user_names = [
             "bot", "ビジネス", "副業", "公式", 
             "株", "FX", "ブランド", "無料", 
-            "キャリア", "エージェント", "LINE", "エロ"
+            "キャリア", "エージェント", "LINE", "エロ", 
+            "オフパコ", "おふぱこ", "裏垢", "セフレ"
             ] # user name
         self.exclusion_words = ["peing", "http"]
+        self.exclution_descriptions= ["パコ", "おふぱこ", "LINE", "裏垢", "エロ", "セフレ"]
         self.good_morning_words = ["おはよう", "ぽきた", "起きた", "起床", "早起き"]
         self.good_night_words = ["おやすみ", "寝よう", "寝る", "寝ます"]
         self.classify_words = [
@@ -161,12 +163,11 @@ class Hometamon():
             return True
         elif len(tweet.text) >= 80: # if tweet is more than 80 words, it will be ignored
             return True
-        for exclusion_name in self.exclusion_user_names:
-            if exclusion_name in tweet.user.name:
-                return True
         for exclusion_word in self.exclusion_words:
             if exclusion_word in tweet.text:
                 return True
+        if self.exclude_user(tweet.user): #特定のユーザー情報を含む場合除外
+            return True
         return False
 
     def check_good_morning(self, tweet): # 返事するかどうかcheck
@@ -230,18 +231,36 @@ class Hometamon():
         self.counts["transform"] += 1
         return "" 
 
+    def exclude_user(self, user_status):
+        for exclusion_name in self.exclusion_user_names:
+            if exclusion_name in user_status.name:
+                return True
+
+        if user_status.description is None:
+            return False
+        for exclusion_description in self.exclution_descriptions:
+            if exclusion_description in user_status.description:
+                return True
+        return False
+
     def followback(self):
         followers = self.api.followers_ids(self.my_twitter_user_id)
         friends = self.api.friends_ids(self.my_twitter_user_id)
         follow_back = list(set(followers) - set(friends))
         random.shuffle(follow_back)
-        user_statuses = self.api.lookup_users(follow_back[:10])
+        user_statuses = self.api.lookup_users(follow_back)
+        cnt = 0
         for user_status in user_statuses:
+            if self.exclude_user(user_status):
+                continue
             if not user_status.follow_request_sent:
                 try:
                     self.api.create_friendship(id = user_status.id)
+                    cnt += 1
                 except tweepy.error.TweepError as e:
                     print(e)
+            if cnt > 10:
+                break
 
     def report(self):
         result = "time:{}\n褒めた数:{}\n除外した数:{}\n挨拶した数:{}\n反応しなかった数:{}\n変身:{}\nテスト数:{}\n合計:{}だもん！".format(

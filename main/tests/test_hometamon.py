@@ -44,6 +44,19 @@ class Test_Hometamon():
         task_tweet.id = 987654
         return task_tweet
 
+    @pytest.fixture()
+    def user_status(self, mocker):
+        user_status = mocker.MagicMock()
+        user_status.name = "電電"
+        user_status.screen_name = "yosyuaomenww"
+        user_status.id = 5555555555
+        user_status.url = "https://developer.twitter.com"
+        user_status.description = "I love cats!!!!"
+        user_status.statuses_count = 1000 # num of tweets
+        user_status.followers_count = 100
+        user_status.friends_count = 100 # following count
+        return user_status
+
     class Test_初期値がうまく読み込めているか調べる:
         def test_image_dir(self, app):
             assert app.image_dir in ["images", "/images"]
@@ -255,6 +268,13 @@ class Test_Hometamon():
                 assert app.check_image_flg(tweet) == True
 
     class Test_フォローしてきたユーザーのうちランダムに10人フォローバックする:
+        def test_exclude_user(self, app, user_status):
+            assert app.exclude_user(user_status) == False
+        
+        def test_exclude_user_with_exclude_description(self, app, user_status):
+            user_status.description = "裏垢はじめました音符リアルな出会いが欲しいです"
+            assert app.exclude_user(user_status) == True
+
         def test_followback(self, app, mocker):
             app.api.followers_ids.return_value = [1220747547607650304, 1125305225198297089]
             app.api.friends_ids.return_value = [1220747547607650304]
@@ -278,6 +298,21 @@ class Test_Hometamon():
             ]
             app.followback()
             app.api.create_friendship.assert_not_called()
+
+        def test_followback_with_exclution_user(self, app, mocker):
+            app.api.followers_ids.return_value = [1220747547607650304, 1125305225198297089]
+            app.api.friends_ids.return_value = [1220747547607650304]
+            user_status = mocker.Mock()
+            user_status.name = "abap"
+            user_status.follow_request_sent = False
+            user_status.id = 1125305225198297089
+            user_status.description = "セフレ募集中"
+            app.api.lookup_users.return_value = [
+                user_status
+            ]
+            app.followback()
+            app.api.create_friendship.assert_not_called(
+            )
 
     class Test_実行した行動のログをyosyuaomenwwに送信する:
         def test_report(self, app):

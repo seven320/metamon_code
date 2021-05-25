@@ -18,6 +18,7 @@ test:
 	docker-compose build 
 	docker-compose up -d
 	docker exec hometamon pytest tests
+	docker-compose down
 
 # run:
 	# python3 main/src/hometamon.py --test 1

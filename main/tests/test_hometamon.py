@@ -144,6 +144,15 @@ class Test_Hometamon():
                 status = expected
             )
 
+    class Test_LINEスタンプの宣伝ツイートを行う:
+        def test_tweet_linestamp(self, app):
+            expected = "ぼくのLINEスタンプがでたもん!!!ぼくのかわりにみんなをほめてほしいもん!!よろしくもん!!\nhttps://store.line.me/stickershop/product/17652748"
+            app.test_tweet_linestamp()
+            app.api.update_with_media.assert_called_once_with(
+                filename = os.path.join(app.image_dir, "stamp", "all.png"),
+                status = expected
+            )
+
     class Test_電電のテストツイートに対して反応する:
         def test_test_tweet(self, app):
             expected = "起きてるもん！\n⊂・ー・つ"
@@ -235,6 +244,15 @@ class Test_Hometamon():
         def test_check_sweet_with_after(self, app):
             app.JST = dt.datetime(2020, 12, 25, 20, 8)
             assert app.check_sweet() == False
+
+    class Test_日本時間の12日の18時15から18時20にTrueを返す:
+        def test_check_tweet_linestamp_with_False(self, app, tweet):
+            app.JST = dt.datetime(2022, 12, 12, 18, 21)
+            assert app.check_tweet_linestamp() == False
+
+        def test_check_tweet_linestamp_with_True(self, app, tweet):
+            app.JST = dt.datetime(2022, 12, 12, 18, 18)
+            assert app.check_tweet_linestamp() == True
 
     class Test_返事をするかどうか:
         def test_check_reply(self, app, tweet, mocker):

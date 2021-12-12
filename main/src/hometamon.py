@@ -258,7 +258,7 @@ class Hometamon():
         friends = self.api.friends_ids(self.my_twitter_user_id)
         follow_back = list(set(followers) - set(friends))
         random.shuffle(follow_back)
-        user_statuses = self.api.lookup_users(follow_back)
+        user_statuses = self.api.lookup_users(follow_back[:100])
         cnt = 0
         for user_status in user_statuses:
             if self.exclude_user(user_status):

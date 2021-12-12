@@ -136,6 +136,11 @@ class Hometamon():
         status += random.choice(self.manuscript.sweet_tweet_after)
         self.api.update_status(status = status)
 
+    def test_tweet_linestamp(self):
+        reply = "ぼくのLINEスタンプがでたもん!!!ぼくのかわりにみんなをほめてほしいもん!!よろしくもん!!\nhttps://store.line.me/stickershop/product/17652748"
+        image_file = os.path.join(self.image_dir, "stamp", "all.png")
+        self.api.update_with_media(filename=image_file, status = reply)
+
     def test_tweet(self, image_flg = False):
         status = "起きてるもん！\n⊂・ー・つ"
         if image_flg:
@@ -184,8 +189,13 @@ class Hometamon():
                     return True
         return False
 
+    # NOTE: 毎日15時にお菓子を進めるツイートをする
     def check_sweet(self):
         return self.JST.hour == 15 and 0 <= self.JST.minute <= 5
+
+    # NOTE: 一ヶ月に一回宣伝ツイートを実行する
+    def check_tweet_linestamp(self):    
+        return self.JST.day == 12 and self.JST.hour == 18 and 15 <= self.JST.minute <= 20
 
     def check_reply(self, tweet):
         for classify_word in self.classify_words:
@@ -283,6 +293,8 @@ def main():
         hometamon.classify(public_tweet)
     if hometamon.check_sweet():
         hometamon.tweet_sweet()
+    if hometamon.check_tweet_linestamp():
+        hometamon.tweet_linestamp()
     hometamon.followback()
     hometamon.report()
 

@@ -9,16 +9,16 @@ services:
         environment: 
             TZ: Asia/Tokyo
 
-    web:
-        build: ./Django/main
-        container_name: hometask
-        command: python3 manage.py runserver 0.0.0.0:8001
-        volumes:
-            - ./Django/main:/code
-        ports:
-            - "8001:8001"
-        environment:
-            TZ: Asia/Tokyo
+    # web:
+        # build: ./Django/main
+        # container_name: hometask
+        # command: python3 manage.py runserver 0.0.0.0:8001
+        # volumes:
+        #     - ./Django/main:/code
+        # ports:
+        #     - "8001:8001"
+        # environment:
+        #     TZ: Asia/Tokyo
 
     # database:
     #     image: mysql:5.7

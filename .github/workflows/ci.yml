@@ -20,12 +20,6 @@ jobs:
           docker-compose build
           docker-compose up -d
           docker exec hometamon pytest tests
-      - 
-      
 
-        
-
-    
-  
 
 

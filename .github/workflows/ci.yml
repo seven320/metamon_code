@@ -15,16 +15,13 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
-
-      - name: Git Checkout
-        uses: actions/checkout@v3
-
       - name: test
         run: |
           docker-compose build
           docker-compose up -d
           docker exec hometamon pytest tests
+      - 
+      
 
         
 

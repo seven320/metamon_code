@@ -16,17 +16,33 @@ jobs:
         run: |
           ls ${{ github.workspace }}
 
-      
-      - name: Docker Build
-        run: 
-          docker-compose build
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
       - name: Cache Docker Layers
+        id: cache
         uses: actions/cache@v3
         with: 
           path: /tmp/.build-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          key: ${{ github.ref }}-${{ github.sha }}
           restore-keys:
             ${{ runner.os }}-buildx-
+
+      # キャッシュがある場合は tar をロードしてイメージ一覧に追加
+      # - name: Load Docker image if exists
+      #   if: steps.cache.outputs.cache-hit == 'true'
+      #   run: docker load --input ${{ steps.imagetag.outputs.PATH_TAR }}
+
+      # - name: Build Docker image and save
+      #   if: steps.cache.outputs.cache-hit != 'true'
+      #   run: |
+
+
+      - name: Docker Build
+        run: 
+          docker-compose build
+
+      
       - name: Text
         run: |
           docker-compose up -d

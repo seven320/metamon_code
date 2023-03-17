@@ -1,7 +1,8 @@
 # encoding: utf-8
 import urllib.parse
 
-def make(text, tweet_to = "", url = "", hashtag = "", via = "", related = "", in_reply_to = ""):
+
+def make(text, tweet_to="", url="", hashtag="", via="", related="", in_reply_to=""):
     base_url = "https://twitter.com/intent/tweet"
 
     if not tweet_to == "":
@@ -12,7 +13,7 @@ def make(text, tweet_to = "", url = "", hashtag = "", via = "", related = "", in
         "url": url,
         "hashtags": hashtag,
         "via": via,
-        "in_reply_to": in_reply_to
+        "in_reply_to": in_reply_to,
     }
 
     parameters = urllib.parse.urlencode(query_dic)
@@ -24,8 +25,7 @@ def make(text, tweet_to = "", url = "", hashtag = "", via = "", related = "", in
 
     return web_intent_url
 
+
 if __name__ == "__main__":
     intent_url = make()
     print(intent_url)
-
-    

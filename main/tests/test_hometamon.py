@@ -8,7 +8,8 @@ import datetime as dt
 
 from src import hometamon
 
-class Test_Hometamon():
+
+class Test_Hometamon:
     @pytest.fixture()
     def app(self, mocker):
         app = hometamon.Hometamon()
@@ -18,7 +19,7 @@ class Test_Hometamon():
         app.manuscript.good_night = ["おやすみだもん"]
         app.manuscript.sweet_tweet_before = ["3時"]
         app.manuscript.sweet_tweet_after = ["休憩するもん"]
-        app.manuscript.sweets = ["1F950"] # croissant
+        app.manuscript.sweets = ["1F950"]  # croissant
         app.my_twitter_user_id = "966247026416472064"
         app.api = mocker.MagicMock()
         return app
@@ -52,9 +53,9 @@ class Test_Hometamon():
         user_status.id = 5555555555
         user_status.url = "https://developer.twitter.com"
         user_status.description = "I love cats!!!!"
-        user_status.statuses_count = 1000 # num of tweets
+        user_status.statuses_count = 1000  # num of tweets
         user_status.followers_count = 100
-        user_status.friends_count = 100 # following count
+        user_status.friends_count = 100  # following count
         return user_status
 
     class Test_初期値がうまく読み込めているか調べる:
@@ -64,7 +65,7 @@ class Test_Hometamon():
     class Test_スクリーンネームからat以降の文字を削除する:
         def test_user_screen_name_changer_small(self, app):
             assert app.user_name_changer("電電@テスト頑張る") == "電電"
-        
+
         def test_user_screen_name_changer_big(self, app):
             assert app.user_name_changer("電電＠テスト頑張る") == "電電"
 
@@ -76,52 +77,43 @@ class Test_Hometamon():
             expected = "@yosyuaomenww\n電電おはようだもん"
             assert app.good_morning(tweet) == expected
             app.api.update_status.assert_called_once_with(
-                status = expected,
-                in_reply_to_status_id = 123
+                status=expected, in_reply_to_status_id=123
             )
             app.api.create_favorite.assert_called_once_with(tweet.id)
-        
+
         def test_good_morning_with_image(self):
             pass
-    
+
     class Test_夜の挨拶を行う:
         def test_good_night(self, app, tweet, mocker):
             expected = "@yosyuaomenww\n電電おやすみだもん"
-            random.random = mocker.Mock(return_value = 1)
+            random.random = mocker.Mock(return_value=1)
             assert app.good_night(tweet) == expected
             app.api.update_status.assert_called_once_with(
-                status = expected,
-                in_reply_to_status_id = 123
-                )
-            app.api.create_favorite.assert_called_once_with(
-                tweet.id
-            ) 
+                status=expected, in_reply_to_status_id=123
+            )
+            app.api.create_favorite.assert_called_once_with(tweet.id)
 
         def test_good_night_with_image(self, app, tweet, mocker):
             expected = "@yosyuaomenww\n電電おやすみだもん"
-            random.random = mocker.Mock(return_value = 0)
+            random.random = mocker.Mock(return_value=0)
             assert app.good_night(tweet) == expected
             app.api.update_with_media.assert_called_once_with(
                 filename=os.path.join(app.image_dir, "oyasumi_w_newtext.png"),
-                status = expected,
-                in_reply_to_status_id = tweet.id
-                )
-            app.api.create_favorite.assert_called_once_with(
-                tweet.id
+                status=expected,
+                in_reply_to_status_id=tweet.id,
             )
+            app.api.create_favorite.assert_called_once_with(tweet.id)
 
     class Test_褒める:
         def test_praise(self, app, tweet, mocker):
-            random.random = mocker.Mock(return_value = 1)
+            random.random = mocker.Mock(return_value=1)
             expected = "@yosyuaomenww\n電電お疲れ様だもん"
             assert app.praise(tweet) == expected
             app.api.update_status.assert_called_once_with(
-                status = expected,
-                in_reply_to_status_id = tweet.id
-                )
-            app.api.create_favorite.assert_called_once_with(
-                tweet.id
+                status=expected, in_reply_to_status_id=tweet.id
             )
+            app.api.create_favorite.assert_called_once_with(tweet.id)
 
         # def test_praise_with_image(self, app, tweet, mocker):
         #     random.random = mocker.Mock(return_value = 0)
@@ -140,33 +132,28 @@ class Test_Hometamon():
         def test_tweet_sweet(self, app):
             expected = "3時\n⊂・ー・つ🥐\n休憩するもん"
             app.tweet_sweet()
-            app.api.update_status.assert_called_once_with(
-                status = expected
-            )
+            app.api.update_status.assert_called_once_with(status=expected)
 
     class Test_LINEスタンプの宣伝ツイートを行う:
         def test_tweet_linestamp(self, app):
             expected = "ぼくのLINEスタンプがでたもん!!!ぼくのかわりにみんなをほめてほしいもん!!よろしくもん!!\nhttps://store.line.me/stickershop/product/17652748"
             app.test_tweet_linestamp()
             app.api.update_with_media.assert_called_once_with(
-                filename = os.path.join(app.image_dir, "stamp", "all.png"),
-                status = expected
+                filename=os.path.join(app.image_dir, "stamp", "all.png"),
+                status=expected,
             )
 
     class Test_電電のテストツイートに対して反応する:
         def test_test_tweet(self, app):
             expected = "起きてるもん！\n⊂・ー・つ"
             assert app.test_tweet() == expected
-            app.api.update_status.assert_called_once_with(
-                status = expected
-            )
+            app.api.update_status.assert_called_once_with(status=expected)
 
         def test_test_tweet_with_image(self, app):
             expected = "起きてるもん！\n⊂・ー・つ"
             assert app.test_tweet(image_flg=True) == expected
             app.api.update_with_media.assert_called_once_with(
-                filename=os.path.join(app.image_dir, "icon.jpg"),
-                status = expected
+                filename=os.path.join(app.image_dir, "icon.jpg"), status=expected
             )
 
     class Test_定められたツイートに対しては反応しない:
@@ -174,24 +161,64 @@ class Test_Hometamon():
             assert app.check_exclude(tweet) == False
 
         def test_check_exclude_text_with_favorited(self, app, tweet, mocker):
-            assert app.check_exclude(mocker.patch.object(tweet, "method", favorited=True)) == True
+            assert (
+                app.check_exclude(mocker.patch.object(tweet, "method", favorited=True))
+                == True
+            )
 
         def test_check_exclude_text_with_RT(self, app, tweet, mocker):
-            assert app.check_exclude(mocker.patch.object(tweet, "method", text = "RT おはよう", favorited = False)) == True 
+            assert (
+                app.check_exclude(
+                    mocker.patch.object(
+                        tweet, "method", text="RT おはよう", favorited=False
+                    )
+                )
+                == True
+            )
 
         def test_check_exclude_text_with_at(self, app, tweet, mocker):
-            assert app.check_exclude(mocker.patch.object(tweet, "method", text = "@yosyuaomew おはよう", favorited = False)) == True
+            assert (
+                app.check_exclude(
+                    mocker.patch.object(
+                        tweet, "method", text="@yosyuaomew おはよう", favorited=False
+                    )
+                )
+                == True
+            )
 
         def test_check_exclude_text_with_long_tweet(self, app, tweet, mocker):
-            assert app.check_exclude(mocker.patch.object(tweet, "method", text = "*" * 80, favorited = False)) == True 
+            assert (
+                app.check_exclude(
+                    mocker.patch.object(tweet, "method", text="*" * 80, favorited=False)
+                )
+                == True
+            )
 
         def test_check_exclude_text_with_url(self, app, tweet, mocker):
-            assert app.check_exclude(mocker.patch.object(tweet, "method", text = "https://www.google.com/", favorited = False)) == True 
+            assert (
+                app.check_exclude(
+                    mocker.patch.object(
+                        tweet, "method", text="https://www.google.com/", favorited=False
+                    )
+                )
+                == True
+            )
 
         def test_check_exclude_text_with_at_me(self, app, tweet, mocker):
-            assert app.check_exclude(mocker.patch.object(tweet, "method", text = "@denden_by ありがとう", favorited = False, id = 123)) == True
+            assert (
+                app.check_exclude(
+                    mocker.patch.object(
+                        tweet,
+                        "method",
+                        text="@denden_by ありがとう",
+                        favorited=False,
+                        id=123,
+                    )
+                )
+                == True
+            )
 
-        def test_check_exclude_text_with_mytweet(self, app, tweet, mocker): 
+        def test_check_exclude_text_with_mytweet(self, app, tweet, mocker):
             mocker.patch.object(tweet.user, "id", 966247026416472064)
             assert app.check_exclude(tweet) == True
 
@@ -256,17 +283,29 @@ class Test_Hometamon():
 
     class Test_返事をするかどうか:
         def test_check_reply(self, app, tweet, mocker):
-            assert app.check_reply(mocker.patch.object(tweet, "method", text = "疲れた")) == True
+            assert (
+                app.check_reply(mocker.patch.object(tweet, "method", text="疲れた"))
+                == True
+            )
 
         def test_check_reply_with_false(self, app, tweet, mocker):
-            assert app.check_reply(mocker.patch.object(tweet, "method", text = "元気いっぱい")) == False
+            assert (
+                app.check_reply(mocker.patch.object(tweet, "method", text="元気いっぱい"))
+                == False
+            )
 
     class Test_予備機能_変身:
         def test_check_transform(self, app, tweet, mocker):
-            assert app.check_transform(mocker.patch.object(tweet, "method", text = "変身")) == True
+            assert (
+                app.check_transform(mocker.patch.object(tweet, "method", text="変身"))
+                == True
+            )
 
         def test_check_transform_with_false(self, app, tweet, mocker):
-            assert app.check_transform(mocker.patch.object(tweet, "method", text = "返信")) == False
+            assert (
+                app.check_transform(mocker.patch.object(tweet, "method", text="返信"))
+                == False
+            )
 
     class Test_test_tweetに対してツイートするかどうか:
         class Test_起動ツイート:
@@ -288,62 +327,59 @@ class Test_Hometamon():
     class Test_フォローしてきたユーザーのうちランダムに10人フォローバックする:
         def test_exclude_user(self, app, user_status):
             assert app.exclude_user(user_status) == False
-        
+
         def test_exclude_user_with_exclude_description(self, app, user_status):
             user_status.description = "裏垢はじめました音符リアルな出会いが欲しいです"
             assert app.exclude_user(user_status) == True
 
         def test_followback(self, app, mocker):
-            app.api.followers_ids.return_value = [1220747547607650304, 1125305225198297089]
+            app.api.followers_ids.return_value = [
+                1220747547607650304,
+                1125305225198297089,
+            ]
             app.api.friends_ids.return_value = [1220747547607650304]
             user_status = mocker.Mock()
             user_status.name = "abap"
             user_status.follow_request_sent = False
             user_status.id = 1125305225198297089
             user_status.description = None
-            app.api.lookup_users.return_value = [
-                user_status
-            ]
+            app.api.lookup_users.return_value = [user_status]
             app.followback()
-            app.api.create_friendship.assert_called_once_with(
-                id = 1125305225198297089
-            )
+            app.api.create_friendship.assert_called_once_with(id=1125305225198297089)
 
-            app.api.reset_mock() # 呼び出し回数をリセット
+            app.api.reset_mock()  # 呼び出し回数をリセット
             user_status.follow_request_sent = True
-            app.api.lookup_users.return_value = [
-                user_status
-            ]
+            app.api.lookup_users.return_value = [user_status]
             app.followback()
             app.api.create_friendship.assert_not_called()
 
         def test_followback_with_exclution_user(self, app, mocker):
-            app.api.followers_ids.return_value = [1220747547607650304, 1125305225198297089]
+            app.api.followers_ids.return_value = [
+                1220747547607650304,
+                1125305225198297089,
+            ]
             app.api.friends_ids.return_value = [1220747547607650304]
             user_status = mocker.Mock()
             user_status.name = "abap"
             user_status.follow_request_sent = False
             user_status.id = 1125305225198297089
             user_status.description = "セフレ募集中"
-            app.api.lookup_users.return_value = [
-                user_status
-            ]
+            app.api.lookup_users.return_value = [user_status]
             app.followback()
-            app.api.create_friendship.assert_not_called(
-            )
+            app.api.create_friendship.assert_not_called()
 
     class Test_実行した行動のログをyosyuaomenwwに送信する:
         def test_report(self, app):
-            app.JST = dt.datetime(2020, 4, 27, 17, 40 , 30)
+            app.JST = dt.datetime(2020, 4, 27, 17, 40, 30)
             app.admin_twitter_id = 999
             app.report()
             app.api.send_direct_message.assert_called_once_with(
                 999,
-                'time:2020/04/27 17:40:30\n褒めた数:0\n除外した数:0\n挨拶した数:0\n反応しなかった数:0\n変身:0\nテスト数:0\n合計:0だもん！'
+                "time:2020/04/27 17:40:30\n褒めた数:0\n除外した数:0\n挨拶した数:0\n反応しなかった数:0\n変身:0\nテスト数:0\n合計:0だもん！",
             )
 
     #################
-    ### Join test ### 
+    ### Join test ###
     #################
     class Test_ツイート内容に基づいた分類とその反応ができている:
         def test_classify_with_false(self, app, tweet):
@@ -351,9 +387,8 @@ class Test_Hometamon():
             expected = ""
             assert app.classify(tweet) == expected
             app.api.update_statussert_called_once_with(
-                status = expected,
-                in_reply_to_status_id = tweet.id
-                )
+                status=expected, in_reply_to_status_id=tweet.id
+            )
             app.api.create_favorite.assert_not_called()
 
         class Test_おはよう:
@@ -364,71 +399,58 @@ class Test_Hometamon():
                 app.JST = dt.datetime(2020, 2, 21, 8, 0)
                 assert app.classify(tweet) == expected
                 app.api.update_status.assert_called_once_with(
-                    status = expected,
-                    in_reply_to_status_id = tweet.id
-                    )
-                app.api.create_favorite.assert_called_once_with(
-                    tweet.id
+                    status=expected, in_reply_to_status_id=tweet.id
                 )
-        
+                app.api.create_favorite.assert_called_once_with(tweet.id)
+
         class Test_おやすみ:
             def test_classify_goodnight(self, app, tweet, mocker):
-                random.random = mocker.Mock(return_value = 1)
+                random.random = mocker.Mock(return_value=1)
                 tweet.text = "寝る"
                 expected = "@yosyuaomenww\n電電おやすみだもん"
                 app.JST = dt.datetime(2020, 2, 21, 22, 0)
 
                 assert app.classify(tweet) == expected
                 app.api.update_status.assert_called_once_with(
-                    status = expected,
-                    in_reply_to_status_id = tweet.id
-                    )
-                app.api.create_favorite.assert_called_once_with(
-                    tweet.id
+                    status=expected, in_reply_to_status_id=tweet.id
                 )
+                app.api.create_favorite.assert_called_once_with(tweet.id)
 
             def test_classify_goodnight_with_image(self, app, tweet, mocker):
-                random.random = mocker.Mock(return_value = 0)
+                random.random = mocker.Mock(return_value=0)
                 tweet.text = "寝る"
                 expected = "@yosyuaomenww\n電電おやすみだもん"
                 app.JST = dt.datetime(2020, 2, 21, 22, 0)
                 assert app.classify(tweet) == expected
                 app.api.update_with_media.assert_called_once_with(
-                    filename=os.path.join(app.image_dir,"oyasumi_w_newtext.png"),
-                    status = expected,
-                    in_reply_to_status_id = tweet.id
-                    )
-                app.api.create_favorite.assert_called_once_with(
-                    tweet.id
+                    filename=os.path.join(app.image_dir, "oyasumi_w_newtext.png"),
+                    status=expected,
+                    in_reply_to_status_id=tweet.id,
                 )
+                app.api.create_favorite.assert_called_once_with(tweet.id)
 
         class Test_褒める:
             def test_classify(self, app, tweet, mocker):
                 tweet.text = "疲れた"
                 expected = "@yosyuaomenww\n電電お疲れ様だもん"
-                random.random = mocker.Mock(return_value = 1)
+                random.random = mocker.Mock(return_value=1)
                 assert app.classify(tweet) == expected
                 app.api.update_status.assert_called_once_with(
-                    status = expected,
-                    in_reply_to_status_id = tweet.id
+                    status=expected, in_reply_to_status_id=tweet.id
                 )
-                app.api.create_favorite.assert_called_once_with(
-                    tweet.id
-                )
+                app.api.create_favorite.assert_called_once_with(tweet.id)
 
             def test_classify_with_image(self, app, tweet, mocker):
                 tweet.text = "疲れた"
                 expected = "@yosyuaomenww\n電電お疲れ様だもん"
-                random.random = mocker.Mock(return_value = 0)
+                random.random = mocker.Mock(return_value=0)
                 assert app.classify(tweet) == expected
                 app.api.update_with_media.assert_called_once_with(
-                    filename = os.path.join(app.image_dir, "otukare_w_newtext.png"),
-                    status = expected,
-                    in_reply_to_status_id = tweet.id
+                    filename=os.path.join(app.image_dir, "otukare_w_newtext.png"),
+                    status=expected,
+                    in_reply_to_status_id=tweet.id,
                 )
-                app.api.create_favorite.assert_called_once_with(
-                    tweet.id
-                )
+                app.api.create_favorite.assert_called_once_with(tweet.id)
 
             def test_classify_with_false(self, app, tweet):
                 tweet.text = "今日のメニューはカレーだ"
@@ -448,17 +470,13 @@ class Test_Hometamon():
             def test_choose_image_by_reply_otu(self, app):
                 reply = "お疲れ様だもん"
                 assert app.choose_image_by_reply(reply) == "otukare_w_newtext.png"
-            
-            
 
         class Test_テストツイート:
             def test_classify(self, app, tweet):
                 tweet.text = "__test__"
                 expected = "起きてるもん！\n⊂・ー・つ"
                 assert app.classify(tweet) == expected
-                app.api.update_status.assert_called_once_with(
-                    status = expected
-                )
+                app.api.update_status.assert_called_once_with(status=expected)
                 expected = ""
                 tweet.user.screen_name = "twitter"
                 assert app.classify(tweet) == expected
@@ -468,8 +486,7 @@ class Test_Hometamon():
                 expected = "起きてるもん！\n⊂・ー・つ"
                 assert app.classify(tweet) == expected
                 app.api.update_with_media.assert_called_once_with(
-                    status = expected,
-                    filename=os.path.join(app.image_dir,"icon.jpg")
+                    status=expected, filename=os.path.join(app.image_dir, "icon.jpg")
                 )
 
         class Test_変身:

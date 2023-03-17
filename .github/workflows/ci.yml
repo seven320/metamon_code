@@ -1,4 +1,4 @@
-name: GitHub Actions Demo
+name: GitHub CI
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
 jobs:
@@ -28,22 +28,11 @@ jobs:
           restore-keys:
             ${{ runner.os }}-buildx-
 
-      # キャッシュがある場合は tar をロードしてイメージ一覧に追加
-      # - name: Load Docker image if exists
-      #   if: steps.cache.outputs.cache-hit == 'true'
-      #   run: docker load --input ${{ steps.imagetag.outputs.PATH_TAR }}
-
-      # - name: Build Docker image and save
-      #   if: steps.cache.outputs.cache-hit != 'true'
-      #   run: |
-
-
       - name: Docker Build
         run: 
           docker-compose build
 
-      
-      - name: Text
+      - name: Run Test
         run: |
           docker-compose up -d
           docker exec hometamon pytest tests

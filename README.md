@@ -1,12 +1,12 @@
 # README
+## 褒めたもん
 <img alt="hometamon" 
 src = "main/images/icon.jpg" 
-width = "100"
+width = "150"
 align = "middle">
-褒めたもん
 
 [![CircleCI](https://circleci.com/gh/seven320/metamon_code.svg?style=svg)](https://circleci.com/gh/seven320/metamon_code)
-[![GitHub Actions Demo](https://github.com/seven320/metamon_code/actions/workflows/ci.yml/badge.svg)](https://github.com/seven320/metamon_code/actions/workflows/ci.yml)
+[![GitHub Actions CI](https://github.com/seven320/metamon_code/actions/workflows/ci.yml/badge.svg)](https://github.com/seven320/metamon_code/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/seven320/metamon_code)](https://github.com/seven320/metamon_code/stargazers)
 
 
@@ -14,6 +14,7 @@ align = "middle">
 褒めたもんを実行するためのコード
 
 ## Requirement
+~~~
 tweepy == 3.8.0  
 python-dotenv == 0.10.5  
 pytest == 5.4.1  
@@ -21,35 +22,27 @@ pytest-mock == 3.1.0
 Django == 3.1  
 django-filter == 2.3.0  
 djangorestframework == 3.11.2
+~~~
 
-
-## 使い方 How to USE
+## How to USE(使い方)
 
 #### 1 clone this repository
 ~~~
 git clone https://github.com/seven320/metamon_code.git
 ~~~
 #### 2 get twitter api and input 
-
 input your api keys into "main/src/.env" like "main/src/exam_env"
-
 ~~~
 cd hometamon/main/src
 cp exam_env .env
 vim .env
 ~~~
 
-#### server 起動
-~~~
-cd hometamon/Django
-docker-compose up
-~~~
-
-#### 4 run code
+#### 3 run code
 ~~~
 python hometamon.py
 ~~~
-#### 5 deploy with docker(optional)
+#### 4deploy with docker(optional)
 ~~~
 cd hometamon/
 make re-run

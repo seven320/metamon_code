@@ -1,6 +1,6 @@
 # encoding utf-8
 import os, sys
-import random 
+import random
 import datetime as dt
 import unicodedata
 
@@ -13,7 +13,8 @@ sys.path.append(pardir)
 
 from src import meta_manuscript
 
-class Hometamon():
+
+class Hometamon:
     def __init__(self):
         if os.path.exists("/env/.env"):
             load_dotenv("/env/.env")
@@ -30,15 +31,13 @@ class Hometamon():
         consumer_key = os.environ.get("CONSUMER_KEY")
         consumer_secret = os.environ.get("CONSUMER_SECRET")
         access_token = os.environ.get("ACCESS_TOKEN")
-        token_secret = os.environ.get("TOKEN_SECRET") 
+        token_secret = os.environ.get("TOKEN_SECRET")
 
         auth = tweepy.OAuthHandler(
-            consumer_key = consumer_key,
-            consumer_secret = consumer_secret)
-        auth.set_access_token(
-            key = access_token,
-            secret = token_secret)
-        self.api = tweepy.API(auth, wait_on_rate_limit = True)
+            consumer_key=consumer_key, consumer_secret=consumer_secret
+        )
+        auth.set_access_token(key=access_token, secret=token_secret)
+        self.api = tweepy.API(auth, wait_on_rate_limit=True)
         self.my_twitter_user_id = os.environ.get("TWITTER_USER_ID")
         self.manuscript = meta_manuscript.Manuscript()
         JST = dt.timezone(dt.timedelta(hours=+9), "JST")
@@ -46,22 +45,53 @@ class Hometamon():
         self.admin_twitter_id = os.environ.get("ADMIN_RECIPIENT_ID")
 
         self.exclusion_user_names = [
-            "bot", "ビジネス", "副業", "公式", 
-            "株", "FX", "ブランド", "無料", 
-            "キャリア", "エージェント", "LINE", "エロ", 
-            "オフパコ", "おふぱこ", "裏垢", "セフレ"
-            ] # user name
+            "bot",
+            "ビジネス",
+            "副業",
+            "公式",
+            "株",
+            "FX",
+            "ブランド",
+            "無料",
+            "キャリア",
+            "エージェント",
+            "LINE",
+            "エロ",
+            "オフパコ",
+            "おふぱこ",
+            "裏垢",
+            "セフレ",
+        ]  # user name
         self.exclusion_words = ["peing", "http"]
-        self.exclution_descriptions= ["パコ", "おふぱこ", "LINE", "裏垢", "エロ", "セフレ"]
+        self.exclution_descriptions = ["パコ", "おふぱこ", "LINE", "裏垢", "エロ", "セフレ"]
         self.good_morning_words = ["おはよう", "ぽきた", "起きた", "起床", "早起き"]
         self.good_night_words = ["おやすみ", "寝よう", "寝る", "寝ます"]
         self.classify_words = [
-            "褒めて", "ほめて", 
-            "バオワ", "ばおわ", "バイト終", "バおわ", 
-            "実験終", "実験おわ", "らぼりだ", "ラボ離脱", "ラボりだ", "ラボリダ",
-            "帰宅", "疲れた","つかれた", "ちゅかれた", 
-            "仕事納め", "仕事おわり","退勤", "仕事終わり",  
-            "掃除終", "掃除した", "がこおわ", "学校終"]
+            "褒めて",
+            "ほめて",
+            "バオワ",
+            "ばおわ",
+            "バイト終",
+            "バおわ",
+            "実験終",
+            "実験おわ",
+            "らぼりだ",
+            "ラボ離脱",
+            "ラボりだ",
+            "ラボリダ",
+            "帰宅",
+            "疲れた",
+            "つかれた",
+            "ちゅかれた",
+            "仕事納め",
+            "仕事おわり",
+            "退勤",
+            "仕事終わり",
+            "掃除終",
+            "掃除した",
+            "がこおわ",
+            "学校終",
+        ]
         self.set_task_words = ["設定"]
         self.transform_words = ["変身"]
         self.test_words = ["__test__"]
@@ -72,11 +102,11 @@ class Hometamon():
             "good_night": 0,
             "pass": 0,
             "transform": 0,
-            "test": 0
+            "test": 0,
         }
 
     def get_tweets(self):
-        return self.api.home_timeline(count = 100, since_id = None)
+        return self.api.home_timeline(count=100, since_id=None)
 
     def user_name_changer(self, user_name):
         #  正規化
@@ -87,71 +117,95 @@ class Hometamon():
 
     def good_morning(self, tweet):
         # image_ratio = 0.000001
-        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name) + random.choice(self.manuscript.good_morning)
+        reply = (
+            "@"
+            + tweet.user.screen_name
+            + "\n"
+            + self.user_name_changer(tweet.user.name)
+            + random.choice(self.manuscript.good_morning)
+        )
         self.counts["good_morning"] += 1
         # if random.random() < image_ratio:
         #     pass
         # else:
-        self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
-        self.api.create_favorite(tweet.id)
-        return reply
-    
-    def good_night(self, tweet, image_ratio = 0.2):
-        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name)  + random.choice(self.manuscript.good_night)
-        self.counts["good_night"] += 1
-        if random.random() < image_ratio:
-            image_file = os.path.join(self.image_dir, "oyasumi_w_newtext.png")
-            self.api.update_with_media(filename=image_file, status = reply, in_reply_to_status_id = tweet.id)
-        else:
-            self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
+        self.api.update_status(status=reply, in_reply_to_status_id=tweet.id)
         self.api.create_favorite(tweet.id)
         return reply
 
-    def choose_image_by_reply(self, reply:str) -> str:
+    def good_night(self, tweet, image_ratio=0.2):
+        reply = (
+            "@"
+            + tweet.user.screen_name
+            + "\n"
+            + self.user_name_changer(tweet.user.name)
+            + random.choice(self.manuscript.good_night)
+        )
+        self.counts["good_night"] += 1
+        if random.random() < image_ratio:
+            image_file = os.path.join(self.image_dir, "oyasumi_w_newtext.png")
+            self.api.update_with_media(
+                filename=image_file, status=reply, in_reply_to_status_id=tweet.id
+            )
+        else:
+            self.api.update_status(status=reply, in_reply_to_status_id=tweet.id)
+        self.api.create_favorite(tweet.id)
+        return reply
+
+    def choose_image_by_reply(self, reply: str) -> str:
         # replyの言葉から画像を選ぶ
         image_name = "erai_w_newtext.png"
-        for otukare in ["お疲れ", "飲む", "休"]: # 飲み物を運んでくれるようなリプライ
+        for otukare in ["お疲れ", "飲む", "休"]:  # 飲み物を運んでくれるようなリプライ
             if otukare in reply:
                 image_name = "otukare_w_newtext.png"
-        for yosi in ["よし", "えらい", "すごい"]: #頭撫でるイメージのリプライ
+        for yosi in ["よし", "えらい", "すごい"]:  # 頭撫でるイメージのリプライ
             if yosi in reply:
                 image_name = "yosi_w_newtext.png"
         return image_name
 
-    def praise(self, tweet, image_ratio = 0.2):
-        reply = "@" + tweet.user.screen_name + "\n" + self.user_name_changer(tweet.user.name)  + random.choice(self.manuscript.reply)
+    def praise(self, tweet, image_ratio=0.2):
+        reply = (
+            "@"
+            + tweet.user.screen_name
+            + "\n"
+            + self.user_name_changer(tweet.user.name)
+            + random.choice(self.manuscript.reply)
+        )
         self.counts["praise"] += 1
         if random.random() < image_ratio:
             image_name = self.choose_image_by_reply(reply)
             image_file = os.path.join(self.image_dir, image_name)
-            self.api.update_with_media(filename=image_file, status = reply, in_reply_to_status_id = tweet.id)
+            self.api.update_with_media(
+                filename=image_file, status=reply, in_reply_to_status_id=tweet.id
+            )
         else:
-            self.api.update_status(status = reply, in_reply_to_status_id = tweet.id)
+            self.api.update_status(status=reply, in_reply_to_status_id=tweet.id)
         self.api.create_favorite(tweet.id)
         return reply
 
     def tweet_sweet(self):
         status = random.choice(self.manuscript.sweet_tweet_before)
-        status += "\n⊂・ー・つ" + chr(int(random.choice(self.manuscript.sweets), 16)) + "\n" # 16進数から変換
+        status += (
+            "\n⊂・ー・つ" + chr(int(random.choice(self.manuscript.sweets), 16)) + "\n"
+        )  # 16進数から変換
         status += random.choice(self.manuscript.sweet_tweet_after)
-        self.api.update_status(status = status)
+        self.api.update_status(status=status)
 
     def test_tweet_linestamp(self):
         reply = "ぼくのLINEスタンプがでたもん!!!ぼくのかわりにみんなをほめてほしいもん!!よろしくもん!!\nhttps://store.line.me/stickershop/product/17652748"
         image_file = os.path.join(self.image_dir, "stamp", "all.png")
-        self.api.update_with_media(filename=image_file, status = reply)
+        self.api.update_with_media(filename=image_file, status=reply)
 
-    def test_tweet(self, image_flg = False):
+    def test_tweet(self, image_flg=False):
         status = "起きてるもん！\n⊂・ー・つ"
         if image_flg:
             image_file = os.path.join(self.image_dir, "icon.jpg")
-            self.api.update_with_media(filename=image_file, status = status)
+            self.api.update_with_media(filename=image_file, status=status)
         else:
-            self.api.update_status(status = status)
+            self.api.update_status(status=status)
         self.counts["test"] += 1
         return status
 
-    def check_exclude(self, tweet): # 除外するかどうかcheck
+    def check_exclude(self, tweet):  # 除外するかどうかcheck
         if str(tweet.user.id) == self.my_twitter_user_id:
             return True
         elif tweet.favorited:
@@ -163,19 +217,21 @@ class Hometamon():
                 # hometaskの設定が入っていれば無視．
                 if self.set_task_words[0] in tweet.text:
                     return True
-                else: # 自分に向けてのtweetかつ，設定が入っていないならファボ
-                    self.api.create_favorite(id = tweet.id)
+                else:  # 自分に向けてのtweetかつ，設定が入っていないならファボ
+                    self.api.create_favorite(id=tweet.id)
             return True
-        elif len(tweet.text) >= 80: # if tweet is more than 80 words, it will be ignored
+        elif (
+            len(tweet.text) >= 80
+        ):  # if tweet is more than 80 words, it will be ignored
             return True
         for exclusion_word in self.exclusion_words:
             if exclusion_word in tweet.text:
                 return True
-        if self.exclude_user(tweet.user): #特定のユーザー情報を含む場合除外
+        if self.exclude_user(tweet.user):  # 特定のユーザー情報を含む場合除外
             return True
         return False
 
-    def check_good_morning(self, tweet): # 返事するかどうかcheck
+    def check_good_morning(self, tweet):  # 返事するかどうかcheck
         if 5 <= self.JST.hour <= 9:
             for good_morning_word in self.good_morning_words:
                 if good_morning_word in tweet.text:
@@ -194,8 +250,10 @@ class Hometamon():
         return self.JST.hour == 15 and 0 <= self.JST.minute <= 5
 
     # NOTE: 一ヶ月に一回宣伝ツイートを実行する
-    def check_tweet_linestamp(self):    
-        return self.JST.day == 12 and self.JST.hour == 18 and 15 <= self.JST.minute <= 20
+    def check_tweet_linestamp(self):
+        return (
+            self.JST.day == 12 and self.JST.hour == 18 and 15 <= self.JST.minute <= 20
+        )
 
     def check_reply(self, tweet):
         for classify_word in self.classify_words:
@@ -226,20 +284,20 @@ class Hometamon():
             if self.check_good_morning(tweet):
                 reply = self.good_morning(tweet)
             elif self.check_good_night(tweet):
-                reply  = self.good_night(tweet)
+                reply = self.good_night(tweet)
             elif self.check_reply(tweet):
-                reply  = self.praise(tweet)
+                reply = self.praise(tweet)
             elif self.check_transform(tweet):
                 reply = self.transform()
             elif self.check_test(tweet):
-                reply = self.test_tweet(image_flg = self.check_image_flg(tweet))
+                reply = self.test_tweet(image_flg=self.check_image_flg(tweet))
             else:
                 self.counts["pass"] += 1
         return reply
 
     def transform(self):
         self.counts["transform"] += 1
-        return "" 
+        return ""
 
     def exclude_user(self, user_status):
         for exclusion_name in self.exclusion_user_names:
@@ -265,7 +323,7 @@ class Hometamon():
                 continue
             if not user_status.follow_request_sent:
                 try:
-                    self.api.create_friendship(id = user_status.id)
+                    self.api.create_friendship(id=user_status.id)
                     cnt += 1
                 except tweepy.error.TweepError as e:
                     print(e)
@@ -281,10 +339,12 @@ class Hometamon():
             self.counts["pass"],
             self.counts["transform"],
             self.counts["test"],
-            sum(self.counts.values()))
+            sum(self.counts.values()),
+        )
         self.api.send_direct_message(self.admin_twitter_id, result)
         print(result)
         return result
+
 
 def main():
     hometamon = Hometamon()
@@ -297,6 +357,7 @@ def main():
         hometamon.tweet_linestamp()
     hometamon.followback()
     hometamon.report()
+
 
 if __name__ == "__main__":
     main()

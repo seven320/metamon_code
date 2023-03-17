@@ -1,6 +1,7 @@
 # encoding:utf-8
 
 import random
+
 """
 返事ルール
 
@@ -9,10 +10,10 @@ import random
 一人称は「僕」にすること
 """
 
+
 class Manuscript:
     def __init__(self):
-        self.tweet = [
-        ]
+        self.tweet = []
         self.reply = [
             "仕事終わらせてすごいもん！！",
             # "つかれたもん〜",
@@ -90,7 +91,7 @@ class Manuscript:
             "今日はあったかいもの飲むもん!!",
             "ちょっと休むんだもん",
             "\n体に気をつけるもん。応援してるもん!!",
-            "今日はご飯食べて散歩してよく寝るもん!!!"
+            "今日はご飯食べて散歩してよく寝るもん!!!",
         ]
 
         self.good_morning = [
@@ -101,10 +102,8 @@ class Manuscript:
             "今日もがんばるもん",
             "起きてえらいもん",
             # "布団から出てえらい！！",
-            "布団から出てえらいもん！！"
-            "おはようもん！！",
-            "\nおはようもん\n僕ももうちょっとで起きる。もん。。。"
-            "起きてえらいもん",
+            "布団から出てえらいもん！！" "おはようもん！！",
+            "\nおはようもん\n僕ももうちょっとで起きる。もん。。。" "起きてえらいもん",
             "おはようもん",
             "おはようもん\n今日もみんなを褒めてまわるもん",
             "おはようだもん\n僕ももうちょっとで布団から出るもん。。。",
@@ -123,7 +122,7 @@ class Manuscript:
             "えらいんだもん",
             "\nおはようだもん⊂・ー・つ",
             "朝起きれて偉いんだもん!!",
-            "起きれてえらいもん!!よしよしもん!!"
+            "起きれてえらいもん!!よしよしもん!!",
         ]
 
         self.good_night = [
@@ -153,7 +152,7 @@ class Manuscript:
             "おやすみだもん\n良い夢みれるように祈ってるんだもん！！",
             "体冷やさないようにねるもん",
             "ちゃんと歯磨きしたもんか？おやすみだもん！！",
-            "今日も頑張ったもん！！\nおやすみもん"
+            "今日も頑張ったもん！！\nおやすみもん",
         ]
 
         self.sweet_tweet_before = [
@@ -168,9 +167,9 @@ class Manuscript:
             "みんなお疲れ様だもん",
             "3時だもんね\nうがい，手洗いしっかりしてゆっくりたべるもん",
             "おやつ食べるもん",
-            "一度休憩とるもん", 
+            "一度休憩とるもん",
             "ちょっとゆっくりするもん",
-            "こん詰めすぎもよくないもんよ。"
+            "こん詰めすぎもよくないもんよ。",
         ]
 
         self.sweet_tweet_after = [
@@ -180,23 +179,23 @@ class Manuscript:
             "頑張ってるもんよ",
             "休憩も大事もんよ",
             "もう少しだもん",
-            "がんばるもんよ〜"
+            "がんばるもんよ〜",
         ]
- 
- #  ref [https://lets-emoji.com/food-emoji/]
+
+        #  ref [https://lets-emoji.com/food-emoji/]
         self.sweets = [
-            "1F950", # croissant
-            "1F95E", #pancakes
-            "1F9C7", # waffle
-            "1F361", # dango
-            "1F366", # soft ice cream
-            "1F368", # ice cream
-            "1F369", # doughnut
-            "1F36A", # cookie
-            "1F370", #shortcake
-            "1F36B", # chocolate bar
-            "1F36E", # custard
-            "1F36C" # candy
+            "1F950",  # croissant
+            "1F95E",  # pancakes
+            "1F9C7",  # waffle
+            "1F361",  # dango
+            "1F366",  # soft ice cream
+            "1F368",  # ice cream
+            "1F369",  # doughnut
+            "1F36A",  # cookie
+            "1F370",  # shortcake
+            "1F36B",  # chocolate bar
+            "1F36E",  # custard
+            "1F36C",  # candy
         ]
 
         self.hometask_random_reply = [
@@ -217,27 +216,27 @@ class Manuscript:
             "#hometask 今日も頑張ってるもん",
             "#hometask できて偉いもん!!!",
             "お疲れ様だもん #hometask",
-            "よく頑張ったもん #hometask"
+            "よく頑張ったもん #hometask",
         ]
 
         self.count_reply = {
-            1:"最初の達成だもんね．偉いもん！！この称号あげるもん\n\nつ",
-            5:"5回目だもん，すごいもん!!称号あげるもん!!!\n\nつ",
-            10:"10回目だもん!!お疲れ様だもん!!この調子で続けるもん!!!\n\nつ",
-            30:"30回目だもん!!この調子で頑張るもん!!!\n\nつ"
+            1: "最初の達成だもんね．偉いもん！！この称号あげるもん\n\nつ",
+            5: "5回目だもん，すごいもん!!称号あげるもん!!!\n\nつ",
+            10: "10回目だもん!!お疲れ様だもん!!この調子で続けるもん!!!\n\nつ",
+            30: "30回目だもん!!この調子で頑張るもん!!!\n\nつ",
         }
 
         self.streak_reply = {
-            3:"連続3日達成だもん!!!すごいもん!!これあげるもん\n銅メダルあげるもん!\n\nつ🥉",
-            7:"連続7日hometask達成だもん!!!この調子で続けるもん!!\n銀メダルあげるもん\n\nつ🥈",
-            14:"連続14日hometask達成だもん!!偉いもん!!\nこの調子で続けるもん\n金メダルあげるもん\n\nつ🥇"
+            3: "連続3日達成だもん!!!すごいもん!!これあげるもん\n銅メダルあげるもん!\n\nつ🥉",
+            7: "連続7日hometask達成だもん!!!この調子で続けるもん!!\n銀メダルあげるもん\n\nつ🥈",
+            14: "連続14日hometask達成だもん!!偉いもん!!\nこの調子で続けるもん\n金メダルあげるもん\n\nつ🥇",
         }
 
         # self.rewards = [
         #     "U+1F435", # monkey
         #     "U+1F98D", # gorilla
         #     "U+1F436", # dog
-        #     "U+1F98A", # fox 
+        #     "U+1F98A", # fox
         #     "U+1F99D", # raccoon
         #     "U+1F431", # cat
         #     "U+1F434", # horse
@@ -248,8 +247,8 @@ class Manuscript:
         # ]
 
         self.icon = {
-            1:"1F95A", # egg
-            5:"1F423", # hatching chick
-            10:"1F413", # rooster
-            30:"1F985", # eagle
+            1: "1F95A",  # egg
+            5: "1F423",  # hatching chick
+            10: "1F413",  # rooster
+            30: "1F985",  # eagle
         }

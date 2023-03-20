@@ -61,9 +61,91 @@ class Hometamon:
             "おふぱこ",
             "裏垢",
             "セフレ",
+            "セックスレス",
         ]  # user name
         self.exclusion_words = ["peing", "http"]
-        self.exclution_descriptions = ["パコ", "おふぱこ", "LINE", "裏垢", "エロ", "セフレ"]
+        self.exclution_descriptions = [
+            # 性的コンテンツ
+            "アダルト",
+            "エロ",
+            "セクシャル",
+            "18+",
+            "グラビア",
+            "美女",
+            "美少女",
+            "ヌード",
+            "下着",
+            "大人のおもちゃ",
+            "風俗",
+            "出会い系",
+            "エッチ",
+            "AV",
+            "ポルノ",
+            "裏垢",
+            "パコ",
+            "おふぱこ",
+            "セフレ",
+            "メンズエステ",
+            "デリヘル",
+            "スパム",
+            "spam",
+            "ボット",
+            "bot",
+            "ゲット",
+            "無料",
+            "キャンペーン",
+            "アンケート",
+            "企画",
+            "LINE",
+            "詐欺",
+            "偽情報",
+            "フェイクニュース",
+            "fake news",
+            "返金",
+            "refund",
+            "クレジットカード",
+            "カード情報",
+            "個人情報",
+            "金儲け",
+            "お金",
+            "投資",
+            "トレード",
+            "FX",
+            # 薬物や医療
+            "医療",
+            "薬",
+            "ドクター",
+            "doctor",
+            "クリニック",
+            "clinic",
+            "ED",
+            "育毛",
+            "ダイエット",
+            "美容",
+            "整形",
+            "美容外科",
+            "健康",
+            "ハーブ",
+            "サプリメント",
+            # ビジネス行為など
+            "マルチ商法",
+            "ネズミ講",
+            "詐欺商法",
+            "MLM",
+            "ビジネスチャンス",
+            "business opportunity",
+            "副業",
+            "在宅ワーク",
+            "自由な生活",
+            "自由な時間",
+            "ノマドワーク",
+            "稼ぐ",
+            "儲ける",
+            "年収",
+            "月収",
+            "資産",
+            "利益",
+        ]
         self.good_morning_words = ["おはよう", "ぽきた", "起きた", "起床", "早起き"]
         self.good_night_words = ["おやすみ", "寝よう", "寝る", "寝ます"]
         self.classify_words = [
@@ -300,33 +382,40 @@ class Hometamon:
         return ""
 
     def exclude_user(self, user_status):
+        # ユーザー名に特定の単語が入っている場合
         for exclusion_name in self.exclusion_user_names:
             if exclusion_name in user_status.name:
                 return True
-
         if user_status.description is None:
             return False
+        # ユーザーの目的欄に特定の単語が入っている場合
         for exclusion_description in self.exclution_descriptions:
             if exclusion_description in user_status.description:
                 return True
         return False
 
-    def followback(self):
+    def follower_management(self):
+        # フォローしているユーザーのリストを取得する処理
         followers = self.api.followers_ids(self.my_twitter_user_id)
         friends = self.api.friends_ids(self.my_twitter_user_id)
         follow_back = list(set(followers) - set(friends))
+
         random.shuffle(follow_back)
         user_statuses = self.api.lookup_users(follow_back[:100])
         cnt = 0
         for user_status in user_statuses:
+            # フォローしている中で適切でないユーザー名や自己紹介欄をしているユーザーをアンフォローする処理
             if self.exclude_user(user_status):
-                continue
-            if not user_status.follow_request_sent:
+                # self.api.destroy_friendship(id=user_status.id)
+                # cnt += 1
+                pass
+            elif not user_status.follow_request_sent:
                 try:
                     self.api.create_friendship(id=user_status.id)
                     cnt += 1
                 except tweepy.error.TweepError as e:
                     print(e)
+                    cnt += 1
             if cnt > 10:
                 break
 
@@ -355,7 +444,7 @@ def main():
         hometamon.tweet_sweet()
     if hometamon.check_tweet_linestamp():
         hometamon.tweet_linestamp()
-    hometamon.followback()
+    hometamon.follower_management()
     hometamon.report()
 
 

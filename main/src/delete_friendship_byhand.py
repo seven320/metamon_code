@@ -24,5 +24,7 @@ def delete_by_hand():
                 pass
     print(f"{cnt}人の記憶を忘れました")
 
+    
+
 if __name__ == '__main__':
     delete_by_hand()

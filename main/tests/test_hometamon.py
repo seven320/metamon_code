@@ -332,7 +332,7 @@ class Test_Hometamon:
             user_status.description = "裏垢はじめました音符リアルな出会いが欲しいです"
             assert app.exclude_user(user_status) == True
 
-        def test_followback(self, app, mocker):
+        def test_follower_management(self, app, mocker):
             app.api.followers_ids.return_value = [
                 1220747547607650304,
                 1125305225198297089,
@@ -344,16 +344,16 @@ class Test_Hometamon:
             user_status.id = 1125305225198297089
             user_status.description = None
             app.api.lookup_users.return_value = [user_status]
-            app.followback()
+            app.follower_management()
             app.api.create_friendship.assert_called_once_with(id=1125305225198297089)
 
             app.api.reset_mock()  # 呼び出し回数をリセット
             user_status.follow_request_sent = True
             app.api.lookup_users.return_value = [user_status]
-            app.followback()
+            app.follower_management()
             app.api.create_friendship.assert_not_called()
 
-        def test_followback_with_exclution_user(self, app, mocker):
+        def test_follower_management_with_exclution_user(self, app, mocker):
             app.api.followers_ids.return_value = [
                 1220747547607650304,
                 1125305225198297089,
@@ -365,7 +365,7 @@ class Test_Hometamon:
             user_status.id = 1125305225198297089
             user_status.description = "セフレ募集中"
             app.api.lookup_users.return_value = [user_status]
-            app.followback()
+            app.follower_management()
             app.api.create_friendship.assert_not_called()
 
     class Test_実行した行動のログをyosyuaomenwwに送信する:

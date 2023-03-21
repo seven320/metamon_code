@@ -16,7 +16,7 @@ RUN pip install \
     tweepy==3.8.0 \
     tqdm==4.36.1\
     pykakasi==1.2\
-    python-dotenv==0.10.5\
+    python-dotenv==1.0.0\
     pytest==5.4.1\
     pytest-mock==3.1.0
 

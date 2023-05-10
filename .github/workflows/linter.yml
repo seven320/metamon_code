@@ -1,8 +1,8 @@
-name: Linter
+name: reviewdog
 run-name: run Linter and comment to PR
 on: [pull_request]
 jobs:
-  Explore-GitHub-Actions:
+  linter_name:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
@@ -10,5 +10,13 @@ jobs:
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v3
-
-      
+      # Install specific version black (this step is not required. default is "black[jupyter]")
+      - run: pip install black==23.1.0
+      - uses: reviewdog/action-black@v3
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-check
+          # Change reporter level if you need.
+          # GitHub Status Check won't become failure with a warning.
+          level: warning
+        

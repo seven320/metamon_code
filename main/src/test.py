@@ -1,0 +1,3 @@
+import hoge
+
+def hoge

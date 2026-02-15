@@ -8,33 +8,3 @@ services:
         tty: true
         environment: 
             TZ: Asia/Tokyo
-
-    # web:
-        # build: ./Django/main
-        # container_name: hometask
-        # command: python3 manage.py runserver 0.0.0.0:8001
-        # volumes:
-        #     - ./Django/main:/code
-        # ports:
-        #     - "8001:8001"
-        # environment:
-        #     TZ: Asia/Tokyo
-
-    # database:
-    #     image: mysql:5.7
-    #     container_name: mysql_host
-    #     environment:
-    #         MYSQL_ROOT_PASSWORD: root
-    #         MYSQL_PASSWORD: docker
-    #         TZ: 'Asia/Tokyo'
-    #     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    #     # restart: always
-    #     # 永続化
-    #     volumes:
-    #     #   - ./database/mysql_data:/var/lib/mysql
-    #       - ./database/my.cnf:/etc/mysql/conf.d/my.cnf
-    #     tty: true
-
-    #     ports:
-    #       - 3307:3307
-        

@@ -1,4 +1,4 @@
-FROM python:3.8-alpine
+FROM python:3.13-alpine AS base
 
 RUN apk update && \
     apk --no-cache add \
@@ -25,8 +25,13 @@ COPY ./tests ./tests
 COPY ./images ./images
 COPY ./env ./env
 COPY ./crontab /var/spool/cron/crontabs/root
-CMD ["busybox", "crond", "-l", "2", "-L", "/dev/stderr", "-f"]
 
 ENV USER mother
 ENV HOME /home/${USER}
 ENV SHELL /bin/sh
+
+FROM base AS dev
+CMD ["sh"]
+
+FROM base AS prd
+CMD ["busybox", "crond", "-l", "2", "-L", "/dev/stderr", "-f"]

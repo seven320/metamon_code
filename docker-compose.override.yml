@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  metamon:
+    build:
+      context: ./main
+      target: dev
+    volumes:
+      - ./main/src:/app/src
+      - ./main/tests:/app/tests
+      - ./main/images:/app/images
+      - ./main/env:/app/env
+    command: sh

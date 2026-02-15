@@ -28,10 +28,10 @@ class Hometamon:
         elif os.path.dirname("/images"):
             self.image_dir = "/images"
 
-        consumer_key = os.environ.get("CONSUMER_KEY")
-        consumer_secret = os.environ.get("CONSUMER_SECRET")
-        access_token = os.environ.get("ACCESS_TOKEN")
-        token_secret = os.environ.get("TOKEN_SECRET")
+        consumer_key = os.environ.get("CONSUMER_KEY") or ""
+        consumer_secret = os.environ.get("CONSUMER_SECRET") or ""
+        access_token = os.environ.get("ACCESS_TOKEN") or ""
+        token_secret = os.environ.get("TOKEN_SECRET") or ""
 
         auth = tweepy.OAuthHandler(
             consumer_key=consumer_key, consumer_secret=consumer_secret

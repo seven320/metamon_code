@@ -14,14 +14,16 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build containers
-        run: docker compose build
+      - name: Build test image (with cache)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./main
+          file: ./main/Dockerfile
+          target: dev
+          tags: metamon-ci:test
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Run tests in container
-        run: |
-          docker compose up -d
-          docker exec hometamon pytest tests
-
-      - name: Tear down
-        if: always()
-        run: docker compose down
+      - name: Run tests in image
+        run: docker run --rm metamon-ci:test pytest tests

@@ -5,7 +5,6 @@ src = "main/images/icon.jpg"
 width = "150"
 align = "middle">
 
-[![CircleCI](https://circleci.com/gh/seven320/metamon_code.svg?style=svg)](https://circleci.com/gh/seven320/metamon_code)
 [![GitHub Actions CI](https://github.com/seven320/metamon_code/actions/workflows/ci.yml/badge.svg)](https://github.com/seven320/metamon_code/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/seven320/metamon_code)](https://github.com/seven320/metamon_code/stargazers)
 
@@ -15,13 +14,7 @@ align = "middle">
 
 ## Requirement
 ~~~
-tweepy == 3.8.0  
-python-dotenv == 0.10.5  
-pytest == 5.4.1  
-pytest-mock == 3.1.0  
-Django == 3.1  
-django-filter == 2.3.0  
-djangorestframework == 3.11.2
+see `main/requirements.txt` (installed by uv in Docker)
 ~~~
 
 ## How to USE(使い方)

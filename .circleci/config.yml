@@ -1,39 +1,7 @@
-version: 2 # circle ci のversion
+# CircleCI is deprecated for this repository.
+# CI runs on GitHub Actions: .github/workflows/ci.yml
+version: 2.1
 
-jobs:
-  build:
-    docker:
-      - image: circleci/python:3.8
-        environment:
-          - DB_HOST=127.0.0.1
-          - DB_PORT=3306
-          - DB_DATABASE=hometask
-          - DB_USERNAME=root
-          - DB_PASSWORD=root
-
-    working_directory: ~/hometamon
-
-    steps:
-      - checkout # code to docker image
-
-      - run: 
-          name: install dependencies
-          command: |
-            pip install tweepy==3.8.0
-            pip install pytest==5.4.1
-            pip install pytest-mock==3.1.0
-            pip install python-dotenv==0.10.5
-            pip install mysqlclient==2.0.1
-      
-      - run:
-          name: Test
-          # cd でテストの領域を指定
-          command: |
-            mkdir test-reports
-            cd main
-            pytest 
-
-          # --junitxml=test-reports/junit.xml
-
-      - store_test_results:
-          path: test-reports
+workflows:
+  disabled:
+    jobs: []

@@ -1,1 +1,1 @@
-*/6 * * * * python3 /src/hometamon.py
+*/6 * * * * cd /app && python3 /app/src/hometamon.py

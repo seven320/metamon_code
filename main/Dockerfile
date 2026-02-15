@@ -1,4 +1,4 @@
-FROM python:3.8-alpine
+FROM python:3.13-alpine AS base
 
 RUN apk update && \
     apk --no-cache add \
@@ -10,25 +10,28 @@ RUN apk update && \
     tree \
     busybox-static
 
-# library
-RUN pip install --upgrade pip
-RUN pip install \
-    tweepy==3.8.0 \
-    tqdm==4.36.1\
-    pykakasi==1.2\
-    python-dotenv==1.0.0\
-    pytest==5.4.1\
-    pytest-mock==3.1.0
+WORKDIR /app
 
-# RUN service cron start
-# RUN git clone https://github.com/seven320/metamon_code.git
-COPY ./src src
-COPY ./tests tests
-COPY ./images images
-COPY ./env env
+# library
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:${PATH}"
+ENV UV_SYSTEM_PYTHON=1
+
+COPY ./requirements.txt /tmp/requirements.txt
+RUN uv pip install --no-cache -r /tmp/requirements.txt
+
+COPY ./src ./src
+COPY ./tests ./tests
+COPY ./images ./images
+COPY ./env ./env
 COPY ./crontab /var/spool/cron/crontabs/root
-CMD ["busybox", "crond", "-l", "2", "-L", "/dev/stderr", "-f"]
 
 ENV USER mother
 ENV HOME /home/${USER}
 ENV SHELL /bin/sh
+
+FROM base AS dev
+CMD ["sh"]
+
+FROM base AS prd
+CMD ["busybox", "crond", "-l", "2", "-L", "/dev/stderr", "-f"]

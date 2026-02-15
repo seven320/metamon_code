@@ -19,4 +19,3 @@ jobs:
           # Change reporter level if you need.
           # GitHub Status Check won't become failure with a warning.
           level: warning
-        

@@ -17,8 +17,9 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/root/.local/bin:${PATH}"
 ENV UV_SYSTEM_PYTHON=1
 
-COPY ./requirements.txt /tmp/requirements.txt
-RUN uv pip install --no-cache -r /tmp/requirements.txt
+COPY ./pyproject.toml ./uv.lock ./
+RUN uv sync --frozen
+ENV PATH="/app/.venv/bin:${PATH}"
 
 COPY ./src ./src
 COPY ./tests ./tests

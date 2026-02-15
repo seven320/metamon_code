@@ -14,7 +14,7 @@ align = "middle">
 
 ## Requirement
 ~~~
-see `main/requirements.txt` (installed by uv in Docker)
+see `main/pyproject.toml` and `main/uv.lock` (installed by uv in Docker)
 ~~~
 
 ## How to USE(使い方)

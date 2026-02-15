@@ -1,18 +1,18 @@
 # 開発環境起動
 dev:
-	docker compose build --no-cache
+	docker compose build
 	docker compose up -d
 
 # 本番用
 compose/build:
-	docker compose build --no-cache
+	docker compose build
 
 compose/up:
 	docker compose up
 
 re-run:
 	docker compose down
-	docker compose build --no-cache
+	docker compose build
 	docker compose up -d
 
 exec:

@@ -290,7 +290,9 @@ class Test_Hometamon:
 
         def test_check_reply_with_false(self, app, tweet, mocker):
             assert (
-                app.check_reply(mocker.patch.object(tweet, "method", text="元気いっぱい"))
+                app.check_reply(
+                    mocker.patch.object(tweet, "method", text="元気いっぱい")
+                )
                 == False
             )
 

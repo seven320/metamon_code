@@ -18,9 +18,10 @@ jobs:
       - name: Build containers
         run: docker compose build
 
-      - name: Run tests in container
+      - name: Run checks in container
         run: |
           docker compose up -d
+          docker exec hometamon black --check src tests
           docker exec hometamon pytest tests
 
       - name: Tear down

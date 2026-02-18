@@ -22,6 +22,7 @@ class Test_Hometamon:
         app.manuscript.sweets = ["1F950"]  # croissant
         app.my_twitter_user_id = "966247026416472064"
         app.api = mocker.MagicMock()
+        app.client = None
         return app
 
     @pytest.fixture()

@@ -3,6 +3,7 @@ import os, sys
 import random
 import datetime as dt
 import unicodedata
+from types import SimpleNamespace
 
 from dotenv import load_dotenv
 
@@ -16,11 +17,18 @@ from src import meta_manuscript
 
 class Hometamon:
     def __init__(self):
-        if os.path.exists("/env/.env"):
-            load_dotenv("/env/.env")
-        elif os.path.exists("env/.env"):
-            load_dotenv("env/.env")
-        else:
+        env_candidates = [
+            "/app/env/.env",
+            "/env/.env",
+            "env/.env",
+        ]
+        loaded = False
+        for env_path in env_candidates:
+            if os.path.exists(env_path):
+                load_dotenv(env_path)
+                loaded = True
+                break
+        if not loaded:
             print("error doesn't exist .env path")
 
         if os.path.dirname("images"):
@@ -33,11 +41,20 @@ class Hometamon:
         access_token = os.environ.get("ACCESS_TOKEN") or ""
         token_secret = os.environ.get("TOKEN_SECRET") or ""
 
-        auth = tweepy.OAuthHandler(
+        auth = tweepy.OAuth1UserHandler(
             consumer_key=consumer_key, consumer_secret=consumer_secret
         )
         auth.set_access_token(key=access_token, secret=token_secret)
         self.api = tweepy.API(auth, wait_on_rate_limit=True)
+        self.client = None
+        if consumer_key and consumer_secret and access_token and token_secret:
+            self.client = tweepy.Client(
+                consumer_key=consumer_key,
+                consumer_secret=consumer_secret,
+                access_token=access_token,
+                access_token_secret=token_secret,
+                wait_on_rate_limit=True,
+            )
         self.my_twitter_user_id = os.environ.get("TWITTER_USER_ID")
         self.manuscript = meta_manuscript.Manuscript()
         JST = dt.timezone(dt.timedelta(hours=+9), "JST")
@@ -188,7 +205,82 @@ class Hometamon:
         }
 
     def get_tweets(self):
+        if self.client:
+            if not self.my_twitter_user_id:
+                raise RuntimeError("TWITTER_USER_ID is required when using v2 client")
+            response = self.client.get_home_timeline(
+                id=self.my_twitter_user_id,
+                max_results=100,
+                expansions=["author_id"],
+                tweet_fields=["author_id"],
+                user_fields=["username", "name", "description"],
+                user_auth=True,
+            )
+            tweets = response.data or []
+            users = {}
+            if response.includes and "users" in response.includes:
+                users = {str(user.id): user for user in response.includes["users"]}
+            legacy_like_tweets = []
+            for tweet in tweets:
+                user = users.get(str(tweet.author_id))
+                legacy_like_tweets.append(
+                    SimpleNamespace(
+                        id=tweet.id,
+                        text=tweet.text,
+                        favorited=False,
+                        user=SimpleNamespace(
+                            id=user.id if user else 0,
+                            name=user.name if user else "",
+                            screen_name=user.username if user else "",
+                            description=user.description if user else "",
+                        ),
+                    )
+                )
+            return legacy_like_tweets
         return self.api.home_timeline(count=100, since_id=None)
+
+    def _tweet(self, status, in_reply_to_status_id=None, image_file=None):
+        if self.client:
+            if image_file:
+                media = self.api.media_upload(filename=image_file)
+                kwargs = {"text": status, "media_ids": [media.media_id]}
+                if in_reply_to_status_id:
+                    kwargs["in_reply_to_tweet_id"] = in_reply_to_status_id
+                self.client.create_tweet(user_auth=True, **kwargs)
+            else:
+                kwargs = {"text": status}
+                if in_reply_to_status_id:
+                    kwargs["in_reply_to_tweet_id"] = in_reply_to_status_id
+                self.client.create_tweet(user_auth=True, **kwargs)
+            return
+        if image_file:
+            if in_reply_to_status_id is None:
+                self.api.update_with_media(
+                    filename=image_file,
+                    status=status,
+                )
+            else:
+                self.api.update_with_media(
+                    filename=image_file,
+                    status=status,
+                    in_reply_to_status_id=in_reply_to_status_id,
+                )
+        else:
+            if in_reply_to_status_id is None:
+                self.api.update_status(status=status)
+            else:
+                self.api.update_status(
+                    status=status,
+                    in_reply_to_status_id=in_reply_to_status_id,
+                )
+
+    def _favorite(self, tweet_id):
+        if self.client:
+            if not self.my_twitter_user_id:
+                raise RuntimeError("TWITTER_USER_ID is required when using v2 client")
+            self.client.like(self.my_twitter_user_id, tweet_id, user_auth=True)
+            return
+        self.api.create_favorite(tweet_id)
 
     def user_name_changer(self, user_name):
         #  正規化
@@ -210,8 +302,8 @@ class Hometamon:
         # if random.random() < image_ratio:
         #     pass
         # else:
-        self.api.update_status(status=reply, in_reply_to_status_id=tweet.id)
-        self.api.create_favorite(tweet.id)
+        self._tweet(status=reply, in_reply_to_status_id=tweet.id)
+        self._favorite(tweet.id)
         return reply
 
     def good_night(self, tweet, image_ratio=0.2):
@@ -225,12 +317,12 @@ class Hometamon:
         self.counts["good_night"] += 1
         if random.random() < image_ratio:
             image_file = os.path.join(self.image_dir, "oyasumi_w_newtext.png")
-            self.api.update_with_media(
-                filename=image_file, status=reply, in_reply_to_status_id=tweet.id
+            self._tweet(
+                status=reply, in_reply_to_status_id=tweet.id, image_file=image_file
             )
         else:
-            self.api.update_status(status=reply, in_reply_to_status_id=tweet.id)
-        self.api.create_favorite(tweet.id)
+            self._tweet(status=reply, in_reply_to_status_id=tweet.id)
+        self._favorite(tweet.id)
         return reply
 
     def choose_image_by_reply(self, reply: str) -> str:
@@ -256,12 +348,12 @@ class Hometamon:
         if random.random() < image_ratio:
             image_name = self.choose_image_by_reply(reply)
             image_file = os.path.join(self.image_dir, image_name)
-            self.api.update_with_media(
-                filename=image_file, status=reply, in_reply_to_status_id=tweet.id
+            self._tweet(
+                status=reply, in_reply_to_status_id=tweet.id, image_file=image_file
             )
         else:
-            self.api.update_status(status=reply, in_reply_to_status_id=tweet.id)
-        self.api.create_favorite(tweet.id)
+            self._tweet(status=reply, in_reply_to_status_id=tweet.id)
+        self._favorite(tweet.id)
         return reply
 
     def tweet_sweet(self):
@@ -270,20 +362,24 @@ class Hometamon:
             "\n⊂・ー・つ" + chr(int(random.choice(self.manuscript.sweets), 16)) + "\n"
         )  # 16進数から変換
         status += random.choice(self.manuscript.sweet_tweet_after)
-        self.api.update_status(status=status)
+        self._tweet(status=status)
 
-    def test_tweet_linestamp(self):
+    def tweet_linestamp(self):
         reply = "ぼくのLINEスタンプがでたもん!!!ぼくのかわりにみんなをほめてほしいもん!!よろしくもん!!\nhttps://store.line.me/stickershop/product/17652748"
         image_file = os.path.join(self.image_dir, "stamp", "all.png")
-        self.api.update_with_media(filename=image_file, status=reply)
+        self._tweet(status=reply, image_file=image_file)
+
+    # Backward compatibility for existing tests/calls.
+    def test_tweet_linestamp(self):
+        self.tweet_linestamp()
 
     def test_tweet(self, image_flg=False):
         status = "起きてるもん！\n⊂・ー・つ"
         if image_flg:
             image_file = os.path.join(self.image_dir, "icon.jpg")
-            self.api.update_with_media(filename=image_file, status=status)
+            self._tweet(status=status, image_file=image_file)
         else:
-            self.api.update_status(status=status)
+            self._tweet(status=status)
         self.counts["test"] += 1
         return status
 
@@ -300,7 +396,7 @@ class Hometamon:
                 if self.set_task_words[0] in tweet.text:
                     return True
                 else:  # 自分に向けてのtweetかつ，設定が入っていないならファボ
-                    self.api.create_favorite(id=tweet.id)
+                    self._favorite(tweet.id)
             return True
         elif (
             len(tweet.text) >= 80

@@ -2,7 +2,6 @@
 import os, sys
 import random
 import datetime as dt
-import unicodedata
 
 from dotenv import load_dotenv
 
@@ -12,6 +11,7 @@ pardir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(pardir)
 
 from src import meta_manuscript
+from src import filters
 
 
 class Hometamon:
@@ -44,136 +44,12 @@ class Hometamon:
         self.JST = dt.datetime.now(JST)
         self.admin_twitter_id = os.environ.get("ADMIN_RECIPIENT_ID")
 
-        self.exclusion_user_names = [
-            "bot",
-            "ビジネス",
-            "副業",
-            "公式",
-            "株",
-            "FX",
-            "ブランド",
-            "無料",
-            "キャリア",
-            "エージェント",
-            "LINE",
-            "エロ",
-            "オフパコ",
-            "おふぱこ",
-            "裏垢",
-            "セフレ",
-            "セックスレス",
-        ]  # user name
-        self.exclusion_words = ["peing", "http"]
-        self.exclution_descriptions = [
-            # 性的コンテンツ
-            "アダルト",
-            "エロ",
-            "セクシャル",
-            "18+",
-            "グラビア",
-            "美女",
-            "美少女",
-            "ヌード",
-            "下着",
-            "大人のおもちゃ",
-            "風俗",
-            "出会い系",
-            "エッチ",
-            "AV",
-            "ポルノ",
-            "裏垢",
-            "パコ",
-            "おふぱこ",
-            "セフレ",
-            "メンズエステ",
-            "デリヘル",
-            "スパム",
-            "spam",
-            "ボット",
-            "bot",
-            "ゲット",
-            "無料",
-            "キャンペーン",
-            "アンケート",
-            "企画",
-            "LINE",
-            "詐欺",
-            "偽情報",
-            "フェイクニュース",
-            "fake news",
-            "返金",
-            "refund",
-            "クレジットカード",
-            "カード情報",
-            "個人情報",
-            "金儲け",
-            "お金",
-            "投資",
-            "トレード",
-            "FX",
-            # 薬物や医療
-            "医療",
-            "薬",
-            "ドクター",
-            "doctor",
-            "クリニック",
-            "clinic",
-            "ED",
-            "育毛",
-            "ダイエット",
-            "美容",
-            "整形",
-            "美容外科",
-            "健康",
-            "ハーブ",
-            "サプリメント",
-            # ビジネス行為など
-            "マルチ商法",
-            "ネズミ講",
-            "詐欺商法",
-            "MLM",
-            "ビジネスチャンス",
-            "business opportunity",
-            "副業",
-            "在宅ワーク",
-            "自由な生活",
-            "自由な時間",
-            "ノマドワーク",
-            "稼ぐ",
-            "儲ける",
-            "年収",
-            "月収",
-            "資産",
-            "利益",
-        ]
+        self.exclusion_user_names = filters.EXCLUSION_USER_NAMES  # user name
+        self.exclusion_words = filters.EXCLUSION_WORDS
+        self.exclution_descriptions = filters.EXCLUSION_DESCRIPTIONS
         self.good_morning_words = ["おはよう", "ぽきた", "起きた", "起床", "早起き"]
         self.good_night_words = ["おやすみ", "寝よう", "寝る", "寝ます"]
-        self.classify_words = [
-            "褒めて",
-            "ほめて",
-            "バオワ",
-            "ばおわ",
-            "バイト終",
-            "バおわ",
-            "実験終",
-            "実験おわ",
-            "らぼりだ",
-            "ラボ離脱",
-            "ラボりだ",
-            "ラボリダ",
-            "帰宅",
-            "疲れた",
-            "つかれた",
-            "ちゅかれた",
-            "仕事納め",
-            "仕事おわり",
-            "退勤",
-            "仕事終わり",
-            "掃除終",
-            "掃除した",
-            "がこおわ",
-            "学校終",
-        ]
+        self.classify_words = filters.PRAISE_WORDS
         self.set_task_words = ["設定"]
         self.transform_words = ["変身"]
         self.test_words = ["__test__"]
@@ -191,11 +67,7 @@ class Hometamon:
         return self.api.home_timeline(count=100, since_id=None)
 
     def user_name_changer(self, user_name):
-        #  正規化
-        normalize_user_name = unicodedata.normalize("NFKC", user_name)
-        if "@" in normalize_user_name:
-            normalize_user_name = normalize_user_name.split("@")[0]
-        return normalize_user_name
+        return filters.normalize_user_name(user_name)
 
     def good_morning(self, tweet):
         # image_ratio = 0.000001
@@ -234,23 +106,13 @@ class Hometamon:
         return reply
 
     def choose_image_by_reply(self, reply: str) -> str:
-        # replyの言葉から画像を選ぶ
-        image_name = "erai_w_newtext.png"
-        for otukare in ["お疲れ", "飲む", "休"]:  # 飲み物を運んでくれるようなリプライ
-            if otukare in reply:
-                image_name = "otukare_w_newtext.png"
-        for yosi in ["よし", "えらい", "すごい"]:  # 頭撫でるイメージのリプライ
-            if yosi in reply:
-                image_name = "yosi_w_newtext.png"
-        return image_name
+        return filters.choose_image_by_reply(reply)
 
     def praise(self, tweet, image_ratio=0.2):
-        reply = (
-            "@"
-            + tweet.user.screen_name
-            + "\n"
-            + self.user_name_changer(tweet.user.name)
-            + random.choice(self.manuscript.reply)
+        reply = filters.build_praise_reply(
+            tweet.user.screen_name,
+            tweet.user.name,
+            random.choice(self.manuscript.reply),
         )
         self.counts["praise"] += 1
         if random.random() < image_ratio:
@@ -382,17 +244,7 @@ class Hometamon:
         return ""
 
     def exclude_user(self, user_status):
-        # ユーザー名に特定の単語が入っている場合
-        for exclusion_name in self.exclusion_user_names:
-            if exclusion_name in user_status.name:
-                return True
-        if user_status.description is None:
-            return False
-        # ユーザーの目的欄に特定の単語が入っている場合
-        for exclusion_description in self.exclution_descriptions:
-            if exclusion_description in user_status.description:
-                return True
-        return False
+        return filters.is_excluded_user(user_status.name, user_status.description)
 
     def follower_management(self):
         # フォローしているユーザーのリストを取得する処理

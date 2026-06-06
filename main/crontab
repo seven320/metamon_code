@@ -1,1 +1,6 @@
-*/6 * * * * python3 /src/hometamon.py
+# 褒めたもん mixi2版: 巡回コミュニティをポーリングして褒める。
+# bot感対策で15分間隔（レート制限確認後に調整）。出力は docker logs に流す。
+*/15 * * * * cd /app && python3 src/hometamon_mixi2.py > /proc/1/fd/1 2>&1
+
+# X版（旧）は停止中。再開するなら以下を有効化（要 X API トークン）。
+# */6 * * * * cd /app && python3 src/hometamon.py > /proc/1/fd/1 2>&1

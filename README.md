@@ -67,17 +67,6 @@ uv run python -m src.mixi2_probe       # まず疎通＋導入確認＋使える
 uv run python -m src.hometamon_mixi2    # 1回実行（.env の MIXI2_DRY_RUN=1 なら投稿せずログのみ）
 ```
 
-Docker + cron（標準デプロイ。`main/crontab` の `*/15` で巡回）:
-
-```bash
-make dev        # build & up -d
-```
-
-## デプロイ
-
-- **Docker + cron**（標準。`main/crontab`）
-- **Cloud Run**（サーバーレス・別途対応予定）
-
 ## proto の再生成
 
 mixi2 が API を更新したら、公式 proto を取り込み直して再生成します（生成物 `main/src/mixi2_gen/` はコミット対象）:

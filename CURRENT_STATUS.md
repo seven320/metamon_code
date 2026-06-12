@@ -12,10 +12,6 @@
   分類 → 返信＋スタンプ → DM レポート。
 - テスト: `cd main && uv run pytest`（X版＋mixi2版で計83件 green）。
 
-## デプロイ
-- 標準: Docker + cron（`main/crontab` の `*/15`）。
-- 検討中: Cloud Run（別ブランチで対応予定）。
-
 ## 残課題 / TODO
 - [ ] Cloud Run へのデプロイ（別ブランチで作業予定）。
 - [ ] `.env` の `ADMIN_USER_ID` 記入（レポート DM を有効化したい場合）。

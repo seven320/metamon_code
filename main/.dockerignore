@@ -1,0 +1,11 @@
+# 秘密はイメージに焼かない（Cloud Run等では環境変数/Secret Managerで渡す）
+env/.env
+
+# ローカル仮想環境・実行時状態・キャッシュ（ビルドコンテキストを軽くする）
+.venv/
+state/mixi2_cursor.txt
+state/mentions_since_id.txt
+**/__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store

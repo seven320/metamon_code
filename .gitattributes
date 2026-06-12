@@ -1,2 +1,9 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# protoc が生成したコードはレビュー対象外の生成物。
+# GitHub の diff で自動的に畳み、言語統計からも除外する。
+main/src/mixi2_gen/** linguist-generated=true
+
+# mixi2 公式 proto は vendor（我々のソースではない）。統計から除外し diff も畳む。
+main/proto/** linguist-vendored=true

@@ -1,3 +1,7 @@
+# mixi2 protoからPythonスタブを再生成（main/src/mixi2_gen へ出力・コミット対象）
+gen-proto:
+	cd main && uv run bash scripts/gen_proto.sh
+
 # 開発環境起動
 dev:
 	docker compose build

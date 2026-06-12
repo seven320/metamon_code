@@ -1,0 +1,1 @@
+VERSION v1.2.0 (mixigroup/mixi2-api @ 91b0915)

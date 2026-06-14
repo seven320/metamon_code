@@ -3,6 +3,7 @@ import pytest
 from src import mixi2_client  # noqa: F401  (生成スタブの path を通す)
 from src import hometamon_mixi2
 from src.mixi2_adapter import TweetLike, UserLike
+from tests.fakes import InMemoryStore
 
 from social.mixi.application.model.v1 import post_pb2, user_pb2
 
@@ -25,7 +26,7 @@ def make_post(post_id, creator_id, text, created_seconds, **kw):
 
 
 @pytest.fixture
-def bot(mocker, tmp_path, monkeypatch):
+def bot(mocker, monkeypatch):
     monkeypatch.setenv("MIXI2_DRY_RUN", "1")
     monkeypatch.setenv("MAX_REPLIES_PER_RUN", "2")
     monkeypatch.setenv("POLL_MIN_SLEEP", "0")
@@ -34,8 +35,7 @@ def bot(mocker, tmp_path, monkeypatch):
     monkeypatch.setenv("BOT_USER_ID", "bot1")
     mocker.patch("src.hometamon_mixi2.time.sleep")
     client = mocker.Mock()
-    b = hometamon_mixi2.HometamonMixi2(client=client)
-    b.state_dir = str(tmp_path)
+    b = hometamon_mixi2.HometamonMixi2(client=client, store=InMemoryStore())
     b.manuscript = mocker.Mock()
     b.manuscript.reply = ["お疲れ様だもん"]
     return b

@@ -38,8 +38,6 @@ from src import filters  # noqa: E402
 from src import mixi2_adapter  # noqa: E402
 from src.mixi2_client import Mixi2Client  # noqa: E402
 
-CURSOR_FILENAME = "mixi2_cursor.txt"
-
 # 運用チューニングの既定値。秘密ではないので .env には置かず、ここを真実源とする。
 # 変えたい場合のみ同名の環境変数（docker-compose の environment 等）で上書きできる。
 # 注: mixi2は全RPCで 20 req/min 制限。MAX_REPLIES=5 なら1run約13コールで安全圏。
@@ -50,7 +48,7 @@ DEFAULT_MAX_POST_LEN = 150
 
 
 class HometamonMixi2:
-    def __init__(self, client=None):
+    def __init__(self, client=None, store=None):
         if os.path.exists("/env/.env"):
             load_dotenv("/env/.env")
         elif os.path.exists("env/.env"):
@@ -59,9 +57,14 @@ class HometamonMixi2:
             print("error doesn't exist .env path")
 
         self.image_dir = "/images" if os.path.isdir("/images") else "images"
-        self.state_dir = "/state" if os.path.isdir("/state") else "state"
 
         self.client = client if client is not None else Mixi2Client.from_env()
+        if store is not None:
+            self.store = store
+        else:
+            from src.firestore_store import FirestoreStore
+
+            self.store = FirestoreStore()
         self.manuscript = meta_manuscript.Manuscript()
 
         self.community_id = os.environ.get("COMMUNITY_ID")
@@ -81,21 +84,14 @@ class HometamonMixi2:
         self.counts = {"ignore": 0, "praise": 0, "pass": 0, "capped": 0}
         self._replies_done = 0
 
-    # ---- カーソル永続化 ---------------------------------------------------
-    def _cursor_path(self):
-        return os.path.join(self.state_dir, CURSOR_FILENAME)
-
+    # ---- カーソル永続化（Firestore） --------------------------------------
     def load_cursor(self):
-        try:
-            with open(self._cursor_path(), encoding="utf-8") as f:
-                return f.read().strip() or None
-        except FileNotFoundError:
-            return None
+        """前回の最新 post_id（カーソル）を Firestore から読む。"""
+        return self.store.load_cursor(self.community_id)
 
     def save_cursor(self, post_id):
-        os.makedirs(self.state_dir, exist_ok=True)
-        with open(self._cursor_path(), "w", encoding="utf-8") as f:
-            f.write(post_id)
+        """今回の最新 post_id（カーソル）を Firestore に保存する。"""
+        self.store.save_cursor(self.community_id, post_id)
 
     @staticmethod
     def newest_post_id(posts):

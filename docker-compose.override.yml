@@ -10,4 +10,5 @@ services:
       - ./main/tests:/app/tests
       - ./main/images:/app/images
       - ./main/env:/app/env
+      - ./main/state:/app/state
     command: sh

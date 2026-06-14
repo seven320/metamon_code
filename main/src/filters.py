@@ -165,9 +165,23 @@ def is_excluded_user(name, description):
     return False
 
 
+def _mention_header(screen_name, display_name):
+    """宛名部（@ハンドル + 改行 + 正規化した表示名）を返す。褒め/歓迎で共通。"""
+    return "@" + screen_name + "\n" + normalize_user_name(display_name)
+
+
 def build_praise_reply(screen_name, display_name, phrase):
-    """褒め返信文を組み立てる（@ハンドル + 改行 + 正規化した表示名 + 褒め文）。"""
-    return "@" + screen_name + "\n" + normalize_user_name(display_name) + phrase
+    """褒め返信文を組み立てる（宛名部 + 褒め文）。"""
+    return _mention_header(screen_name, display_name) + phrase
+
+
+def build_welcome_message(screen_name, display_name, body):
+    """歓迎ポスト文を組み立てる（宛名部 + 改行 + 本文）。
+
+    褒め返信と同じ体裁で、公開ポストながら本人にも @ で気づいてもらう。
+    body には「あいさつ＋使い方案内」を渡す。
+    """
+    return _mention_header(screen_name, display_name) + "\n" + body
 
 
 def has_excluded_word(text):

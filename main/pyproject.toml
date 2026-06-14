@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "black>=26.1.0",
+    "google-cloud-firestore>=2.16.0",
     "grpcio>=1.68.0",
     "grpcio-tools>=1.68.0",
     "protobuf>=5.28.0",

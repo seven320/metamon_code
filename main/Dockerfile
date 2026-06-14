@@ -1,7 +1,8 @@
 FROM python:3.13-alpine AS base
 
-RUN apk update && \
-    apk --no-cache add \
+# 実行時ツール＋本番コンテナ調査用（make exec で入って vim 等を使う）。
+# --no-cache が一時索引を取得するため apk update は不要。
+RUN apk --no-cache add \
     curl \
     tmux \
     git \
@@ -12,9 +13,8 @@ RUN apk update && \
 
 WORKDIR /app
 
-# library
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.local/bin:${PATH}"
+# uv はインストーラDLせず公式イメージから固定版をコピー（決定的・キャッシュ安定）
+COPY --from=ghcr.io/astral-sh/uv:0.4.29 /uv /uvx /bin/
 ENV UV_SYSTEM_PYTHON=1
 
 COPY ./pyproject.toml ./uv.lock ./

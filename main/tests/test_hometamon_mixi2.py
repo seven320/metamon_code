@@ -86,6 +86,36 @@ class Test_praise:
         assert len(bot.praise(tweet())) == 10
 
 
+class Test_praise_image:
+    def test_attaches_image_when_ratio_high(self, bot, mocker):
+        bot.dry_run = False
+        bot.image_ratio = 1.0  # 必ず添付
+        mocker.patch("os.path.exists", return_value=True)
+        bot.client.upload_image.return_value = "media123"
+        bot.praise(tweet(text="退勤"))
+        bot.client.upload_image.assert_called_once()
+        _, kwargs = bot.client.create_post.call_args
+        assert kwargs["media_id_list"] == ["media123"]
+
+    def test_no_image_when_ratio_zero(self, bot):
+        bot.dry_run = False
+        bot.image_ratio = 0.0  # 添付しない
+        bot.praise(tweet(text="退勤"))
+        bot.client.upload_image.assert_not_called()
+        _, kwargs = bot.client.create_post.call_args
+        assert kwargs["media_id_list"] is None
+
+    def test_image_upload_failure_falls_back_to_text(self, bot, mocker):
+        bot.dry_run = False
+        bot.image_ratio = 1.0
+        mocker.patch("os.path.exists", return_value=True)
+        bot.client.upload_image.side_effect = RuntimeError("boom")
+        bot.praise(tweet(text="退勤"))
+        _, kwargs = bot.client.create_post.call_args
+        assert kwargs["media_id_list"] is None  # テキストのみで投稿
+        assert bot.counts["praise"] == 1
+
+
 class Test_run:
     def test_classifies_caps_and_saves_cursor(self, bot):
         # 3件のトリガー投稿（cap=2）+ 1件の無反応

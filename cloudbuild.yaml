@@ -1,0 +1,62 @@
+# Cloud Build 設定。master への push を監視する Cloud Build トリガーから実行される。
+# GitHub 側に GCP 資格情報を置かず、GCP が公開リポを見てビルド＆デプロイする方式。
+#
+# やること: prd イメージをビルド → Artifact Registry へ push → 2つの Cloud Run Job の
+#           イメージを更新する。ジョブの env / secrets は scripts/deploy.sh で設定済み前提
+#           （ここでは --image だけ差し替え、設定は保持）。
+#
+# 初回のジョブ作成・env/secrets 設定・Firestore/IAM/Scheduler は scripts/deploy.sh と
+# 手元の CLOUD_RUN.md（runbook）で行う。本ファイルは「更新の自動配達」だけを担当する。
+
+substitutions:
+  _REGION: asia-northeast1
+  _REPO: hometamon
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --target
+      - prd
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/bot:$SHORT_SHA
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/bot:latest
+      - main
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - --all-tags
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/bot
+
+  - id: update-praise
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - jobs
+      - update
+      - hometamon-praise
+      - --region
+      - ${_REGION}
+      - --image
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/bot:$SHORT_SHA
+
+  - id: update-welcome
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - jobs
+      - update
+      - hometamon-welcome
+      - --region
+      - ${_REGION}
+      - --image
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/bot:$SHORT_SHA

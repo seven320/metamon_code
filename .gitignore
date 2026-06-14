@@ -1,5 +1,6 @@
 /main/src/.env
 .env
+.env.dev
 
 /Django/main/hometask/local_settings.py
 *.pyc

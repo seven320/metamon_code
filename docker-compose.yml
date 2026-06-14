@@ -8,8 +8,6 @@ services:
         tty: true
         depends_on:
             - firestore
-        volumes:
-            - ./main/state:/app/state
         environment:
             TZ: Asia/Tokyo
             # APP_ENV=dev を渡すと env/.env.dev（devコミュニティ用）を読む。未指定はprod。

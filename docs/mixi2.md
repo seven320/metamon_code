@@ -23,7 +23,7 @@
 3. users   = GetUsers([p.creator_id for p in posts])      # Postに作者が埋め込まれないため解決
 4. tweets  = adapter(posts, users)                        # 旧tweet風オブジェクトへ変換
 5. for tweet: classify → check_exclude / check_reply
-6. praise  = CreatePost(返信) + AddStampToPost(スタンプ)
+6. praise  = CreatePost(返信[, media_id_list]) + AddStampToPost(スタンプ)  # 確率 IMAGE_RATIO で画像添付
 7. 最新 post_id を Firestore に保存（次回の since_cursor）
 8. report  = SendDirectMessageToCommunityMember(admin)    # ADMIN_USER_ID 未設定なら print のみ
 ```
@@ -141,6 +141,17 @@ mixi2 は「いつ参加したか」を返さず、参加イベントは Stream 
 ## スタンプ（旧ファボの代替）
 
 `AddStampToPost(post_id, stamp_id)`。`stamp_id` は `GetStamps` で取得（`mixi2_probe` が列挙）。公式スタンプ ID（例 `o_hearts`＝💕）はどのポストにも使える。コミュニティ固有スタンプはそのコミュニティの投稿にのみ。
+
+## 画像添付（返信メディア）
+
+X 版を踏襲し、確率 `IMAGE_RATIO`（既定 0.2）で返信に画像を添える。画像は `filters.choose_image_by_reply` が返信文に応じて `main/images/` から選ぶ。アップロードは `mixi2_client.upload_image(path)` が以下を実施:
+
+1. `InitiatePostMediaUpload(content_type, data_size, media_type=TYPE_IMAGE)` → `{media_id, upload_url}`
+2. `upload_url` へ画像バイトを **POST**（`Authorization: Bearer` 必須・本文は生バイト）。→ 202 Accepted
+3. `GetPostMediaStatus(media_id)` を `STATUS_COMPLETED` までポーリング
+4. `CreatePost(..., media_id_list=[media_id])` で添付（最大 4）
+
+> **実機で確定した罠**: `upload_url` は署名済みURLではなく**認証必須**（無認証だと 401）。メソッドは **POST**（PUT は 500）、本文は**生バイト**（multipart は Content-Length 不一致で 400）。専用の権限は不要（`Community.Post.Create` の範囲）。アップロード失敗時はテキストのみで投稿して褒めは止めない。
 
 ## bot 感対策・運用パラメータ
 

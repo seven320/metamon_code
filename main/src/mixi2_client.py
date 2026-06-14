@@ -14,6 +14,7 @@ env (`/env/.env` もしくは `env/.env`):
     MIXI2_GRPC_INSECURE        任意。"1" でTLS無し（ローカル検証用）
 """
 
+import mimetypes
 import os
 import sys
 import time
@@ -222,6 +223,65 @@ class Mixi2Client:
         if media_id_list:
             req.media_id_list.extend(media_id_list)
         return self._stub.CreatePost(req, metadata=self._metadata()).post
+
+    def initiate_post_media_upload(
+        self, content_type, data_size, media_type=None, description=None
+    ):
+        """メディアアップロードを開始し、(media_id, upload_url) を返す。"""
+        req = service_pb2.InitiatePostMediaUploadRequest(
+            content_type=content_type, data_size=data_size
+        )
+        req.media_type = (
+            media_type
+            if media_type is not None
+            else service_pb2.InitiatePostMediaUploadRequest.TYPE_IMAGE
+        )
+        if description:
+            req.description = description
+        resp = self._stub.InitiatePostMediaUpload(req, metadata=self._metadata())
+        return resp.media_id, resp.upload_url
+
+    def get_post_media_status(self, media_id):
+        """メディアのアップロード/処理状況（Status enum）を返す。"""
+        req = service_pb2.GetPostMediaStatusRequest(media_id=media_id)
+        return self._stub.GetPostMediaStatus(req, metadata=self._metadata()).status
+
+    def upload_image(self, path, description=None, poll_attempts=6, poll_interval=1.0):
+        """画像ファイルをアップロードし、添付用の media_id を返す。
+
+        手順: InitiatePostMediaUpload で発行された upload_url へ画像バイトを PUT し、
+        GetPostMediaStatus が COMPLETED になるまでポーリングする。
+        FAILED / タイムアウト / 失敗ステータスでは例外を投げる（呼び出し側でテキストのみに退避）。
+        """
+        content_type = mimetypes.guess_type(path)[0] or "application/octet-stream"
+        with open(path, "rb") as f:
+            data = f.read()
+        media_id, upload_url = self.initiate_post_media_upload(
+            content_type, len(data), description=description
+        )
+        # upload_url は署名済みURLではなく認証必須。gRPC と同じ Bearer トークンを付与する。
+        # メソッドは POST・本文は生バイト（Content-Length は data_size と一致が必要なので
+        # multipart は不可）。実機検証で 202 Accepted を確認済み。
+        headers = {
+            "Content-Type": content_type,
+            "Authorization": "Bearer {}".format(self._token_provider.token()),
+        }
+        if self._auth_key:
+            headers["x-auth-key"] = self._auth_key
+        resp = requests.post(upload_url, data=data, headers=headers, timeout=30)
+        if not (200 <= resp.status_code < 300):
+            raise RuntimeError(
+                "media upload POST failed: {} {}".format(resp.status_code, resp.text)
+            )
+        Status = service_pb2.GetPostMediaStatusResponse
+        for _ in range(poll_attempts):
+            status = self.get_post_media_status(media_id)
+            if status == Status.STATUS_COMPLETED:
+                return media_id
+            if status == Status.STATUS_FAILED:
+                raise RuntimeError("media processing failed: {}".format(media_id))
+            time.sleep(poll_interval)
+        raise TimeoutError("media not completed in time: {}".format(media_id))
 
     def add_stamp_to_post(self, post_id, stamp_id):
         """ポストにスタンプを付与（旧ファボ相当）。更新後 Post を返す。"""

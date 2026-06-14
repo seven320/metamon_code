@@ -5,10 +5,11 @@
 X版 (hometamon.py) の褒め機能だけを移植したもの。挨拶・お菓子・スタンプ宣伝・
 フォロー管理はスコープ外。
 
-実行は cron による定期ポーリングを想定。差分取得のため最新 post_id を state/ に永続化する。
+実行は cron による定期ポーリングを想定。差分取得のため最新 post_id を Firestore に永続化する。
 
 env:
     （接続系は mixi2_client.Mixi2Client.from_env を参照）
+    （状態保存は firestore_store.FirestoreStore を参照）
     COMMUNITY_ID         巡回対象コミュニティID
     ADMIN_USER_ID        実行レポートのDM送信先ユーザーID
     BOT_USER_ID          bot自身のユーザーID（自分の投稿を除外するため／任意）
@@ -17,6 +18,7 @@ env:
     POLL_MIN_SLEEP       返信前ランダム待機の下限秒（既定3）
     POLL_MAX_SLEEP       返信前ランダム待機の上限秒（既定12）
     MAX_POST_LEN         返信本文の最大文字数（既定150）
+    IMAGE_RATIO          返信に画像を添える確率（既定0.2／0で無効）
     MIXI2_DRY_RUN        "1" で書き込みRPCを実行せずログのみ（疎通/動作確認用）
 """
 
@@ -44,6 +46,7 @@ DEFAULT_MAX_REPLIES_PER_RUN = 5
 DEFAULT_POLL_MIN_SLEEP = 3.0
 DEFAULT_POLL_MAX_SLEEP = 12.0
 DEFAULT_MAX_POST_LEN = 150
+DEFAULT_IMAGE_RATIO = 0.2  # 返信に画像を添える確率（X版踏襲）。レート制限のため控えめに
 
 
 class HometamonMixi2:
@@ -71,6 +74,7 @@ class HometamonMixi2:
         self.min_sleep = float(os.environ.get("POLL_MIN_SLEEP", DEFAULT_POLL_MIN_SLEEP))
         self.max_sleep = float(os.environ.get("POLL_MAX_SLEEP", DEFAULT_POLL_MAX_SLEEP))
         self.max_post_len = int(os.environ.get("MAX_POST_LEN", DEFAULT_MAX_POST_LEN))
+        self.image_ratio = float(os.environ.get("IMAGE_RATIO", DEFAULT_IMAGE_RATIO))
         self.dry_run = os.environ.get("MIXI2_DRY_RUN") == "1"
 
         JST = dt.timezone(dt.timedelta(hours=+9), "JST")
@@ -133,16 +137,36 @@ class HometamonMixi2:
         )
         return reply[: self.max_post_len]
 
+    def pick_image(self, reply):
+        """確率 image_ratio で reply に合う画像パスを返す（添付しないなら None）。"""
+        if random.random() >= self.image_ratio:
+            return None
+        path = os.path.join(self.image_dir, filters.choose_image_by_reply(reply))
+        return path if os.path.exists(path) else None
+
     def praise(self, tweet):
         reply = self.build_reply_text(tweet)
         time.sleep(random.uniform(self.min_sleep, self.max_sleep))  # bot感対策
+        image_path = self.pick_image(reply)
         if self.dry_run:
-            print("[dry-run] reply to {}: {}".format(tweet.id, reply))
+            print(
+                "[dry-run] reply to {} (image={}): {}".format(
+                    tweet.id, image_path, reply
+                )
+            )
         else:
+            media_id = None
+            if image_path:
+                # 画像のアップロードに失敗してもテキストのみで投稿する（褒めは止めない）
+                try:
+                    media_id = self.client.upload_image(image_path)
+                except Exception as e:
+                    print("image upload failed, posting text only: {}".format(e))
             self.client.create_post(
                 reply,
                 in_reply_to_post_id=tweet.id,
                 community_id=self.community_id,
+                media_id_list=[media_id] if media_id else None,
             )
             if self.praise_stamp_id:
                 self.client.add_stamp_to_post(tweet.id, self.praise_stamp_id)

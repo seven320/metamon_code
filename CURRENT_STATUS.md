@@ -6,6 +6,7 @@
 
 ## 現状
 - **「褒める」機能の mixi2 移行が完了**（実環境でエンドツーエンド動作確認済み：返信＋スタンプ付与まで成功）。mixi2 が現在の稼働対象。
+- **返信に画像添付**（X版踏襲、確率 `IMAGE_RATIO` 既定0.2）。`InitiatePostMediaUpload`→upload_url へ POST→`GetPostMediaStatus` 完了待ち→`CreatePost(media_id_list)`。dev で実投稿まで確認済み。
 - **新規参加者への「歓迎」機能を追加**（Phase1）。コミュニティのメンバー一覧の差分で新規参加を検知し、あいさつ＋使い方案内をコミュニティへ公開ポストする。dev コミュニティで実投稿まで確認済み。
 - **状態保存を Firestore に一本化**。褒めのカーソル（最新 post_id）と歓迎の既知メンバー集合を Firestore に保存（旧 `state/mixi2_cursor.txt` は廃止）。ローカル/CI は Firestore エミュレータ、本番 Cloud Run は ADC で実 Firestore。
 - **prod/dev のコミュニティ切替**に対応。実行時の環境変数 `APP_ENV=dev` で `env/.env.dev`（別テストコミュニティ）を読む。状態は `COMMUNITY_ID` 単位で分かれるため prod を汚さない。
@@ -15,7 +16,6 @@
 
 ## 残課題 / TODO
 - [ ] Cloud Run へのデプロイ（cron → Cloud Run Jobs + Scheduler、Firestore は本番プロジェクトへ）。手順メモは `CLOUD_RUN.md`。
-- [ ] 画像添付の返信（`InitiatePostMediaUpload` 系）。Phase1 の残り（テキストのみ実装済み）。
 - [ ] `.env` の `ADMIN_USER_ID` 記入（レポート DM を有効化したい場合）。
 - [ ] `BOT_USER_ID` を UUID 化（任意。現状はハンドルだが返信除外でカバー済み）。
 - [ ] （任意）CI に「proto から再生成して差分が出たら落とす」チェックを追加。

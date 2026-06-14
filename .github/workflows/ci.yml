@@ -3,6 +3,15 @@ name: CI
 on:
   pull_request:
 
+# 同一ブランチで新しい push が来たら走行中の古いランを止める（連投時の無駄削減）
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# 最小権限。テストはチェックアウト読み取りだけで十分（fork PR対策の明示）
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -19,7 +28,7 @@ jobs:
         with:
           context: ./main
           file: ./main/Dockerfile
-          target: dev
+          target: prd            # デプロイ成果物そのものをテスト（dev版ではなく本番prd版）
           tags: metamon-ci:test
           load: true
           cache-from: type=gha

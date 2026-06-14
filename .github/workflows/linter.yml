@@ -1,6 +1,13 @@
 name: reviewdog
 run-name: run Linter and comment to PR
 on: [pull_request]
+
+# 最小権限。reviewdog が PR にコメントするため pull-requests:write のみ付与。
+# fork PR では GITHUB_TOKEN が読み取り専用になり、コメントは出ないが安全側に倒れる。
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   black-format:
     runs-on: ubuntu-latest

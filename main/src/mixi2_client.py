@@ -162,6 +162,26 @@ class Mixi2Client:
         req = service_pb2.GetUsersRequest(user_id_list=list(user_ids))
         return list(self._stub.GetUsers(req, metadata=self._metadata()).users)
 
+    def get_community_member_list(self, community_id):
+        """コミュニティの全メンバー（User）をページングを辿って取得する。
+
+        レスポンスは User のみで参加日時を持たないため、呼び出し側は
+        前回取得した member_id 集合との差分で新規参加者を検知する。
+        """
+        members = []
+        cursor = None
+        while True:
+            req = service_pb2.GetCommunityMemberListRequest(community_id=community_id)
+            if cursor:
+                req.pagination_cursor = cursor
+            resp = self._stub.GetCommunityMemberList(req, metadata=self._metadata())
+            members.extend(resp.members)
+            if resp.next_pagination_cursor:
+                cursor = resp.next_pagination_cursor
+            else:
+                break
+        return members
+
     def get_stamps(self, official_language=None, community_ids=None):
         """利用可能スタンプを取得（stamp_id の発見用）。"""
         req = service_pb2.GetStampsRequest()

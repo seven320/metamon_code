@@ -2,5 +2,9 @@
 # bot感対策で15分間隔（レート制限確認後に調整）。出力は docker logs に流す。
 */15 * * * * cd /app && python3 src/hometamon_mixi2.py > /proc/1/fd/1 2>&1
 
+# 歓迎: メンバー一覧の差分で新規参加者を検知して挨拶する。
+# 褒めより頻度を落として1時間ごと（参加検知の遅延は許容範囲）。
+0 * * * * cd /app && python3 src/welcome_newcomer.py > /proc/1/fd/1 2>&1
+
 # X版（旧）は停止中。再開するなら以下を有効化（要 X API トークン）。
 # */6 * * * * cd /app && python3 src/hometamon.py > /proc/1/fd/1 2>&1

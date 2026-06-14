@@ -15,3 +15,6 @@ __pycache__/
 /main/images/stamp/*
 /main/state/mentions_since_id.txt
 /main/state/mixi2_cursor.txt
+
+# Claude Code のローカル設定/メモ（個人用）
+.claude/

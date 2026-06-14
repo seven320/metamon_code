@@ -6,5 +6,20 @@ services:
         container_name: hometamon
         restart: always
         tty: true
-        environment: 
+        depends_on:
+            - firestore
+        volumes:
+            - ./main/state:/app/state
+        environment:
             TZ: Asia/Tokyo
+            # ローカルは Firestore エミュレータに接続（本番 Cloud Run は ADC で実Firestore）
+            GOOGLE_CLOUD_PROJECT: hometamon-local
+            FIRESTORE_EMULATOR_HOST: firestore:8080
+
+    # bot の永続状態（カーソル / 既知メンバー）を保持する Firestore エミュレータ。
+    # 本番では Cloud Firestore を使うためデプロイ対象外（ローカル開発専用）。
+    firestore:
+        image: google/cloud-sdk:emulators
+        command: gcloud emulators firestore start --host-port=0.0.0.0:8080 --project=hometamon-local
+        ports:
+            - "8080:8080"

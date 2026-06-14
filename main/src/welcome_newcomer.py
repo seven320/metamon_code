@@ -33,8 +33,6 @@ import random
 import time
 import datetime as dt
 
-from dotenv import load_dotenv
-
 # スクリプトとして直接実行されても `from src import ...` が解決できるようにする
 pardir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if pardir not in sys.path:
@@ -42,6 +40,7 @@ if pardir not in sys.path:
 
 from src import meta_manuscript  # noqa: E402
 from src import filters  # noqa: E402
+from src import env_loader  # noqa: E402
 from src.mixi2_client import Mixi2Client  # noqa: E402
 
 # 運用チューニングの既定値。秘密ではないので .env には置かず、ここを真実源とする。
@@ -55,12 +54,7 @@ DEFAULT_MAX_POST_LEN = 150
 class WelcomeNewcomer:
     def __init__(self, client=None, store=None):
         """env を読み込み、クライアント・ストア・運用パラメータを初期化する。"""
-        if os.path.exists("/env/.env"):
-            load_dotenv("/env/.env")
-        elif os.path.exists("env/.env"):
-            load_dotenv("env/.env")
-        else:
-            print("error doesn't exist .env path")
+        env_loader.load_env()
 
         self.client = client if client is not None else Mixi2Client.from_env()
         if store is not None:

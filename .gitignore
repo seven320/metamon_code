@@ -17,3 +17,6 @@ __pycache__/
 
 # Claude Code のローカル設定/メモ（個人用）
 .claude/
+
+# デプロイ runbook（ローカルメモ・コミット対象外）
+/CLOUD_RUN.md

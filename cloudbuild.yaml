@@ -2,11 +2,11 @@
 # GitHub 側に GCP 資格情報を置かず、GCP が公開リポを見てビルド＆デプロイする方式。
 #
 # やること: prd イメージをビルド → Artifact Registry へ push → 2つの Cloud Run Job の
-#           イメージを更新する。ジョブの env / secrets は scripts/deploy.sh で設定済み前提
-#           （ここでは --image だけ差し替え、設定は保持）。
+#           イメージを更新する。ジョブの env / secrets は Terraform（別private リポ
+#           metamon_infra）で設定済み前提（ここでは --image だけ差し替え、設定は保持）。
 #
-# 初回のジョブ作成・env/secrets 設定・Firestore/IAM/Scheduler は scripts/deploy.sh と
-# 手元の CLOUD_RUN.md（runbook）で行う。本ファイルは「更新の自動配達」だけを担当する。
+# 初回のジョブ作成・env/secrets・Firestore/IAM/Scheduler・このトリガー自体は Terraform
+# （metamon_infra）が管理する。本ファイルは「更新の自動配達」だけを担当する。
 
 substitutions:
   _REGION: asia-northeast1
